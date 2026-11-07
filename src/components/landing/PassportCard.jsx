@@ -1,28 +1,22 @@
 import { useRef, useState } from 'react'
-import {
-  motion,
-  useMotionValue,
-  useMotionTemplate,
-  useSpring,
-  useTransform,
-  useReducedMotion,
-} from 'framer-motion'
-import Khatam, { KhatamPath } from './Khatam.jsx'
+import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'framer-motion'
+import { KhatamPath } from './Khatam.jsx'
 import Crest from '../Crest.jsx'
 
 const SOFT = { stiffness: 220, damping: 22, mass: 0.6 }
 
 /**
- * The passport as a physical object: tilts toward the cursor, can be dragged
- * and thrown, snaps home on release, and takes a stamp with a thump. Built as
- * a real travel document — embossed cover, holder panel, and a machine-
- * readable zone along the bottom edge.
+ * The passport data page: cream paper, navy ink, photo box, labelled fields,
+ * and a machine-readable zone. Flat colour throughout — a real document is
+ * printed, not lit. It tilts toward the cursor and can be dragged and thrown.
  */
 export default function PassportCard({
   name = 'Omar Khalid',
-  route = 'San Diego Mesa → UC San Diego',
+  campus = 'San Diego Mesa',
+  target = 'UC San Diego',
   space = 'brother',
   track = 'Transfer',
+  level = 'Traveler',
   stamps = [],
   filled,
   draggable = true,
@@ -32,134 +26,83 @@ export default function PassportCard({
   const reduced = useReducedMotion()
   const ref = useRef(null)
 
-  // Pointer position, normalised to -0.5…0.5, drives tilt and the glare.
   const px = useMotionValue(0)
   const py = useMotionValue(0)
-  const rx = useSpring(useTransform(py, [-0.5, 0.5], [13, -13]), SOFT)
-  const ry = useSpring(useTransform(px, [-0.5, 0.5], [-16, 16]), SOFT)
-  const glareX = useTransform(px, [-0.5, 0.5], ['15%', '85%'])
-  const glareY = useTransform(py, [-0.5, 0.5], ['5%', '80%'])
-  const glare = useMotionTemplate`radial-gradient(420px circle at ${glareX} ${glareY}, #ffd98a38, transparent 62%)`
-
-  // While dragging, lean into the direction of travel.
-  const dx = useMotionValue(0)
-  const dy = useMotionValue(0)
-  const dragTilt = useSpring(useTransform(dx, [-240, 240], [-18, 18]), { stiffness: 160, damping: 18 })
+  const rx = useSpring(useTransform(py, [-0.5, 0.5], [11, -11]), SOFT)
+  const ry = useSpring(useTransform(px, [-0.5, 0.5], [-13, 13]), SOFT)
 
   const shown = typeof filled === 'number' ? filled : stamps.length
-
-  const move = (e) => {
-    const el = ref.current
-    if (!el || reduced) return
-    const r = el.getBoundingClientRect()
-    px.set((e.clientX - r.left) / r.width - 0.5)
-    py.set((e.clientY - r.top) / r.height - 0.5)
-  }
-
-  const rest = () => {
-    px.set(0)
-    py.set(0)
-  }
+  const [surname, ...given] = name.split(' ').reverse()
+  const givenNames = given.reverse().join(' ')
 
   return (
     <div className={`[perspective:1400px] ${className}`}>
-      {/* glow pooled under the card */}
-      <motion.div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10 blur-3xl"
-        style={{
-          background:
-            'radial-gradient(60% 50% at 50% 45%, #ffc24733, transparent 70%), radial-gradient(45% 40% at 65% 70%, #7c5cff2e, transparent 70%)',
-        }}
-        animate={reduced ? {} : { opacity: [0.75, 1, 0.75], scale: [1, 1.05, 1] }}
-        transition={{ duration: 7, repeat: Infinity, ease: 'easeInOut' }}
-      />
-
       <motion.div
         ref={ref}
-        onPointerMove={move}
-        onPointerLeave={rest}
+        onPointerMove={(e) => {
+          if (reduced || !ref.current) return
+          const r = ref.current.getBoundingClientRect()
+          px.set((e.clientX - r.left) / r.width - 0.5)
+          py.set((e.clientY - r.top) / r.height - 0.5)
+        }}
+        onPointerLeave={() => {
+          px.set(0)
+          py.set(0)
+        }}
         drag={draggable && !reduced}
-        dragElastic={0.14}
+        dragElastic={0.12}
         dragSnapToOrigin
         dragTransition={{ bounceStiffness: 180, bounceDamping: 18 }}
-        onDrag={(_, i) => {
-          dx.set(i.offset.x)
-          dy.set(i.offset.y)
-        }}
-        onDragEnd={() => {
-          dx.set(0)
-          dy.set(0)
-        }}
-        whileDrag={{ scale: 1.04, cursor: 'grabbing' }}
-        style={{
-          rotateX: rx,
-          rotateY: ry,
-          rotateZ: dragTilt,
-          transformStyle: 'preserve-3d',
-          cursor: draggable ? 'grab' : 'default',
-        }}
-        className="relative aspect-[3/4.1] w-full max-w-[340px] touch-none rounded-[26px] select-none"
+        whileDrag={{ scale: 1.03, cursor: 'grabbing' }}
+        style={{ rotateX: rx, rotateY: ry, cursor: draggable ? 'grab' : 'default' }}
+        className="relative aspect-[3/4.05] w-full max-w-[330px] touch-none select-none"
       >
-        {/* cover */}
         <div
-          className="absolute inset-0 overflow-hidden rounded-[26px] border"
-          style={{
-            borderColor: '#e3b04b55',
-            background:
-              'linear-gradient(158deg,#1b2d63 0%,#0d1838 45%,#0a1230 100%)',
-            boxShadow:
-              '0 44px 90px -24px #000c, 0 10px 30px -12px #00000090, inset 0 1px 0 #ffffff1f, inset 0 0 0 1px #ffffff0a',
-          }}
+          className="absolute inset-0 overflow-hidden rounded-[10px] bg-[#f2ece0] text-[#0b1530]"
+          style={{ boxShadow: '0 30px 60px -22px #000c, 0 2px 0 #ffffff14' }}
         >
-          {/* embossed khatam, catching the light */}
-          <svg className="absolute -top-16 -right-16 size-64 opacity-[0.13]" viewBox="-60 -60 120 120" aria-hidden="true">
-            <g fill="none" stroke="#F6D58A" strokeWidth="1.1">
-              <KhatamPath r={52} />
-              <KhatamPath r={36} />
-              <circle r="22" />
-            </g>
-          </svg>
-
-          {/* glare follows the pointer */}
-          <motion.div className="pointer-events-none absolute inset-0" style={{ background: glare }} aria-hidden="true" />
-
-          <div className="relative flex h-full flex-col p-5" style={{ transform: 'translateZ(40px)' }}>
-            <div className="flex items-start justify-between">
-              <div>
-                <p className="font-mono text-[9px] tracking-[0.22em] text-gold/80 uppercase">Manara West</p>
-                <p className="font-display text-[18px] font-medium leading-tight text-cream">Rihla Passport</p>
-              </div>
-              <Khatam size={22} stroke="var(--color-gold)" width={1.1} />
+          {/* header */}
+          <div className="flex items-start justify-between border-b border-[#0b1530]/15 px-4 pt-3.5 pb-2.5">
+            <div>
+              <p className="font-mono text-[8px] tracking-[0.26em] uppercase opacity-60">Manara West</p>
+              <p className="mt-0.5 text-[15px] font-semibold tracking-tight">Rihla Passport</p>
             </div>
+            <svg width="24" height="24" viewBox="-60 -60 120 120" aria-hidden="true" fill="none" stroke="#0b1530" strokeWidth="4" opacity=".75">
+              <KhatamPath r={50} />
+            </svg>
+          </div>
 
-            <div className="mt-4 flex items-center gap-3">
-              <Holder photo={photo} name={name} />
-              <div className="min-w-0">
-                <p className="truncate font-display text-[25px] font-semibold leading-none text-cream">{name}</p>
-                <p className="mt-1 truncate text-[11px] text-mute">{route}</p>
-                <p className="mt-1.5 inline-block rounded-full px-2 py-0.5 font-mono text-[9px] tracking-wider uppercase"
-                   style={space === 'sister'
-                     ? { background: '#b58cff22', color: '#d2b8ff' }
-                     : { background: '#5b8cff22', color: '#9db9ff' }}>
-                  {space === 'sister' ? '🟪 Sisters' : '🟦 Brothers'} · {track}
-                </p>
-              </div>
-            </div>
+          {/* photo + fields */}
+          <div className="flex gap-3.5 px-4 pt-3.5">
+            <Photo photo={photo} name={name} />
+            <dl className="min-w-0 flex-1 space-y-[7px]">
+              <Field label="Surname" value={surname} />
+              <Field label="Given names" value={givenNames} />
+              <Field label="Campus" value={campus} />
+              <Field label="Transferring to" value={target} />
+            </dl>
+          </div>
 
-            {/* stamp pages */}
-            <div className="mt-4 grid flex-1 grid-cols-3 content-start gap-2">
-              {stamps.map((s, i) => (
-                <Stamp key={s + i} label={s} on={i < shown} index={i} />
-              ))}
-            </div>
+          <div className="mt-3 grid grid-cols-3 gap-x-3 border-t border-[#0b1530]/12 px-4 pt-2.5">
+            <Field label="Space" value={space === 'sister' ? 'Sisters' : 'Brothers'} />
+            <Field label="Track" value={track} />
+            <Field label="Level" value={level} />
+          </div>
 
-            {/* machine-readable zone */}
-            <div className="mt-3 border-t border-dashed border-gold/25 pt-2">
-              <p className="truncate font-mono text-[8.5px] leading-[1.5] tracking-[0.14em] text-gold/45">
-                {mrz(name, space, shown)}
+          {/* stamps, inked at angles like a real page */}
+          <div className="mt-3 flex flex-wrap gap-x-1 gap-y-1 px-4">
+            {stamps.map((s, i) => (
+              <Stamp key={s + i} label={s} on={i < shown} index={i} />
+            ))}
+          </div>
+
+          {/* machine-readable zone */}
+          <div className="absolute inset-x-0 bottom-0 border-t border-[#0b1530]/15 bg-[#e7e0d0] px-4 py-2">
+            {mrz(surname, givenNames, space, shown).map((line) => (
+              <p key={line} className="font-mono text-[8px] leading-[1.45] tracking-[0.1em] whitespace-nowrap opacity-75">
+                {line}
               </p>
-            </div>
+            ))}
           </div>
         </div>
       </motion.div>
@@ -167,59 +110,54 @@ export default function PassportCard({
   )
 }
 
-/** Holder photo, or a generated khatam monogram when there is no file yet. */
-function Holder({ photo, name }) {
+function Field({ label, value }) {
+  return (
+    <div>
+      <dt className="font-mono text-[7.5px] tracking-[0.16em] uppercase opacity-50">{label}</dt>
+      <dd className="truncate text-[12.5px] font-medium">{value}</dd>
+    </div>
+  )
+}
+
+function Photo({ photo, name }) {
   const [failed, setFailed] = useState(false)
+  const box = 'h-[92px] w-[70px] shrink-0 rounded-[3px] border border-[#0b1530]/25 object-cover'
   if (photo && !failed) {
-    return (
-      <img
-        src={photo}
-        alt=""
-        onError={() => setFailed(true)}
-        className="size-[58px] shrink-0 rounded-xl object-cover"
-        style={{ boxShadow: '0 0 0 1.5px #e3b04b66, 0 6px 16px #0007' }}
-      />
-    )
+    return <img src={photo} alt="" onError={() => setFailed(true)} className={box} />
   }
   return (
-    <div
-      className="relative grid size-[58px] shrink-0 place-items-center overflow-hidden rounded-xl"
-      style={{ background: '#1a2b63', boxShadow: '0 0 0 1.5px #e3b04b66' }}
-      aria-hidden="true"
-    >
-      <svg className="absolute inset-0 size-full opacity-30" viewBox="-60 -60 120 120">
-        <g fill="none" stroke="#F6D58A" strokeWidth="2">
-          <KhatamPath r={48} />
-        </g>
+    <div className={`${box} relative grid place-items-center bg-[#e4ddcc]`} aria-hidden="true">
+      <svg className="absolute inset-0 size-full opacity-20" viewBox="-60 -60 120 120" fill="none" stroke="#0b1530" strokeWidth="3">
+        <KhatamPath r={48} />
       </svg>
-      <span className="relative font-display text-xl text-gold2">
+      <span className="relative text-lg font-semibold opacity-70">
         {name.split(' ').slice(0, 2).map((p) => p[0]).join('')}
       </span>
     </div>
   )
 }
 
-/** A stamp: dashed and empty, or struck with the campus logo at a slight angle. `label` is a campus id. */
+/** A circular stamp with the campus logo, struck at a slight angle. `label` is a campus id. Empty slots stay faint. */
 function Stamp({ label, on, index }) {
-  const tilt = ((index * 37) % 15) - 7
+  const tilt = ((index * 37) % 17) - 8
+  if (!on || !label) {
+    return <span className="size-[46px] rounded-full border border-dashed border-[#0b1530]/15" />
+  }
   return (
-    <motion.div
-      initial={false}
-      animate={{ scale: 1, opacity: 1, rotate: on ? tilt : 0 }}
-      className="relative grid aspect-square place-items-center rounded-full"
-      style={on ? { border: '1.6px solid var(--color-gold)', background: '#e3b04b14' } : { border: '1.4px dashed #e3b04b33' }}
+    <motion.span
+      initial={{ scale: 2.2, opacity: 0, rotate: tilt - 24 }}
+      animate={{ scale: 1, opacity: 1, rotate: tilt }}
+      transition={{ type: 'spring', stiffness: 500, damping: 18 }}
+      className="grid size-[46px] place-items-center rounded-full border-2"
+      style={{ borderColor: '#9a6b1f' }}
     >
-      {on && label && (
-        <motion.span initial={{ scale: 2.6, opacity: 0, rotate: -34 }} animate={{ scale: 1, opacity: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 18 }}>
-          <Crest id={label} size={52} />
-        </motion.span>
-      )}
-    </motion.div>
+      <Crest id={label} size={34} />
+    </motion.span>
   )
 }
 
-const mrz = (name, space, n) => {
-  const surname = (name.split(' ').pop() || 'TRAVELLER').toUpperCase().replace(/[^A-Z]/g, '')
-  const given = (name.split(' ')[0] || '').toUpperCase().replace(/[^A-Z]/g, '')
-  return `P<MNW${surname}<<${given}<<<<<<<<<<${space[0].toUpperCase()}${String(n).padStart(2, '0')}<<<`
-}
+const pad = (s, n) => s.toUpperCase().replace(/[^A-Z]/g, '').padEnd(n, '<').slice(0, n)
+const mrz = (surname, given, space, n) => [
+  `P<MNW${pad(surname, 12)}<<${pad(given, 14)}`,
+  `${pad(space, 1)}${String(n).padStart(2, '0')}MNW<<<<<<<<<<<<<<<<<<<<<<<<<`,
+]

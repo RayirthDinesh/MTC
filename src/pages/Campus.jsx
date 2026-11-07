@@ -11,6 +11,8 @@ import CoHostInvite from '../components/CoHostInvite.jsx'
 import GenderPill from '../components/GenderPill.jsx'
 import Crest from '../components/Crest.jsx'
 import Stamp from '../components/Stamp.jsx'
+import NetworkEvents from '../components/NetworkEvents.jsx'
+import AskRihla from '../components/AskRihla.jsx'
 
 const fmt = (ts) => new Date(ts).toLocaleString(undefined, { weekday: 'short', month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' })
 
@@ -19,6 +21,8 @@ export default function Campus() {
   const me = useMe()
   const [open, setOpen] = useState(false)
   const [preset, setPreset] = useState('')
+  const [tab, setTab] = useState('My events')
+  const pending = (s.inbox ?? []).length
   const composer = useRef(null)
   const here = campusById(me.campusId)
   const events = [...s.events].sort((a, b) => b.date - a.date)
@@ -55,6 +59,15 @@ export default function Campus() {
                 <div className="pt-4"><EventForm preset={preset} bare /></div></motion.div>)}</AnimatePresence>
           </div>
 
+          <nav className="card flex gap-1 !p-1.5" role="tablist">
+            {['My events', 'Co-hosting', 'Ask'].map((t) => (
+              <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`relative flex-1 rounded-lg px-3 py-2 text-sm font-semibold transition-colors ${tab === t ? 'bg-white/5 text-cream' : 'text-mute hover:text-cream'}`}>
+                {t}{t === 'Co-hosting' && pending > 0 && <span className="ml-1.5 rounded-full bg-gold px-1.5 text-[11px] text-[#1a1200]">{pending}</span>}
+              </button>))}
+          </nav>
+          {tab === 'Co-hosting' && <NetworkEvents />}
+          {tab === 'Ask' && <AskRihla />}
+          {tab === 'My events' && (
           <motion.ul variants={stagger} initial="initial" animate="animate" className="space-y-3">
             {events.map((e) => {
               const mine = e.campusId === me.campusId
@@ -75,6 +88,7 @@ export default function Campus() {
             })}
             {!events.length && <p className="card text-mute">No events yet. Create the first one.</p>}
           </motion.ul>
+          )}
         </section>
 
         <aside className="card lg:sticky lg:top-20"><h3 className="text-xl">Co-host suggestions</h3>

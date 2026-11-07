@@ -9,6 +9,7 @@ import ConnectList from '../components/ConnectList.jsx'
 import Chat from '../components/Chat.jsx'
 import NearbyEvents from '../components/NearbyEvents.jsx'
 import EventsTab from '../components/EventsTab.jsx'
+import AskRihla from '../components/AskRihla.jsx'
 
 export default function Student() {
   const me = useMe()
@@ -22,6 +23,7 @@ export default function Student() {
       {tab === 'Me' && <div className="mx-auto max-w-3xl"><ProfileCard user={me} owner /></div>}
       {tab === 'Network' && <ConnectList onMessage={(id) => setSp({ tab: 'Messaging', peer: id })} />}
       {tab === 'Messaging' && <Chat peerId={peerId} setPeerId={(id) => setSp({ tab: 'Messaging', peer: id }, { replace: true })} />}
+      {tab === 'Ask' && <div className="mx-auto max-w-3xl"><AskRihla /></div>}
       {tab === 'Events' && <div className="space-y-8"><NearbyEvents /><div><h3 className="mb-3 text-2xl">All events in your space</h3><EventsTab /></div></div>}
     </motion.div>
   )

@@ -6,6 +6,7 @@ import { LEVELS, levelIndex, sameGender, audienceOk, TRACK_LIST } from '../src/l
 const id = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 const no = (reason, forbidden = false) => ({ ok: false, reason, ...(forbidden && { forbidden: true }) })
 const campusOk = (c) => CAMPUSES.some((x) => x.id === c)
+const campusLabel = (c) => CAMPUSES.find((x) => x.id === c)?.short ?? 'An MSA'
 export const OTHER = 'other' // a college outside the Manara network (students only)
 const AUDIENCES = ['brothers', 'sisters', 'everyone']
 
@@ -67,13 +68,31 @@ export function view(me) {
       if (!isLeader) delete x.code // codes are secrets; leaders hand them out at the event
       return x
     })
-  return {
+  const out = {
     ...empty, users, events, links: s.links,
     connections: s.connections.filter((c) => c.a === me.id || c.b === me.id),
     messages: s.messages.filter((m) => m.from === me.id || m.to === me.id),
     blocks: s.blocks.filter((b) => b.by === me.id || b.target === me.id),
     activity: s.activity.filter((a) => a.campusId === me.campusId).slice(0, 40),
   }
+
+  if (isLeader) {
+    const reqs = db.prepare('SELECT * FROM join_requests').all()
+      .map((r) => ({ id: r.id, eventId: r.event_id, campusId: r.campus_id, note: r.note, status: r.status, ts: r.ts }))
+    // Events at other campuses, with whatever my MSA has already asked for.
+    out.network = s.events
+      .filter((e) => e.campusId !== me.campusId && e.coHostId !== me.campusId)
+      .map((e) => ({
+        id: e.id, title: e.title, campusId: e.campusId, coHostId: e.coHostId, audience: e.audience,
+        track: e.track, stamp: e.stamp, location: e.location, date: e.date,
+        attendanceCount: e.attendance.length, open: !e.coHostId,
+        request: reqs.find((r) => r.eventId === e.id && r.campusId === me.campusId) ?? null,
+      }))
+    // Requests from other MSAs to co-host MY events.
+    const mine = new Set(s.events.filter((e) => e.campusId === me.campusId).map((e) => e.id))
+    out.inbox = reqs.filter((r) => mine.has(r.eventId) && r.status === 'pending')
+  }
+  return out
 }
 
 /** Signup preview ("Your Rihla Plan"): upcoming events + same-space people. No account needed. */
@@ -122,7 +141,45 @@ function doConnect(me, targetId) {
 }
 const connected = (x, y) => !!db.prepare('SELECT 1 FROM connections WHERE a=? AND b=?').get(...[x, y].sort())
 
+const eventById = (id) => db.prepare('SELECT * FROM events WHERE id=?').get(id)
+
 export const actions = {
+  /** A leader asks to co-host another campus's event. */
+  requestJoin(me, b) {
+    if (!me || me.role !== 'leader') return no('Leaders only', true)
+    const ev = eventById(b.eventId)
+    if (!ev) return no('No such event')
+    if (ev.campus_id === me.campusId) return no('That is already your event')
+    if (ev.co_host_id) return no('This event already has a co-host')
+    const existing = db.prepare('SELECT * FROM join_requests WHERE event_id=? AND campus_id=?').get(ev.id, me.campusId)
+    if (existing && existing.status === 'pending') return no('Request already sent')
+    const note = String(b.note ?? '').trim().slice(0, 200)
+    if (existing) db.prepare("UPDATE join_requests SET status='pending', note=?, by_id=?, ts=? WHERE id=?").run(note, me.id, Date.now(), existing.id)
+    else db.prepare('INSERT INTO join_requests VALUES(?,?,?,?,?,?,?)').run(id('jr'), ev.id, me.campusId, me.id, note, 'pending', Date.now())
+    log('cohost', ev.campus_id, me.id, `${campusLabel(me.campusId)} asked to co-host "${ev.title}"`)
+    return { ok: true }
+  },
+
+  /** The host leader accepts or declines. Accepting sets the co-host. */
+  respondJoin(me, b) {
+    if (!me || me.role !== 'leader') return no('Leaders only', true)
+    const r = db.prepare('SELECT * FROM join_requests WHERE id=?').get(b.requestId)
+    if (!r || r.status !== 'pending') return no('No such request')
+    const ev = eventById(r.event_id)
+    if (!ev || ev.campus_id !== me.campusId) return no('Not your event', true)
+    if (!b.accept) {
+      db.prepare("UPDATE join_requests SET status='declined' WHERE id=?").run(r.id)
+      return { ok: true }
+    }
+    if (ev.co_host_id) return no('This event already has a co-host')
+    tx(() => {
+      db.prepare('UPDATE events SET co_host_id=? WHERE id=?').run(r.campus_id, ev.id)
+      db.prepare("UPDATE join_requests SET status='accepted' WHERE id=?").run(r.id)
+    })
+    for (const c of [ev.campus_id, r.campus_id]) log('cohost', c, me.id, `${ev.title} is now co-hosted with ${campusLabel(r.campus_id)}`)
+    return { ok: true }
+  },
+
   signUp(_me, b) {
     const username = String(b.username ?? '').trim().toLowerCase()
     if (!['student', 'leader', 'admin'].includes(b.role)) return no('Pick a role')

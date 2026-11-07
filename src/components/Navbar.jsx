@@ -5,8 +5,8 @@ import { reset, campusShort } from '../store.js'
 import { spring } from '../lib/motion.js'
 import GenderPill from './GenderPill.jsx'
 
-export const STUDENT_TABS = ['Home', 'Passport', 'Network', 'Messaging', 'Events']
-const ICON = { Home: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z', Passport: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h3', Network: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M17 10a2.5 2.5 0 1 0 0-5M18 14.6c2 .5 3 2 3 4.4', Messaging: 'M4 5h16v11H10l-6 4z', Events: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4' }
+export const STUDENT_TABS = ['Home', 'Passport', 'Network', 'Messaging', 'Events', 'Ask']
+const ICON = { Home: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z', Passport: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h3', Network: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M17 10a2.5 2.5 0 1 0 0-5M18 14.6c2 .5 3 2 3 4.4', Messaging: 'M4 5h16v11H10l-6 4z', Events: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4', Ask: 'M12 3l1.8 4.6L18.5 9l-4.7 1.4L12 15l-1.8-4.6L5.5 9l4.7-1.4zM18 15l.8 2.2L21 18l-2.2.8L18 21l-.8-2.2L15 18l2.2-.8z' }
 const Svg = ({ d, className = 'h-6 w-6' }) => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" className={className} aria-hidden="true"><path d={d} /></svg>
 export const Lighthouse = ({ className }) => <Svg className={className} d="M9.5 21l1-11h3l1 11zM8 21h8M10 10l2-4 2 4M12 6V4M7 7l-3-1M17 7l3-1" />
 
