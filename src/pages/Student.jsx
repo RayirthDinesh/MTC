@@ -8,8 +8,9 @@ import ProfileCard from '../components/ProfileCard.jsx'
 import ConnectList from '../components/ConnectList.jsx'
 import Chat from '../components/Chat.jsx'
 import EventsTab from '../components/EventsTab.jsx'
+import AskRihla from '../components/AskRihla.jsx'
 
-const TABS = ['Passport', 'Profile', 'Connect', 'Chat', 'Events']
+const TABS = ['Passport', 'Profile', 'Connect', 'Chat', 'Events', 'Ask']
 
 export default function Student() {
   const me = useMe()
@@ -29,6 +30,7 @@ export default function Student() {
       {tab === 'Connect' && <ConnectList onMessage={(id) => { setPeerId(id); setTab('Chat') }} />}
       {tab === 'Chat' && <Chat peerId={peerId} setPeerId={setPeerId} />}
       {tab === 'Events' && <EventsTab />}
+      {tab === 'Ask' && <AskRihla />}
     </div>
   )
 }

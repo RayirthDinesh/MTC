@@ -19,6 +19,9 @@ CREATE TABLE IF NOT EXISTS messages(id TEXT PRIMARY KEY, from_id TEXT NOT NULL, 
 CREATE TABLE IF NOT EXISTS activity(id TEXT PRIMARY KEY, type TEXT NOT NULL, campus_id TEXT, user_id TEXT, text TEXT, ts INTEGER NOT NULL);
 CREATE TABLE IF NOT EXISTS links(a TEXT NOT NULL, b TEXT NOT NULL, PRIMARY KEY(a, b));
 CREATE TABLE IF NOT EXISTS blocks(by_id TEXT NOT NULL, target_id TEXT NOT NULL, PRIMARY KEY(by_id, target_id));
+CREATE TABLE IF NOT EXISTS join_requests(
+  id TEXT PRIMARY KEY, event_id TEXT NOT NULL, campus_id TEXT NOT NULL, by_id TEXT, note TEXT,
+  status TEXT NOT NULL DEFAULT 'pending', ts INTEGER NOT NULL, UNIQUE(event_id, campus_id));
 CREATE TABLE IF NOT EXISTS reports(id TEXT PRIMARY KEY, by_id TEXT NOT NULL, target_id TEXT NOT NULL, reason TEXT, ts INTEGER NOT NULL);
 CREATE INDEX IF NOT EXISTS idx_activity_ts ON activity(ts);
 CREATE INDEX IF NOT EXISTS idx_messages_pair ON messages(from_id, to_id);
@@ -34,7 +37,7 @@ export const tx = (fn) => {
 export function seedDb(now = Date.now()) {
   const s = buildSeed(now)
   tx(() => {
-    for (const t of ['users', 'events', 'attendance', 'connections', 'messages', 'activity', 'links', 'blocks', 'reports']) db.exec(`DELETE FROM ${t}`)
+    for (const t of ['users', 'events', 'attendance', 'connections', 'messages', 'activity', 'links', 'blocks', 'reports', 'join_requests']) db.exec(`DELETE FROM ${t}`)
     const iu = db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,NULL)')
     const ia = db.prepare('INSERT INTO attendance VALUES(?,?,?)')
     for (const u of s.users) {
@@ -48,6 +51,9 @@ export function seedDb(now = Date.now()) {
     for (const c of s.connections) db.prepare('INSERT INTO connections VALUES(?,?,?)').run(c.a, c.b, now)
     for (const m of s.messages) db.prepare('INSERT INTO messages VALUES(?,?,?,?,?)').run(m.id, m.from, m.to, m.text, m.ts)
     for (const a of s.activity) db.prepare('INSERT INTO activity VALUES(?,?,?,?,?,?)').run(a.id, a.type, a.campusId, a.userId, a.text, a.ts)
+    const ij = db.prepare('INSERT INTO join_requests VALUES(?,?,?,?,?,?,?)')
+    for (const [eid, campus, note] of s.joinRequests ?? [])
+      if (s.events.some((e) => e.id === eid)) ij.run('jr-' + eid + '-' + campus, eid, campus, null, note, 'pending', now - 86400000)
   })
 }
 

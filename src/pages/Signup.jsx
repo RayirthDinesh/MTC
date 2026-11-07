@@ -7,8 +7,18 @@ import { signUp, usernameTaken, fetchPlan } from '../store.js'
 import { useStore } from '../lib/useStore.js'
 import { HOME } from '../App.jsx'
 import { spring } from '../lib/motion.js'
-import GenderPill from '../components/GenderPill.jsx'
 
+const TRACK_BLURB = {
+  Career: 'Internships and mentors',
+  Leadership: 'Run things in your MSA',
+  Transfer: 'Get where you are going',
+  Deen: 'Private to you, always',
+}
+const Tick = ({ on }) => (
+  <span aria-hidden="true" className={`grid size-5 shrink-0 place-items-center rounded-md border transition ${on ? 'border-gold bg-gold text-[#2a1a05]' : 'border-white/20'}`}>
+    {on && <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2 6.2 4.6 9 10 3.2" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" /></svg>}
+  </span>
+)
 const POSITIONS = ['President', 'Vice President', 'Events Chair', 'Treasurer', 'Secretary', 'Outreach Chair']
 const campus = (id) => CAMPUSES.find((c) => c.id === id)
 const stepsFor = (role) => ['role', 'space', 'who', ...(role === 'leader' ? ['details'] : role === 'student' ? ['details', 'plan'] : [])]
@@ -37,7 +47,7 @@ function suggest(f, links) {
 export default function Signup() {
   const nav = useNavigate()
   const [i, setI] = useState(0)
-  const [f, setF] = useState({ role: '', gender: '', name: '', username: '', campusId: '', otherCampus: '', otherType: 'cc', transferring: null, target: '', major: '', interests: [], position: '' })
+  const [f, setF] = useState({ role: '', gender: '', name: '', username: '', campusId: '', otherCampus: '', otherType: 'cc', transferring: null, target: '', major: '', interests: [], position: '', track: '', pickedEvents: [], pickedPeople: [] })
   const { links } = useStore()
   const [taken, setTaken] = useState(false)
   const [pl, setPl] = useState(null)
@@ -72,12 +82,13 @@ export default function Signup() {
   const finish = async () => {
     const base = { role: f.role, gender: f.gender, name: f.name.trim(), username: uname, campusId: needsCampus ? f.campusId : null, ...(f.campusId === 'other' && { otherCampus: f.otherCampus.trim(), campusType: f.otherType }) }
     const body = f.role === 'leader' ? { ...base, position: f.position }
-      : f.role === 'student' ? { ...base, transferring: f.transferring, target: f.transferring ? f.target : null, major: f.major.trim(), interests: f.interests, track: suggest(f, links).track }
+      : f.role === 'student' ? { ...base, transferring: f.transferring, target: f.transferring ? f.target : null, major: f.major.trim(), interests: f.interests, track: f.track || suggest(f, links).track }
       : base
     const r = await signUp(body)
     if (!r.ok) return setErr(r.reason ?? 'Could not create account')
     nav(HOME[f.role])
   }
+  const togglePick = (key, id) => setF((p) => ({ ...p, [key]: p[key].includes(id) ? p[key].filter((x) => x !== id) : [...p[key], id] }))
   const toggle = (t) => set({ interests: f.interests.includes(t) ? f.interests.filter((x) => x !== t) : [...f.interests, t] })
 
   return (
@@ -146,13 +157,100 @@ export default function Signup() {
                 className={`rounded-full border px-3.5 py-1.5 text-sm ${f.interests.includes(t) ? 'border-gold bg-gold/15 text-gold2' : 'border-white/10 text-mute'}`}>{t}</button>)}</div></div>
           </>}
           {step === 'plan' && !pl && <p className="text-mute">Building your plan…</p>}
-          {step === 'plan' && pl && (() => { const p = { ...suggest(f, links), ...pl }; return <>
-            <h1 className="text-4xl">Your Rihla Plan</h1>
-            <p><span className="text-mute">First track:</span> <span className="text-gold">{p.track}</span> <GenderPill value={f.gender} /></p>
-            <p><span className="text-mute">Sister campus:</span> {p.sister ? p.sister.name : 'None yet. Ask your MSA to join Manara Connect.'}</p>
-            <div><p className="mb-1 text-mute">Suggested events</p><ul className="list-disc pl-5">{p.events.map((e) => <li key={e.id}>{e.title} · {campus(e.campusId).short}</li>)}</ul></div>
-            <div><p className="mb-1 text-mute">People to connect with</p><ul className="list-disc pl-5">{p.people.map((u) => <li key={u.id}>{u.name} · {campus(u.campusId).short}</li>)}</ul></div>
-          </> })()}
+          {step === 'plan' && pl && (() => {
+            const sug = suggest(f, links)
+            const track = f.track || sug.track
+            return <>
+              <div>
+                <h1 className="text-4xl">Your Rihla Plan</h1>
+                <p className="mt-1.5 text-sm text-mute">Built from your answers. Change anything — this is your journey.</p>
+              </div>
+
+              {/* --- track: suggested, but yours to pick --- */}
+              <div>
+                <span className="label">Start on this track</span>
+                <div className="mt-2 grid grid-cols-2 gap-2">
+                  {TRACKS.map((t) => {
+                    const on = track === t
+                    return (
+                      <button type="button" key={t} aria-pressed={on} onClick={() => set({ track: t })}
+                        className={`rounded-xl border px-3.5 py-2.5 text-left transition ${on ? 'border-gold bg-gold/10' : 'border-white/10 hover:border-white/25'}`}>
+                        <span className="block text-[15px] font-medium">{t}</span>
+                        <span className="block text-[12px] text-mute">
+                          {t === sug.track ? 'Suggested for you' : TRACK_BLURB[t]}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
+
+              {/* --- events: tick the ones you'll actually go to --- */}
+              {pl.events.length > 0 && <div>
+                <span className="label">Pick your first events</span>
+                <ul className="mt-2 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                  {pl.events.map((e) => {
+                    const on = f.pickedEvents.includes(e.id)
+                    return (
+                      <li key={e.id}>
+                        <button type="button" aria-pressed={on} onClick={() => togglePick('pickedEvents', e.id)}
+                          className="flex w-full items-center gap-3 py-2.5 text-left">
+                          <Tick on={on} />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[14.5px]">{e.title}</span>
+                            <span className="block text-[12px] text-mute">{campus(e.campusId)?.short ?? 'Network'} · {e.stamp}</span>
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+              </div>}
+
+              {/* --- people: same space only --- */}
+              {pl.people.length > 0 && <div>
+                <span className="label">Connect on day one</span>
+                <ul className="mt-2 divide-y divide-white/[0.07] border-y border-white/[0.07]">
+                  {pl.people.map((u) => {
+                    const on = f.pickedPeople.includes(u.id)
+                    return (
+                      <li key={u.id}>
+                        <button type="button" aria-pressed={on} onClick={() => togglePick('pickedPeople', u.id)}
+                          className="flex w-full items-center gap-3 py-2.5 text-left">
+                          <Tick on={on} />
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate text-[14.5px]">{u.name}</span>
+                            <span className="block text-[12px] text-mute">{campus(u.campusId)?.short ?? 'Network'}{u.major && ` · ${u.major}`}</span>
+                          </span>
+                        </button>
+                      </li>
+                    )
+                  })}
+                </ul>
+                <p className="mt-1.5 text-[12px] text-mute">Only {f.gender === 'sister' ? 'sisters' : 'brothers'} appear here. That never changes.</p>
+              </div>}
+
+              {/* --- the live summary --- */}
+              <div className="rounded-xl border border-gold/25 bg-gold/[0.04] p-4">
+                <p className="text-[14.5px]">
+                  You start as an <b className="text-gold2">Explorer</b> on the{' '}
+                  <b className="text-gold2">{track}</b> track
+                  {sug.sister && <> near <b className="text-gold2">{sug.sister.short}</b></>}.
+                </p>
+                <p className="mt-1 text-[13px] text-mute">
+                  {f.pickedEvents.length
+                    ? `${f.pickedEvents.length} event${f.pickedEvents.length > 1 ? 's' : ''} picked — that is ${f.pickedEvents.length} stamp${f.pickedEvents.length > 1 ? 's' : ''} toward Traveler.`
+                    : 'Pick an event above and it becomes your first stamp.'}
+                  {f.pickedPeople.length > 0 && ` ${f.pickedPeople.length} to connect with.`}
+                </p>
+                <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/10">
+                  <motion.div className="h-full rounded-full bg-sun"
+                    animate={{ width: `${Math.min(100, (f.pickedEvents.length / 5) * 100)}%` }} transition={spring.ui} />
+                </div>
+                <p className="mt-1 flex justify-between font-mono text-[10px] text-mute"><span>Explorer</span><span>Traveler at 5</span></p>
+              </div>
+            </>
+          })()}
           {err && <p role="alert" className="text-sm text-fading">{err}</p>}
           <div className="flex justify-between pt-2">
             <button type="button" className="btn btn-glass" onClick={() => (i ? setI(i - 1) : nav('/'))}>Back</button>

@@ -81,13 +81,13 @@ const E = (id, title, campusId, coHostId, audience, track, stamp, code, inDays) 
 export const EVENTS = [
   E('e1', 'Transfer Pathways Panel', 'ucsd', 'mesa', 'everyone', 'Transfer', 'Mesa × UCSD', 'MESA42', -20),
   E('e2', 'Brothers Halaqa Night', 'ucla', null, 'brothers', 'Deen', 'Halaqa', 'HALQ01', -18),
-  E('e3', 'Sisters Career Circle', 'ucr', 'rcc', 'sisters', 'Career', 'Career Circle', 'SIST07', -16),
+  E('e3', 'Sisters Career Circle', 'ucr', null, 'sisters', 'Career', 'Career Circle', 'SIST07', -16),
   E('e4', 'MSA Leadership Summit', 'uci', 'occ', 'everyone', 'Leadership', 'Summit', 'LEAD88', -14),
   E('e5', 'Resume + LinkedIn Lab', 'sjsu', 'deanza', 'everyone', 'Career', 'Resume Lab', 'RESU12', -12),
   E('e6', 'Sisters Study Hall', 'ucb', 'dvc', 'sisters', 'Deen', 'Study Hall', 'STDY33', -10),
   E('e7', 'Brothers Basketball + Iftar', 'csusm', null, 'brothers', 'Leadership', 'Iftar', 'HOOP55', -8),
   E('e8', 'Founders Night', 'ucla', 'smc', 'everyone', 'Career', 'Founders', 'FNDR21', -6),
-  E('e9', 'Transfer Q&A Brothers', 'ucsd', 'mesa', 'brothers', 'Transfer', 'Transfer Q&A', 'TRNB09', 3),
+  E('e9', 'Transfer Q&A Brothers', 'ucsd', null, 'brothers', 'Transfer', 'Transfer Q&A', 'TRNB09', 3),
   E('e10', 'Transfer Q&A Sisters', 'ucsd', 'mesa', 'sisters', 'Transfer', 'Transfer Q&A', 'TRNS09', 3),
   E('e11', 'Cross-Campus Open House', 'ucd', 'sfsu', 'everyone', 'Leadership', 'Open House', 'OPEN99', 7),
   E('e12', 'Quran & Coffee', 'cpp', 'mtsac', 'everyone', 'Deen', 'Quran Circle', 'QURN14', 10),
@@ -153,5 +153,11 @@ export function buildSeed(now = Date.now()) {
     version: 2, currentUserId: null,
     users: [...users, ...leaders, admin].map((u) => ({ ...u, username: u.name.toLowerCase().replace(/[^a-z0-9]/g, '') })), events, links: LINKS.map(([a, b]) => ({ a, b })),
     connections: connections.map(([a, b]) => ({ a, b })), messages, activity, blocks: [], reports: [],
+    // MSAs asking to co-host someone else's event. [eventId, requesting campus, note]
+    joinRequests: [
+      ['e2', 'mesa', 'Our board would love to bring 15 brothers up for this.'],
+      ['e9', 'smc', 'We run a similar night — happy to share speakers.'],
+      ['e3', 'occ', 'Can we co-host? Our sisters have asked for this exact thing.'],
+    ],
   }
 }
