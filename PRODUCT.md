@@ -107,7 +107,7 @@ Mentors and the Starter Kit are passport tracks with pre-filled data, not separa
 ## Tech
 
 - Vite + React + Tailwind + React Router + react-leaflet + framer-motion.
-- No backend. All state in localStorage via a single store module; window `storage` event syncs tabs so the map updates live and chat works across two open tabs.
+- Express + SQLite (`node:sqlite`) API in `server/`. The server filters every response by the viewer's space (brothers/sisters), hides event codes from students and other people's Deen stamps. Live updates over Server-Sent Events, so the map pulses and chat updates across open tabs. Client identity is a username in sessionStorage.
 - Structure: `src/store.js`, `src/data/seed.js`, `src/pages/{Landing,Signup,Student,Campus,Admin}.jsx`, `src/components/` (Navbar, Passport, ProfileCard, ConnectList, Chat, EventForm, NetworkMap, StatsCards, ActivityFeed, GenderPill). "Reset demo data" button in the navbar.
 
 ## Seed data

@@ -1,9 +1,10 @@
 // Front Door quiz. Steps: role -> space -> who you are -> details (student/leader) -> plan (student).
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { CAMPUSES, TRACKS } from '../data/seed.js'
-import { signUp, usernameTaken, visibleEvents, visibleUsers, getState } from '../store.js'
+import { signUp, usernameTaken, fetchPlan } from '../store.js'
+import { useStore } from '../lib/useStore.js'
 import { HOME } from '../App.jsx'
 import { spring } from '../lib/motion.js'
 import GenderPill from '../components/GenderPill.jsx'
@@ -22,31 +23,42 @@ function Choice({ on, onClick, children, sub }) {
 }
 const Field = ({ label, children }) => <label className="block"><span className="mb-1.5 block text-sm text-mute">{label}</span>{children}</label>
 
-// "Your Rihla Plan": suggested track, sister campus, 3 events, 3 same-space connections.
-function plan(f) {
-  const s = getState()
-  const me = { id: 'new', role: 'student', gender: f.gender, campusId: f.campusId }
+// "Your Rihla Plan": suggested track + sister campus are local; events + same-space people come from the server.
+function suggest(f, links) {
   const track = f.transferring ? 'Transfer' : f.interests[0] ?? 'Career'
   const here = campus(f.campusId)
-  const linked = s.links.find((l) => l.a === f.campusId || l.b === f.campusId)
+  const linked = links.find((l) => l.a === f.campusId || l.b === f.campusId)
   const d = (c) => (c.lat - here.lat) ** 2 + (c.lng - here.lng) ** 2
   const sister = campus(linked ? (linked.a === f.campusId ? linked.b : linked.a) : CAMPUSES.filter((c) => c.type !== here.type).sort((a, b) => d(a) - d(b))[0].id)
-  const now = Date.now()
-  const events = visibleEvents(me, s).sort((a, b) => (a.date < now) - (b.date < now) || a.date - b.date).slice(0, 3)
-  const score = (u) => (u.campusId === f.campusId) * 2 + (!!f.target && u.target === f.target) * 2 + (!!f.major && u.major === f.major)
-  const people = visibleUsers(me, s).filter((u) => u.role === 'student').sort((a, b) => score(b) - score(a)).slice(0, 3)
-  return { track, sister, events, people }
+  return { track, sister }
 }
 
 export default function Signup() {
   const nav = useNavigate()
   const [i, setI] = useState(0)
   const [f, setF] = useState({ role: '', gender: '', name: '', username: '', campusId: '', transferring: null, target: '', major: '', interests: [], position: '' })
+  const { links } = useStore()
+  const [taken, setTaken] = useState(false)
+  const [pl, setPl] = useState(null)
+  const [err, setErr] = useState('')
   const set = (patch) => setF((p) => ({ ...p, ...patch }))
   const steps = stepsFor(f.role)
   const step = steps[i]
   const uname = f.username.trim().toLowerCase()
-  const unameErr = !uname ? '' : !/^[a-z0-9_]{3,20}$/.test(uname) ? '3–20 letters, numbers or _' : usernameTaken(uname) ? 'That username is taken' : ''
+  const fmtOk = /^[a-z0-9_]{3,20}$/.test(uname)
+  useEffect(() => {
+    if (!fmtOk) return setTaken(false)
+    let live = true
+    const t = setTimeout(() => usernameTaken(uname).then((v) => live && setTaken(v)), 250)
+    return () => { live = false; clearTimeout(t) }
+  }, [uname, fmtOk])
+  useEffect(() => {
+    if (step !== 'plan') return
+    let live = true
+    fetchPlan({ gender: f.gender, campusId: f.campusId, target: f.target, major: f.major }).then((p) => live && setPl(p))
+    return () => { live = false }
+  }, [step, f.gender, f.campusId, f.target, f.major])
+  const unameErr = !uname ? '' : !fmtOk ? '3–20 letters, numbers or _' : taken ? 'That username is taken' : ''
   const needsCampus = f.role !== 'admin'
   const ok = {
     role: !!f.role, space: !!f.gender,
@@ -55,11 +67,13 @@ export default function Signup() {
     plan: true,
   }[step]
   const last = i === steps.length - 1
-  const finish = () => {
+  const finish = async () => {
     const base = { role: f.role, gender: f.gender, name: f.name.trim(), username: uname, campusId: needsCampus ? f.campusId : null }
-    if (f.role === 'leader') signUp({ ...base, position: f.position })
-    else if (f.role === 'student') signUp({ ...base, campusType: campus(f.campusId).type, transferring: f.transferring, target: f.transferring ? f.target : null, major: f.major.trim(), interests: f.interests, track: plan(f).track })
-    else signUp(base)
+    const body = f.role === 'leader' ? { ...base, position: f.position }
+      : f.role === 'student' ? { ...base, transferring: f.transferring, target: f.transferring ? f.target : null, major: f.major.trim(), interests: f.interests, track: suggest(f, links).track }
+      : base
+    const r = await signUp(body)
+    if (!r.ok) return setErr(r.reason ?? 'Could not create account')
     nav(HOME[f.role])
   }
   const toggle = (t) => set({ interests: f.interests.includes(t) ? f.interests.filter((x) => x !== t) : [...f.interests, t] })
@@ -121,13 +135,15 @@ export default function Signup() {
               <div className="flex flex-wrap gap-2">{TRACKS.map((t) => <button type="button" key={t} aria-pressed={f.interests.includes(t)} onClick={() => toggle(t)}
                 className={`rounded-full border px-3.5 py-1.5 text-sm ${f.interests.includes(t) ? 'border-gold bg-gold/15 text-gold2' : 'border-white/10 text-mute'}`}>{t}</button>)}</div></div>
           </>}
-          {step === 'plan' && (() => { const p = plan(f); return <>
+          {step === 'plan' && !pl && <p className="text-mute">Building your plan…</p>}
+          {step === 'plan' && pl && (() => { const p = { ...suggest(f, links), ...pl }; return <>
             <h1 className="text-4xl">Your Rihla Plan</h1>
             <p><span className="text-mute">First track:</span> <span className="text-gold">{p.track}</span> <GenderPill value={f.gender} /></p>
             <p><span className="text-mute">Sister campus:</span> {p.sister.name}</p>
             <div><p className="mb-1 text-mute">Suggested events</p><ul className="list-disc pl-5">{p.events.map((e) => <li key={e.id}>{e.title} · {campus(e.campusId).short}</li>)}</ul></div>
             <div><p className="mb-1 text-mute">People to connect with</p><ul className="list-disc pl-5">{p.people.map((u) => <li key={u.id}>{u.name} · {campus(u.campusId).short}</li>)}</ul></div>
           </> })()}
+          {err && <p role="alert" className="text-sm text-fading">{err}</p>}
           <div className="flex justify-between pt-2">
             <button type="button" className="btn btn-glass" onClick={() => (i ? setI(i - 1) : nav('/'))}>Back</button>
             <button type="button" className="btn btn-gold disabled:opacity-40" disabled={!ok} onClick={() => (last ? finish() : setI(i + 1))}>{last ? 'Enter Rihla' : 'Continue'}</button>

@@ -1,15 +1,13 @@
 // Landing: pitch, problem, features, the boundary, and two ways in —
-// Sign up (Front Door quiz) or log in. Demo login jumps into a seeded account.
+// Sign up (Front Door quiz) or log in with a username.
 import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { loginByUsername } from '../store.js'
-import { useStore } from '../lib/useStore.js'
-import { CAMPUSES } from '../data/seed.js'
+import { CAMPUSES, EVENTS } from '../data/seed.js'
 import { HOME } from '../App.jsx'
 import Beam from '../components/landing/Beam.jsx'
 import CampusMarquee from '../components/landing/CampusMarquee.jsx'
-import DemoLogin from '../components/landing/DemoLogin.jsx'
 import Reveal from '../components/landing/Reveal.jsx'
 import SpotlightCard from '../components/landing/SpotlightCard.jsx'
 
@@ -54,14 +52,13 @@ const FEATURES = [
 const GATED = ['Profiles', 'Search', 'Suggestions', 'Connections', 'Chat', 'Mentors', 'Events']
 
 export default function Landing() {
-  const s = useStore()
   const nav = useNavigate()
   const [name, setName] = useState('')
   const [err, setErr] = useState('')
 
-  const submit = (e) => {
+  const submit = async (e) => {
     e.preventDefault()
-    const u = loginByUsername(name)
+    const u = await loginByUsername(name)
     if (!u) return setErr('No account with that username. Sign up instead?')
     nav(HOME[u.role])
   }
@@ -120,7 +117,6 @@ export default function Landing() {
             <Link to="/signup" className="btn btn-gold">
               Get your Rihla Passport →
             </Link>
-            <DemoLogin />
             <form onSubmit={submit} className="flex flex-col gap-2">
               <div className="flex gap-2">
                 <input
@@ -155,7 +151,7 @@ export default function Landing() {
             <Stat n="65" label="campuses in the network" />
             <Stat n={CAMPUSES.length} label="live on the map today" />
             <Stat n={ccCount} label="community colleges" />
-            <Stat n={s.events.length} label="events with check-in codes" />
+            <Stat n={EVENTS.length} label="events with check-in codes" />
           </motion.div>
         </div>
       </section>
@@ -255,7 +251,6 @@ export default function Landing() {
             <Link to="/signup" className="btn btn-gold">
               Get your Rihla Passport →
             </Link>
-            <DemoLogin />
           </div>
         </Reveal>
       </section>

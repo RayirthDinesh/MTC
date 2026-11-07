@@ -13,7 +13,7 @@ export default function Navbar() {
         {me && (
           <>
             <span className="hidden sm:inline text-mute">{me.name}{me.campusId ? ` · ${campusById(me.campusId)?.short}` : ''}</span>
-            <GenderPill value={me.gender} />
+            {me.role !== 'admin' && <GenderPill value={me.gender} />}
             <button className="btn btn-glass !py-1.5" onClick={() => { logout(); nav('/') }}>Log out</button>
           </>
         )}
