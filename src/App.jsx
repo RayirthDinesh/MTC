@@ -4,6 +4,7 @@ import { AnimatePresence, motion } from 'framer-motion'
 import { useMe, useStore } from './lib/useStore.js'
 import { page } from './lib/motion.js'
 import Navbar from './components/Navbar.jsx'
+import ChatBubble from './components/ChatBubble.jsx'
 import Landing from './pages/Landing.jsx'
 import Signup from './pages/Signup.jsx'
 import Student from './pages/Student.jsx'
@@ -41,6 +42,7 @@ export default function App() {
           </Routes>
         </motion.main>
       </AnimatePresence>
+      <ChatBubble />
     </>
   )
 }
