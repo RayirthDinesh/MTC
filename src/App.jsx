@@ -1,3 +1,4 @@
+import { useEffect } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useMe, useStore } from './lib/useStore.js'
@@ -23,11 +24,13 @@ function Guard({ role, children }) {
 
 export default function App() {
   const loc = useLocation()
+  const isApp = /^\/(student|campus|admin)/.test(loc.pathname)
+  useEffect(() => { document.body.classList.toggle('app', isApp) }, [isApp])
   return (
     <>
       <Navbar />
       <AnimatePresence mode="wait">
-        <motion.main key={loc.pathname} {...page} className="mx-auto max-w-6xl px-5 pb-20 pt-24">
+        <motion.main key={loc.pathname} {...page} className={`mx-auto px-5 pb-20 ${isApp ? 'max-w-[1128px] pt-[4.5rem]' : 'max-w-6xl pt-24'}`}>
           <Routes location={loc}>
             <Route path="/" element={<Landing />} />
             <Route path="/signup" element={<Signup />} />

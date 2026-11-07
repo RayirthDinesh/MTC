@@ -8,6 +8,7 @@ import {
   useReducedMotion,
 } from 'framer-motion'
 import Khatam, { KhatamPath } from './Khatam.jsx'
+import Crest from '../Crest.jsx'
 
 const SOFT = { stiffness: 220, damping: 22, mass: 0.6 }
 
@@ -183,7 +184,7 @@ function Holder({ photo, name }) {
   return (
     <div
       className="relative grid size-[58px] shrink-0 place-items-center overflow-hidden rounded-xl"
-      style={{ background: 'linear-gradient(150deg,#243a7d,#121f4a)', boxShadow: '0 0 0 1.5px #e3b04b66' }}
+      style={{ background: '#1a2b63', boxShadow: '0 0 0 1.5px #e3b04b66' }}
       aria-hidden="true"
     >
       <svg className="absolute inset-0 size-full opacity-30" viewBox="-60 -60 120 120">
@@ -198,32 +199,19 @@ function Holder({ photo, name }) {
   )
 }
 
-/** A stamp: dashed and empty, or struck in gold at a slight angle. */
+/** A stamp: dashed and empty, or struck with the campus logo at a slight angle. `label` is a campus id. */
 function Stamp({ label, on, index }) {
   const tilt = ((index * 37) % 15) - 7
   return (
     <motion.div
       initial={false}
-      animate={on ? { scale: 1, opacity: 1, rotate: tilt } : { scale: 1, opacity: 1, rotate: 0 }}
-      className="relative grid aspect-square place-items-center rounded-full text-center"
-      style={
-        on
-          ? {
-              border: '1.6px solid var(--color-gold)',
-              background: 'radial-gradient(circle at 35% 30%, #e3b04b26, #e3b04b0d)',
-              boxShadow: '0 0 14px -2px #e3b04b55',
-            }
-          : { border: '1.4px dashed #e3b04b33' }
-      }
+      animate={{ scale: 1, opacity: 1, rotate: on ? tilt : 0 }}
+      className="relative grid aspect-square place-items-center rounded-full"
+      style={on ? { border: '1.6px solid var(--color-gold)', background: '#e3b04b14' } : { border: '1.4px dashed #e3b04b33' }}
     >
       {on && label && (
-        <motion.span
-          initial={{ scale: 2.6, opacity: 0, rotate: -34 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-          className="font-mono text-[8.5px] leading-[1.1] tracking-wide text-gold uppercase"
-        >
-          {label}
+        <motion.span initial={{ scale: 2.6, opacity: 0, rotate: -34 }} animate={{ scale: 1, opacity: 1, rotate: 0 }} transition={{ type: 'spring', stiffness: 500, damping: 18 }}>
+          <Crest id={label} size={52} />
         </motion.span>
       )}
     </motion.div>
