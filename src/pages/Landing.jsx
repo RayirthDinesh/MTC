@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion'
 import { CAMPUSES } from '../data/seed.js'
 import NightSky from '../components/landing/NightSky.jsx'
+import TechText from '../components/landing/TechText.jsx'
 import PassportCard from '../components/landing/PassportCard.jsx'
 import ProfileShowcase from '../components/landing/ProfileShowcase.jsx'
 import MagneticButton from '../components/landing/MagneticButton.jsx'
@@ -27,20 +28,43 @@ export default function Landing() {
               Manara West · 65 campuses
             </motion.p>
 
-            <motion.h1
-              initial={{ opacity: 0, y: 28, filter: 'blur(8px)' }}
-              animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+            {/* The wordmark is a canvas: hover a letter and it becomes its own
+                dashed outline, drag it, click to kick the whole word. */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.9, delay: 0.06, ease }}
-              className="mt-5 text-[clamp(44px,7.6vw,92px)] font-semibold"
+              className="mt-3 -ml-1 h-[140px] sm:h-[170px]"
             >
-              Travel to seek knowledge.
-              <br />
-              <span className="text-sun">Carry the proof.</span>
-            </motion.h1>
+              <TechText
+                text="Manara Rihla"
+                fontFamily="'Inter Tight', system-ui, sans-serif"
+                fontSize={120}
+                fontWeight={600}
+                letterSpacing={-0.045}
+                align="left"
+                reveal="letter"
+                lineStyle="dashed"
+                dashLength={4}
+                dashGap={2}
+                strokeWidth={1.5}
+                specks={10}
+                labels={false}
+                guides={false}
+                selection
+                draggable
+                clickKick
+                sweep
+                bounce={0.4}
+                color="currentColor"
+                accentColor="#ffc247"
+              />
+            </motion.div>
 
-            <motion.p {...rise(0.16)} className="mt-6 max-w-[42ch] text-[17px] text-mute">
-              Show up at an MSA event, get the stamp. Your passport becomes your profile —
-              and your network across every campus.
+            <motion.p {...rise(0.16)} className="max-w-[44ch] text-[17px] text-mute">
+              Travel to seek knowledge. <span className="text-cream">Carry the proof.</span>{' '}
+              Show up at an MSA event, get the stamp, and your passport becomes your profile
+              across every campus.
             </motion.p>
 
             <motion.div {...rise(0.24)} className="mt-9 flex flex-wrap items-start gap-3">
