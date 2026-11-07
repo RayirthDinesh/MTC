@@ -112,8 +112,8 @@ export function buildSeed(now = Date.now()) {
   ].map(([from, to, text, d], i) => ({ id: `m${i}`, from, to, text, ts: now - d * 3600000 }))
 
   return {
-    version: 1, currentUserId: null,
-    users: [...users, ...leaders, admin], events, links: LINKS.map(([a, b]) => ({ a, b })),
+    version: 2, currentUserId: null,
+    users: [...users, ...leaders, admin].map((u) => ({ ...u, username: u.name.toLowerCase().replace(/[^a-z0-9]/g, '') })), events, links: LINKS.map(([a, b]) => ({ a, b })),
     connections: connections.map(([a, b]) => ({ a, b })), messages, activity, blocks: [], reports: [],
   }
 }

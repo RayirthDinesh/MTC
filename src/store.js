@@ -13,7 +13,7 @@ const ls = {
 const load = () => {
   try {
     const raw = ls.get(KEY)
-    if (raw) { const s = JSON.parse(raw); if (s.version === 1) return s }
+    if (raw) { const s = JSON.parse(raw); if (s.version === 2) return s }
   } catch { /* corrupt state: fall through to seed */ }
   return buildSeed()
 }
@@ -44,6 +44,7 @@ export const reset = () => commit((s) => { Object.assign(s, buildSeed()) })
 export const campusById = (id) => CAMPUSES.find((c) => c.id === id)
 export const userById = (id, s = state) => s.users.find((u) => u.id === id)
 export const currentUser = (s = state) => userById(s.currentUserId, s)
+export const usernameTaken = (name, s = state) => s.users.some((u) => u.username === String(name).trim().toLowerCase())
 export const sameGender = (a, b) => !!a && !!b && a.gender === b.gender
 
 /** THE gender filter. Every list of people in the UI must go through this. */
@@ -94,6 +95,12 @@ export const logActivity = (type, campusId, userId = null, text = '') =>
   commit((s) => { s.activity.push({ id: uid('act'), type, campusId, userId, ts: Date.now(), text }) })
 
 export const login = (id) => commit((s) => { if (userById(id, s)) s.currentUserId = id })
+/** Returns the user, or null when no such username. */
+export const loginByUsername = (name) => {
+  const u = state.users.find((x) => x.username === String(name).trim().toLowerCase())
+  if (u) login(u.id)
+  return u ?? null
+}
 export const logout = () => commit((s) => { s.currentUserId = null })
 
 export function signUp(user) {

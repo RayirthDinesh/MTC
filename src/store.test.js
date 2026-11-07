@@ -38,3 +38,10 @@ test('linkCampuses rejects duplicates', () => {
   assert.equal(S.linkCampuses('mesa', 'ucsd').ok, false)
   assert.equal(S.linkCampuses('miramar', 'sdsu').ok, true)
 })
+
+test('usernames: login by username, taken check', () => {
+  assert.equal(S.usernameTaken('OmarK'), true)
+  assert.equal(S.usernameTaken('nobody'), false)
+  assert.equal(S.loginByUsername('manaraadmin')?.role, 'admin')
+  assert.equal(S.loginByUsername('nobody'), null)
+})

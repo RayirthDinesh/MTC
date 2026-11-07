@@ -1,22 +1,32 @@
-// SHELL (feat/landing-signup replaces this). Keep the Demo login: it is the demo's fast path.
+// Landing: pitch + Sign up (Front Door quiz) + username log in. No demo/fake accounts picker.
+import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { useStore } from '../lib/useStore.js'
-import { login } from '../store.js'
+import { loginByUsername } from '../store.js'
 import { HOME } from '../App.jsx'
 
 export default function Landing() {
-  const { users } = useStore()
   const nav = useNavigate()
-  const pick = (id) => { if (!id) return; login(id); nav(HOME[users.find((u) => u.id === id).role]) }
+  const [name, setName] = useState('')
+  const [err, setErr] = useState('')
+  const submit = (e) => {
+    e.preventDefault()
+    const u = loginByUsername(name)
+    if (!u) return setErr('No account with that username. Sign up instead?')
+    nav(HOME[u.role])
+  }
   return (
     <section className="py-16">
       <h1 className="text-6xl sm:text-8xl">Your journey.<br />Your network.<br /><span className="text-gold">One passport.</span></h1>
-      <div className="mt-8 flex flex-wrap items-center gap-3">
+      <p className="mt-6 max-w-xl text-lg text-mute">A passport and professional network for Muslim students across Manara West campuses, with separate spaces for brothers and sisters.</p>
+      <div className="mt-8 flex flex-wrap items-start gap-4">
         <Link to="/signup" className="btn btn-gold">Sign up</Link>
-        <select aria-label="Demo login" className="input !w-auto" defaultValue="" onChange={(e) => pick(e.target.value)}>
-          <option value="" disabled>Demo login…</option>
-          {users.map((u) => <option key={u.id} value={u.id}>{u.name} · {u.role} · {u.gender}</option>)}
-        </select>
+        <form onSubmit={submit} className="flex flex-col gap-2">
+          <div className="flex gap-2">
+            <input className="input !w-56" aria-label="Username" placeholder="Username" value={name} onChange={(e) => { setName(e.target.value); setErr('') }} />
+            <button className="btn btn-glass" type="submit" disabled={!name.trim()}>Log in</button>
+          </div>
+          {err && <p role="alert" className="text-sm text-fading">{err}</p>}
+        </form>
       </div>
     </section>
   )
