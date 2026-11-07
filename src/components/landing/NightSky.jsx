@@ -32,10 +32,7 @@ export default function NightSky() {
       {/* dawn sitting on the horizon */}
       <div
         className="absolute inset-x-0 bottom-0 h-[60%]"
-        style={{
-          background:
-            'radial-gradient(100% 95% at 50% 120%, #ff7a3d40 0%, #7c5cff24 40%, transparent 70%)',
-        }}
+        style={{ background: 'radial-gradient(90% 90% at 50% 125%, #ff7a3d33, transparent 68%)' }}
       />
 
       {/* the beam */}
@@ -52,19 +49,13 @@ export default function NightSky() {
       <div className="absolute bottom-0 left-1/2 -translate-x-1/2">
         <svg width="130" height="180" viewBox="0 0 130 180">
           <defs>
-            <linearGradient id="tower" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0" stopColor="#0a1230" />
-              <stop offset=".45" stopColor="#1b2b5e" />
-              <stop offset="1" stopColor="#060c20" />
-            </linearGradient>
             <radialGradient id="lamp">
-              <stop offset="0" stopColor="#fff3cf" />
-              <stop offset=".5" stopColor="#ffc247" />
-              <stop offset="1" stopColor="#ff7a3d00" />
+              <stop offset="0" stopColor="#ffd98a" />
+              <stop offset="1" stopColor="#ffd98a00" />
             </radialGradient>
           </defs>
           <circle cx="65" cy="34" r="32" fill="url(#lamp)" opacity=".5" />
-          <path d="M53 50 L77 50 L87 162 L43 162 Z" fill="url(#tower)" stroke="#e3b04b40" strokeWidth="1" />
+          <path d="M53 50 L77 50 L87 162 L43 162 Z" fill="#101b40" stroke="#e3b04b40" strokeWidth="1" />
           {[72, 96, 120, 144].map((y, i) => (
             <path
               key={y}
