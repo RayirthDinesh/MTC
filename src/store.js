@@ -1,82 +1,111 @@
-// Single source of truth. Persists to localStorage; the window 'storage' event syncs other tabs.
-// SHARED CONTRACT: change signatures only via a PR to main. See PLAN.md.
-import { buildSeed, CAMPUSES } from './data/seed.js'
+// Client store: a cached, per-viewer snapshot of the server state (SQLite behind /api) + action helpers.
+// The server already filters by gender; the selectors below filter again as defense in depth.
+// Identity lives in sessionStorage so two tabs can be two different users (student + admin demo).
+import { CAMPUSES } from './data/seed.js'
+import { LEVELS, levelIndex, levelOf, sameGender, audienceOk } from './lib/rules.js'
+export { LEVELS, levelIndex, levelOf, sameGender }
 
-const KEY = 'rihla.v1'
 const DAY = 86400000
-const mem = new Map() // fallback when localStorage is missing (node tests, private mode)
-const ls = {
-  get: (k) => { try { return globalThis.localStorage?.getItem(k) ?? mem.get(k) ?? null } catch { return mem.get(k) ?? null } },
-  set: (k, v) => { try { globalThis.localStorage.setItem(k, v) } catch { mem.set(k, v) } },
+const EMPTY = { ready: false, currentUserId: null, users: [], events: [], links: [], connections: [], messages: [], activity: [], blocks: [], reports: [] }
+const ss = {
+  get: () => { try { return sessionStorage.getItem('rihla.uid') } catch { return null } },
+  set: (v) => { try { v ? sessionStorage.setItem('rihla.uid', v) : sessionStorage.removeItem('rihla.uid') } catch { /* private mode */ } },
 }
-
-const load = () => {
-  try {
-    const raw = ls.get(KEY)
-    if (raw) { const s = JSON.parse(raw); if (s.version === 2) return s }
-  } catch { /* corrupt state: fall through to seed */ }
-  return buildSeed()
-}
-
-let state = load()
+let uid = typeof window !== 'undefined' ? ss.get() : null
+let state = { ...EMPTY, currentUserId: uid }
 const subs = new Set()
 const emit = () => subs.forEach((f) => f())
-const persist = () => ls.set(KEY, JSON.stringify(state))
-
 export const getState = () => state
 export const subscribe = (fn) => { subs.add(fn); return () => subs.delete(fn) }
-if (typeof window !== 'undefined') {
-  window.addEventListener('storage', (e) => { if (e.key === KEY) { state = load(); emit() } })
-}
 
-function commit(mutate) {
-  const next = structuredClone(state)
-  const result = mutate(next)
-  state = next
-  persist()
+async function fetchOnce() {
+  try {
+    const r = await fetch('/api/state', { headers: { 'x-user-id': uid ?? '' } })
+    const data = await r.json()
+    if (uid && !data.users.some((u) => u.id === uid)) { uid = null; ss.set(null) } // account vanished (e.g. demo reset)
+    state = { ...EMPTY, ...data, ready: true, currentUserId: uid }
+  } catch { state = { ...state, ready: true } }
   emit()
-  return result
+}
+// Coalesces bursts, but a caller that arrives mid-fetch still waits for a fetch that STARTS after the call.
+let inflight = null, rerun = false
+export function refresh() {
+  if (inflight) { rerun = true; return inflight }
+  inflight = (async () => {
+    do { rerun = false; await fetchOnce() } while (rerun)
+    inflight = null
+  })()
+  return inflight
+}
+if (typeof window !== 'undefined') {
+  refresh()
+  if (typeof EventSource !== 'undefined') new EventSource('/api/stream').onmessage = () => refresh()
 }
 
-export const reset = () => commit((s) => { Object.assign(s, buildSeed()) })
+async function call(action, body = {}) {
+  let j
+  try {
+    const r = await fetch(`/api/${action}`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-user-id': uid ?? '' }, body: JSON.stringify(body) })
+    j = await r.json()
+  } catch { j = { ok: false, reason: 'Network error' } }
+  if (j.ok) await refresh()
+  return j
+}
+
+// ---------- actions (all async, all return {ok, reason?, ...}) ----------
+export async function signUp(user) {
+  const j = await call('signUp', user)
+  if (j.ok) { uid = j.id; ss.set(uid); await refresh() }
+  return j
+}
+export const logout = () => { uid = null; ss.set(null); return refresh() }
+export const reset = async () => { await call('reset'); uid = null; ss.set(null); await refresh() }
+export const checkIn = (code) => call('checkIn', { code })
+export const connect = (target) => call('connect', { target })
+export const sendMessage = (to, text) => call('sendMessage', { to, text })
+export const createEvent = (ev) => call('createEvent', ev)
+export const inviteCoHost = (eventId, campusId) => call('inviteCoHost', { eventId, campusId })
+export const linkCampuses = (a, b) => call('linkCampuses', { a, b })
+export const unlinkCampuses = (a, b) => call('unlinkCampuses', { a, b })
+export const blockUser = (target) => call('block', { target })
+export const reportUser = (target, reason = '') => call('report', { target, reason })
+export const simulate = () => call('simulate')
+export const usernameTaken = async (u) => (await (await fetch(`/api/username/${encodeURIComponent(u)}`)).json()).taken
+export const fetchPlan = async (q) => (await fetch(`/api/plan?${new URLSearchParams(q)}`)).json()
 
 // ---------- selectors ----------
-export const campusById = (id) => CAMPUSES.find((c) => c.id === id)
+// Students outside the Manara network sign up with campusId 'other' + a free-text college name.
+const OTHER_CAMPUS = { id: 'other', name: 'Other college', short: 'Other', type: '4yr' }
+export const campusById = (id) => (id === 'other' ? OTHER_CAMPUS : CAMPUSES.find((c) => c.id === id))
+export const campusName = (u) => (u?.campusId === 'other' ? u.otherCampus || OTHER_CAMPUS.name : campusById(u?.campusId)?.name)
+export const campusShort = (u) => (u?.campusId === 'other' ? u.otherCampus || OTHER_CAMPUS.short : campusById(u?.campusId)?.short)
 export const userById = (id, s = state) => s.users.find((u) => u.id === id)
 export const currentUser = (s = state) => userById(s.currentUserId, s)
-export const usernameTaken = (name, s = state) => s.users.some((u) => u.username === String(name).trim().toLowerCase())
-export const sameGender = (a, b) => !!a && !!b && a.gender === b.gender
+export const stampsOf = (u) => u?.stampCount ?? u?.stamps?.length ?? 0
 
-/** THE gender filter. Every list of people in the UI must go through this. */
+/** Every list of people in the UI goes through this. */
 export const visibleUsers = (viewer, s = state) => {
   if (!viewer) return []
   if (viewer.role === 'admin') return s.users.filter((u) => u.id !== viewer.id)
   return s.users.filter((u) => u.id !== viewer.id && sameGender(u, viewer) && u.role !== 'admin')
 }
-/** Events a user may see: audience 'everyone' or matching their space. */
 export const visibleEvents = (viewer, s = state) =>
-  s.events.filter((e) => !viewer || viewer.role === 'admin' || e.audience === 'everyone' || e.audience === viewer.gender + 's')
+  s.events.filter((e) => !viewer || viewer.role === 'admin' || viewer.role === 'leader' || audienceOk(e.audience, viewer.gender))
 
-export const LEVELS = ['Explorer', 'Traveler', 'Navigator', 'Manara Fellow']
-export const levelIndex = (n) => (n >= 15 ? 3 : n >= 10 ? 2 : n >= 5 ? 1 : 0)
-export const levelOf = (stamps) => LEVELS[levelIndex(Array.isArray(stamps) ? stamps.length : stamps)]
-
-export const connectionsOf = (userId, s = state) =>
-  s.connections.filter((c) => c.a === userId || c.b === userId).map((c) => (c.a === userId ? c.b : c.a))
+export const connectionsOf = (id, s = state) => s.connections.filter((c) => c.a === id || c.b === id).map((c) => (c.a === id ? c.b : c.a))
 export const areConnected = (a, b, s = state) => connectionsOf(a, s).includes(b)
 export const messagesBetween = (a, b, s = state) =>
   s.messages.filter((m) => (m.from === a && m.to === b) || (m.from === b && m.to === a)).sort((x, y) => x.ts - y.ts)
 
-export const lastActivityTs = (campusId, s = state) =>
-  s.activity.filter((a) => a.campusId === campusId).reduce((m, a) => Math.max(m, a.ts), 0)
+export const lastActivityTs = (campusId, s = state) => s.activity.filter((a) => a.campusId === campusId).reduce((m, a) => Math.max(m, a.ts), 0)
 export const isFading = (campusId, s = state, now = Date.now()) => now - lastActivityTs(campusId, s) > 60 * DAY
 
-/** Activity touching both campuses of a link: weight for line thickness. */
+/** Weight for a link's line thickness: co-host check-ins + cross-campus connections + co-hosted events. */
 export const pairActivity = (a, b, s = state) => {
-  const stu = new Map(s.users.map((u) => [u.id, u.campusId]))
+  const camp = new Map(s.users.map((u) => [u.id, u.campusId]))
   const co = s.events.filter((e) => (e.campusId === a && e.coHostId === b) || (e.campusId === b && e.coHostId === a))
-  const checkins = co.reduce((n, e) => n + e.attendance.length, 0)
-  const conns = s.connections.filter((c) => new Set([stu.get(c.a), stu.get(c.b)]).has(a) && new Set([stu.get(c.a), stu.get(c.b)]).has(b)).length
+  const checkins = co.reduce((n, e) => n + (e.attendanceCount ?? e.attendance.length), 0)
+  const conns = s.connections.filter((c) => { const x = camp.get(c.a), y = camp.get(c.b); return (x === a && y === b) || (x === b && y === a) }).length
   return checkins + conns * 2 + co.length * 3
 }
 
@@ -87,96 +116,3 @@ export const strength = (campusId, s = state, now = Date.now()) => {
   const students = s.users.filter((u) => u.campusId === campusId && u.role === 'student').length
   return Math.min(100, Math.min(recent, 6) * 10 + Math.min(links, 2) * 10 + Math.min(students, 4) * 5)
 }
-
-// ---------- actions ----------
-const uid = (p) => `${p}${Date.now().toString(36)}${Math.random().toString(36).slice(2, 6)}`
-
-export const logActivity = (type, campusId, userId = null, text = '') =>
-  commit((s) => { s.activity.push({ id: uid('act'), type, campusId, userId, ts: Date.now(), text }) })
-
-export const login = (id) => commit((s) => { if (userById(id, s)) s.currentUserId = id })
-/** Returns the user, or null when no such username. */
-export const loginByUsername = (name) => {
-  const u = state.users.find((x) => x.username === String(name).trim().toLowerCase())
-  if (u) login(u.id)
-  return u ?? null
-}
-export const logout = () => commit((s) => { s.currentUserId = null })
-
-export function signUp(user) {
-  const id = uid('u')
-  commit((s) => {
-    s.users.push({ stamps: [], interests: [], ...user, id })
-    s.currentUserId = id
-    if (user.campusId) s.activity.push({ id: uid('act'), type: 'join', campusId: user.campusId, userId: id, ts: Date.now(), text: `${user.name} joined` })
-  })
-  return id
-}
-
-export function checkIn(userId, code) {
-  return commit((s) => {
-    const u = userById(userId, s)
-    const ev = s.events.find((e) => e.code.toUpperCase() === String(code).trim().toUpperCase())
-    if (!u || !ev) return { ok: false, reason: 'Invalid code' }
-    if (!(ev.audience === 'everyone' || ev.audience === u.gender + 's')) return { ok: false, reason: 'Event is not open to your space' }
-    if (u.stamps.includes(ev.id)) return { ok: false, reason: 'Already stamped' }
-    const before = levelIndex(u.stamps.length)
-    u.stamps.push(ev.id)
-    ev.attendance.push(u.id)
-    for (const campusId of [ev.campusId, ev.coHostId].filter(Boolean))
-      s.activity.push({ id: uid('act'), type: 'checkin', campusId, userId: u.id, ts: Date.now(), text: `${u.name} checked in: ${ev.title}` })
-    const after = levelIndex(u.stamps.length)
-    return { ok: true, event: ev, stamp: ev.stamp, levelUp: after > before ? LEVELS[after] : null }
-  })
-}
-
-export function connect(a, b) {
-  return commit((s) => {
-    const ua = userById(a, s), ub = userById(b, s)
-    if (!sameGender(ua, ub)) return { ok: false, reason: 'Different space' }
-    if (areConnected(a, b, s)) return { ok: false, reason: 'Already connected' }
-    s.connections.push({ a, b })
-    for (const u of [ua, ub]) if (u.campusId) s.activity.push({ id: uid('act'), type: 'connect', campusId: u.campusId, userId: u.id, ts: Date.now(), text: `${ua.name} connected with ${ub.name}` })
-    return { ok: true }
-  })
-}
-
-export function sendMessage(from, to, text) {
-  return commit((s) => {
-    const a = userById(from, s), b = userById(to, s)
-    if (!text?.trim()) return { ok: false, reason: 'Empty' }
-    if (!sameGender(a, b) || !areConnected(from, to, s)) return { ok: false, reason: 'Not allowed' }
-    if (s.blocks.some((x) => (x.by === from && x.target === to) || (x.by === to && x.target === from))) return { ok: false, reason: 'Blocked' }
-    s.messages.push({ id: uid('m'), from, to, text: text.trim(), ts: Date.now() })
-    return { ok: true }
-  })
-}
-
-const makeCode = () => Array.from({ length: 6 }, () => 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.floor(Math.random() * 32)]).join('')
-export function createEvent(ev) {
-  return commit((s) => {
-    const e = { location: '', coHostId: null, ...ev, id: uid('e'), code: makeCode(), attendance: [] }
-    s.events.push(e)
-    s.activity.push({ id: uid('act'), type: 'event', campusId: e.campusId, userId: null, ts: Date.now(), text: `New event: ${e.title}` })
-    return e
-  })
-}
-
-export const inviteCoHost = (eventId, campusId) =>
-  commit((s) => {
-    const e = s.events.find((x) => x.id === eventId)
-    if (!e || e.campusId === campusId) return { ok: false }
-    e.coHostId = campusId
-    s.activity.push({ id: uid('act'), type: 'cohost', campusId, userId: null, ts: Date.now(), text: `Co-hosting: ${e.title}` })
-    return { ok: true }
-  })
-
-export const linkCampuses = (a, b) =>
-  commit((s) => {
-    if (a === b || s.links.some((l) => (l.a === a && l.b === b) || (l.a === b && l.b === a))) return { ok: false }
-    s.links.push({ a, b })
-    return { ok: true }
-  })
-
-export const blockUser = (by, target) => commit((s) => { s.blocks.push({ by, target }) })
-export const reportUser = (by, target, reason = '') => commit((s) => { s.reports.push({ id: uid('r'), by, target, reason, ts: Date.now() }) })

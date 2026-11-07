@@ -1,6 +1,6 @@
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useMe } from './lib/useStore.js'
+import { useMe, useStore } from './lib/useStore.js'
 import { page } from './lib/motion.js'
 import Navbar from './components/Navbar.jsx'
 import Landing from './pages/Landing.jsx'
@@ -13,7 +13,9 @@ export const HOME = { student: '/student', leader: '/campus', admin: '/admin' }
 
 // Route guard: wrong or no user bounces to the right place.
 function Guard({ role, children }) {
+  const { ready } = useStore()
   const me = useMe()
+  if (!ready) return null // wait for the first server snapshot
   if (!me) return <Navigate to="/" replace />
   if (me.role !== role) return <Navigate to={HOME[me.role]} replace />
   return children
