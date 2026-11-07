@@ -1,0 +1,156 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rihla — Student</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="ui.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="ui.js"></script>
+</head>
+<body>
+<header class="nav"><div class="nav-in">
+  <div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 21l1-11h3l1 11zM8 21h8M10 10l2-4 2 4M12 6V4M7 7l-3-1M17 7l3-1"/></svg>Rihla</div>
+  <span class="grow"></span><span class="who">Omar K. · Mesa</span><span class="pill bro">🟦 Brothers</span>
+  <button class="btn gray sm" id="theme" aria-label="Toggle light or dark">Appearance</button>
+</div></header>
+
+<main class="wrap">
+  <h1 class="large-title" id="title" style="margin:28px 0 16px">Passport</h1>
+  <div class="seg" id="tabs" role="tablist" aria-label="Sections">
+    <button data-v="Passport" role="tab">Passport</button><button data-v="Profile" role="tab">Profile</button><button data-v="Connect" role="tab">Connect</button><button data-v="Chat" role="tab">Chat</button><button data-v="Events" role="tab">Events</button>
+  </div>
+
+  <!-- PASSPORT -->
+  <section id="v-Passport" class="stack" style="margin-top:24px">
+    <div class="card">
+      <div class="row between">
+        <div><div class="title">Omar K.</div><div class="sub">San Diego Mesa College · Computer Science</div>
+          <div class="row" style="margin-top:12px;gap:8px"><span class="pill bro">🟦 Brothers</span><span class="pill all">Transfer → UCSD</span></div></div>
+        <div style="position:relative;width:88px;height:88px;flex:none">
+          <svg class="ring" viewBox="0 0 88 88" style="transform:rotate(-90deg)"><circle class="bg" cx="44" cy="44" r="38"/><circle class="fg" id="ring" cx="44" cy="44" r="38" pathLength="100" stroke-dashoffset="20"/></svg>
+          <div class="num" id="count" style="position:absolute;inset:0;display:grid;place-items:center;font:700 26px -apple-system,Inter,sans-serif;letter-spacing:-.03em">4</div>
+        </div>
+      </div>
+      <div class="row between" style="margin-top:20px;padding-top:16px;border-top:.5px solid var(--sep)">
+        <div><div class="caption">Level</div><div class="headline" id="level">Explorer</div></div>
+        <div class="caption" id="toNext">1 stamp to Traveler</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="row"><input class="field" id="code" placeholder="Event code" value="MESA42" autocomplete="off" style="font-family:ui-monospace,SFMono-Regular,Menlo,monospace;letter-spacing:.14em;text-transform:uppercase"><button class="btn" id="checkin">Check in</button></div>
+    </div>
+
+    <div><div class="section-title">Tracks</div><div class="list" id="tracks"></div></div>
+    <div><div class="section-title">Stamps</div><div class="card"><div class="stamps" id="stamps"></div></div></div>
+    <div><div class="section-title">Badges</div><div class="card"><div class="row wrapx" style="gap:22px;align-items:flex-end" id="badges"></div></div></div>
+  </section>
+
+  <!-- PROFILE -->
+  <section id="v-Profile" class="stack" hidden style="margin-top:24px">
+    <div class="card flush">
+      <div style="height:88px;background:var(--s2)"></div>
+      <div style="padding:0 20px 20px">
+        <div style="margin-top:-38px;width:76px;height:76px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:700 32px -apple-system,Inter,sans-serif;border:4px solid var(--s1)">O</div>
+        <div class="row" style="margin-top:12px;gap:10px"><div class="title">Omar K.</div><span class="pill bro">🟦 Brothers</span></div>
+        <div class="sub">Computer Science · San Diego Mesa College</div>
+      </div>
+    </div>
+    <div class="list">
+      <div class="li"><span id="cMesa"></span><div class="main"><b>San Diego Mesa College</b><span>Community college</span></div><span class="end">Campus</span></div>
+      <div class="li"><span id="cUcsd"></span><div class="main"><b>UC San Diego</b><span>Transfer goal</span></div><span class="end">Goal</span></div>
+      <div class="li"><div class="main"><b id="pLevel">Explorer</b><span id="pStamps">4 stamps</span></div><span class="end">Level</span></div>
+    </div>
+    <div class="card"><div class="caption" style="margin-bottom:12px">Public badges</div><div class="row wrapx" style="gap:22px;align-items:flex-end" id="pBadges"></div></div>
+    <div class="list"><div class="li"><span aria-hidden="true">🔒</span><div class="main"><b>Deen progress is private</b><span>Only you can see it.</span></div></div></div>
+  </section>
+
+  <!-- CONNECT -->
+  <section id="v-Connect" class="stack" hidden style="margin-top:24px">
+    <input class="field" placeholder="Search brothers by name, campus or major" aria-label="Search">
+    <div><div class="section-title" style="margin-top:8px">Suggested for you</div><div class="list" id="people"></div></div>
+  </section>
+
+  <!-- CHAT -->
+  <section id="v-Chat" hidden style="margin-top:24px">
+    <div class="card flush" style="max-width:620px">
+      <div class="row" style="padding:14px 18px;border-bottom:.5px solid var(--sep)"><span id="cYusuf"></span><div style="flex:1"><div class="headline">Yusuf A.</div><div class="caption">UC San Diego</div></div><span class="pill bro">🟦 Brothers</span></div>
+      <div style="padding:18px;display:flex;flex-direction:column;gap:8px" id="thread"></div>
+      <div class="row" style="padding:12px 14px;border-top:.5px solid var(--sep)"><input class="field" id="msg" placeholder="Message" aria-label="Message"><button class="btn" id="send">Send</button></div>
+    </div>
+  </section>
+
+  <!-- EVENTS -->
+  <section id="v-Events" class="stack" hidden style="margin-top:24px">
+    <div class="row between wrapx"><div><div class="title">Near you</div><div class="sub">From San Diego Mesa College</div></div><button class="btn tint sm" id="loc">Use my location</button></div>
+    <div class="map" id="map" role="region" aria-label="Map of nearby events"></div>
+    <div class="list" id="near"></div>
+  </section>
+</main>
+
+<div class="scrim" id="levelup" role="dialog" aria-modal="true" aria-label="Level up"><div class="sheet">
+  <div class="grabber"></div>
+  <div style="width:64px;height:64px;margin:0 auto 14px;color:var(--accent)">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 21l1-11h3l1 11zM8 21h8M10 10l2-4 2 4M12 6V4M7 7l-3-1M17 7l3-1"/></svg></div>
+  <div class="title">You're now a Traveler</div>
+  <p class="sub" style="margin-top:6px">Five stamps in. Next stop: Navigator at ten.</p>
+  <button class="btn" data-close>Continue</button>
+</div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+UI.initTheme()
+const T = UI.TRACK, $ = (id) => document.getElementById(id)
+const MILES = { MESA: [32.8004, -117.1626] }
+let stamps = [['MESA', 'Panel', 'Transfer'], ['UCSD', 'Q&A', 'Transfer'], ['UCLA', 'Halaqa', 'Deen'], ['UCI', 'Summit', 'Leadership']]
+const LV = ['Explorer', 'Traveler', 'Navigator', 'Manara Fellow'], levelIdx = (n) => (n >= 15 ? 3 : n >= 10 ? 2 : n >= 5 ? 1 : 0)
+
+function render(fresh) {
+  const n = stamps.length, L = levelIdx(n), base = [0, 5, 10, 15][L], next = [5, 10, 15, 15][L]
+  $('count').textContent = n; $('ring').style.strokeDashoffset = 100 - (L === 3 ? 100 : ((n - base) / (next - base)) * 100)
+  $('level').textContent = LV[L]; $('pLevel').textContent = LV[L]; $('pStamps').textContent = n + ' stamps'
+  $('toNext').textContent = L === 3 ? 'Top level' : `${next - n} stamp${next - n > 1 ? 's' : ''} to ${LV[L + 1]}`
+  const prog = Object.fromEntries(Object.keys(T).map((t) => [t, stamps.filter((s) => s[2] === t).length]))
+  $('tracks').innerHTML = Object.keys(T).map((t) => `<div class="li"><span class="dot" style="--c:${T[t]}"></span><div class="main"><b>${t}</b></div>${t === 'Deen' ? '<span class="end">🔒 Private</span>' : ''}<div class="dashes">${[0, 1, 2, 3, 4].map((i) => `<i class="${prog[t] > i ? 'on' : ''}" style="--c:${T[t]}"></i>`).join('')}</div><span class="end num" style="width:28px;text-align:right">${Math.min(prog[t], 5)}/5</span></div>`).join('')
+  $('stamps').innerHTML = stamps.map((s, i) => `<div class="${fresh && i === n - 1 ? 'stamp-in' : ''}" style="transform:rotate(${((i * 37) % 9) - 4}deg)">${UI.stamp(...s)}</div>`).join('') + Array.from({ length: Math.max(0, Math.max(10, Math.ceil(n / 5) * 5) - n) }, UI.emptyStamp).map((s) => `<div>${s}</div>`).join('')
+  const track = (pub) => Object.keys(T).filter((t) => prog[t] >= 3 && (!pub || t !== 'Deen')).map((t) => `<div style="text-align:center">${UI.badge(t, t)}</div>`).join('')
+  const college = `<div style="text-align:center">${UI.crest('mesa', 56)}<div class="caption" style="margin-top:6px">Mesa</div></div>`
+  $('badges').innerHTML = college + track(false); $('pBadges').innerHTML = college + track(true)
+}
+render()
+$('cMesa').innerHTML = UI.crest('mesa', 36); $('cUcsd').innerHTML = UI.crest('ucsd', 36); $('cYusuf').innerHTML = UI.crest('ucsd', 36)
+
+$('checkin').onclick = () => {
+  const before = levelIdx(stamps.length); stamps.push(['UCSD', 'Mixer', 'Transfer']); render(true)
+  UI.toast('Stamp earned · Mixer'); if (levelIdx(stamps.length) > before) setTimeout(() => UI.open('levelup'), 450)
+}
+
+// connect
+const PEOPLE = [['ucsd', 'Yusuf A.', 'UC San Diego · Computer Science'], ['ucla', 'Ibrahim S.', 'UCLA · Economics'], ['smc', 'Tariq B.', 'Santa Monica College · Film'], ['deanza', 'Zaid M.', 'De Anza College · Business'], ['sjsu', 'Adam F.', 'San Jose State · Computer Science']]
+$('people').innerHTML = PEOPLE.map(([c, n, s], i) => `<div class="li">${UI.crest(c, 40)}<div class="main"><b>${n}</b><span>${s}</span></div><button class="btn tint sm" data-i="${i}">Connect</button></div>`).join('')
+$('people').addEventListener('click', (e) => { const b = e.target.closest('button'); if (!b) return; b.textContent = 'Connected'; b.className = 'btn gray sm'; UI.toast('Connected with ' + PEOPLE[b.dataset.i][1]) })
+
+// chat
+const MSGS = [['in', 'Salam! How was the transfer to UCSD?'], ['out', 'Wa alaykum salam. Honestly smooth. Meet at the panel?'], ['in', 'InshaAllah. Saving you a seat.']]
+const bubble = ([d, t]) => `<div style="align-self:${d === 'out' ? 'flex-end' : 'flex-start'};max-width:75%;padding:9px 14px;border-radius:18px;background:${d === 'out' ? 'var(--accent)' : 'var(--s2)'};color:${d === 'out' ? 'var(--accent-ink)' : 'var(--t1)'}">${t}</div>`
+$('thread').innerHTML = MSGS.map(bubble).join('')
+$('send').onclick = () => { const v = $('msg').value.trim(); if (!v) return; $('thread').insertAdjacentHTML('beforeend', bubble(['out', v])); $('msg').value = '' }
+$('msg').addEventListener('keydown', (e) => e.key === 'Enter' && $('send').click())
+
+// events + near you
+const EVENTS = [['ucsd', 'Transfer Q&A', 'Fri · Mesa × UCSD', [32.8801, -117.234], 'Transfer Q&A', 'bro'], ['uci', 'MSA Leadership Summit', 'Sat · UCI × OCC', [33.6405, -117.8443], 'Summit', 'all'], ['ucr', 'Career Circle', 'Sun · UCR × RCC', [33.9737, -117.3281], 'Career Circle', 'all'], ['ucla', 'Founders Night', 'Tue · UCLA × SMC', [34.0689, -118.4452], 'Founders', 'all'], ['sjsu', 'Resume Lab', 'Thu · SJSU × De Anza', [37.3352, -121.8811], 'Resume Lab', 'all']]
+const me = MILES.MESA, near = EVENTS.map((e) => ({ e, mi: UI.miles(me, e[3]) })).filter((x) => x.mi <= 150).sort((a, b) => a.mi - b.mi)
+$('near').innerHTML = near.map(({ e, mi }) => `<div class="li">${UI.crest(e[0], 40)}<div class="main"><b>${e[1]}</b><span>${e[2]} · ${e[4]} stamp</span></div><span class="pill dist num">${Math.round(mi)} mi</span></div>`).join('')
+let mapDone = false
+const initMap = () => { if (mapDone) return; mapDone = true
+  const m = UI.map($('map'), { you: { lat: me[0], lng: me[1] }, bounds: L.latLngBounds([me, ...near.map((x) => x.e[3])]), pins: near.map(({ e }) => ({ lat: e[3][0], lng: e[3][1], color: '#ea4335', popup: `<b>${e[1]}</b><br>${e[2]}` })) }); setTimeout(() => m.invalidateSize(), 50) }
+$('loc').onclick = () => UI.toast('Location permission would be requested here')
+
+// tabs
+const views = ['Passport', 'Profile', 'Connect', 'Chat', 'Events']
+UI.seg($('tabs'), (v) => { views.forEach((x) => ($('v-' + x).hidden = x !== v)); $('title').textContent = v; if (v === 'Events') initMap() })
+</script>
+</body>
+</html>

@@ -4,6 +4,7 @@ import { useStore, useMe } from '../lib/useStore.js'
 import { checkIn, campusById, campusName, campusShort, stampsOf } from '../store.js'
 import { LEVELS, levelIndex, trackProgress, starsOf, badgesOf, TRACK_LIST, MILESTONES } from '../lib/rules.js'
 import { fireConfetti, LevelUpModal } from './Celebrate.jsx'
+import Crest from './Crest.jsx'
 import GenderPill from './GenderPill.jsx'
 import Stamp, { Badge, EmptyStamp, TRACK_INK } from './Stamp.jsx'
 import { spring } from '../lib/motion.js'
@@ -39,9 +40,9 @@ export default function Passport() {
 
   return (
     <div className="space-y-6">
-      <div className="card border-gold/40 bg-gradient-to-br from-navy2 to-navy">
+      <div className="card">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <span className="font-mono text-xs uppercase tracking-widest text-gold">Rihla Passport</span>
+          <span className="font-mono text-xs uppercase tracking-widest text-gold2">Rihla Passport</span>
           <GenderPill value={me.gender} />
         </div>
         <h2 className="mt-3 text-5xl">{me.name}</h2>
@@ -51,7 +52,7 @@ export default function Passport() {
           <div className="text-right"><p className="text-sm text-mute">Stars</p><p className="font-display text-3xl text-gold2">{'★'.repeat(Math.min(5, Math.ceil(starsOf(prog) / 4)))}<span className="text-mute">{' '}{starsOf(prog)}</span></p></div>
         </div>
         <div className="mt-4 h-2 overflow-hidden rounded-full bg-white/10" role="progressbar" aria-valuenow={Math.round(pct)} aria-valuemin={0} aria-valuemax={100} aria-label="Progress to next level">
-          <motion.div className="h-full bg-gradient-to-r from-gold to-gold2" animate={{ width: `${pct}%` }} transition={spring.sheet} />
+          <motion.div className="h-full bg-gold" animate={{ width: `${pct}%` }} transition={spring.sheet} />
         </div>
         <p className="mt-1.5 font-mono text-xs text-mute">{n} stamps{L < 3 ? ` · ${NEXT[L] - n} to ${LEVELS[L + 1]}` : ' · max level'}</p>
       </div>
@@ -83,8 +84,8 @@ export default function Passport() {
       <div className="card">
         <h3 className="mb-3 text-2xl">Badges</h3>
         <div className="flex flex-wrap gap-3">
-          <Badge track="College" label={campusShort(me)} className="w-20 drop-shadow-[0_4px_6px_rgba(0,0,0,.5)]" />
-          {badges.map((b) => { const t = b.replace(' Badge', ''); return <Badge key={b} track={t} label={t} private={t === 'Deen'} className="w-20 drop-shadow-[0_4px_6px_rgba(0,0,0,.5)]" /> })}
+          <div className="text-center"><Crest id={me.campusId} size={64} /><p className="mt-1.5 text-xs text-mute">{campusShort(me)}</p></div>
+          {badges.map((b) => { const t = b.replace(' Badge', ''); return <Badge key={b} track={t} label={t} private={t === 'Deen'} className="w-16" /> })}
         </div>
         {!badges.length && <p className="mt-2 text-sm text-mute">Earn 3 stamps in a track for its badge.</p>}
       </div>
@@ -96,7 +97,7 @@ export default function Passport() {
             const e = byId.get(id)
             return (
               <motion.div key={id} initial={{ scale: 1.9, opacity: 0, rotate: -30 }} animate={{ scale: 1, opacity: 1, rotate: ((i * 37) % 17) - 8 }} whileHover={{ scale: 1.08, rotate: 0 }} transition={spring.pop}>
-                <Stamp className="w-full drop-shadow-[0_4px_6px_rgba(0,0,0,.5)]" campus={e ? campusById(e.campusId)?.short : 'Mentor'} label={e ? e.stamp : 'Meeting'} track={e?.track ?? 'Career'} />
+                <Stamp className="w-full" campus={e ? campusById(e.campusId)?.short : 'Mentor'} label={e ? e.stamp : 'Meeting'} track={e?.track ?? 'Career'} />
               </motion.div>
             )
           })}

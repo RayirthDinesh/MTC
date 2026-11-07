@@ -1,34 +1,28 @@
-// Student dashboard: Passport | Profile | Connect | Chat | Events. Tab underline is a shared-element (layoutId) animation.
-import { useState } from 'react'
+// Student dashboard, LinkedIn-style: the top bar (Navbar) switches tabs via ?tab=  Home | Passport | Network | Messaging | Events | Me
+import { useSearchParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useMe } from '../lib/useStore.js'
-import { spring } from '../lib/motion.js'
+import StudentHome from '../components/StudentHome.jsx'
 import Passport from '../components/Passport.jsx'
 import ProfileCard from '../components/ProfileCard.jsx'
 import ConnectList from '../components/ConnectList.jsx'
 import Chat from '../components/Chat.jsx'
+import NearbyEvents from '../components/NearbyEvents.jsx'
 import EventsTab from '../components/EventsTab.jsx'
-
-const TABS = ['Passport', 'Profile', 'Connect', 'Chat', 'Events']
 
 export default function Student() {
   const me = useMe()
-  const [tab, setTab] = useState('Passport')
-  const [peerId, setPeerId] = useState(null)
+  const [sp, setSp] = useSearchParams()
+  const tab = sp.get('tab') ?? 'Home'
+  const peerId = sp.get('peer')
   return (
-    <div>
-      <nav className="mb-6 flex gap-1 overflow-x-auto" role="tablist" aria-label="Student sections">
-        {TABS.map((t) => (
-          <button key={t} role="tab" aria-selected={tab === t} onClick={() => setTab(t)} className={`relative whitespace-nowrap px-4 py-2.5 text-sm transition-colors ${tab === t ? 'text-gold2' : 'text-mute hover:text-cream'}`}>
-            {t}{tab === t && <motion.span layoutId="tab-underline" transition={spring.ui} className="absolute inset-x-3 -bottom-px h-0.5 rounded bg-gold" />}
-          </button>
-        ))}
-      </nav>
-      {tab === 'Passport' && <Passport />}
-      {tab === 'Profile' && <div className="mx-auto max-w-xl"><ProfileCard user={me} owner /></div>}
-      {tab === 'Connect' && <ConnectList onMessage={(id) => { setPeerId(id); setTab('Chat') }} />}
-      {tab === 'Chat' && <Chat peerId={peerId} setPeerId={setPeerId} />}
-      {tab === 'Events' && <EventsTab />}
-    </div>
+    <motion.div key={tab} initial={{ opacity: 0, y: 14, filter: 'blur(6px)' }} animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }} transition={{ type: 'spring', stiffness: 260, damping: 30 }} className="pt-5">
+      {tab === 'Home' && <StudentHome />}
+      {tab === 'Passport' && <div className="mx-auto max-w-3xl"><Passport /></div>}
+      {tab === 'Me' && <div className="mx-auto max-w-3xl"><ProfileCard user={me} owner /></div>}
+      {tab === 'Network' && <ConnectList onMessage={(id) => setSp({ tab: 'Messaging', peer: id })} />}
+      {tab === 'Messaging' && <Chat peerId={peerId} setPeerId={(id) => setSp({ tab: 'Messaging', peer: id }, { replace: true })} />}
+      {tab === 'Events' && <div className="space-y-8"><NearbyEvents /><div><h3 className="mb-3 text-2xl">All events in your space</h3><EventsTab /></div></div>}
+    </motion.div>
   )
 }

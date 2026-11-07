@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rihla — Admin</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<link rel="stylesheet" href="ui.css">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="ui.js"></script>
+<style>
+  .layout { display: grid; grid-template-columns: 250px minmax(0, 1fr) 290px; gap: 20px; align-items: start; margin-top: 24px; }
+  .col { display: grid; gap: 16px; }
+  .sticky { position: sticky; top: 72px; }
+  .post { display: grid; grid-template-columns: 40px 1fr; gap: 12px; }
+  .post .meta { display: flex; justify-content: space-between; gap: 8px; }
+  .post b { font-weight: 600; }
+  .legend { display: flex; flex-wrap: wrap; gap: 16px; padding: 12px 16px; font-size: 12px; color: var(--t2); }
+  .legend i { display: inline-block; width: 9px; height: 9px; border-radius: 50%; margin-right: 6px; }
+  .switch { appearance: none; width: 51px; height: 31px; border-radius: 16px; background: var(--s2); position: relative; cursor: pointer; transition: background .25s; flex: none; border: 0; }
+  .switch::after { content: ""; position: absolute; top: 2px; left: 2px; width: 27px; height: 27px; border-radius: 50%; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,.3); transition: transform .35s var(--spring); }
+  .switch:checked { background: var(--green); } .switch:checked::after { transform: translateX(20px); }
+  select.field { appearance: none; background-image: none; }
+  @media (max-width: 1020px) { .layout { grid-template-columns: 1fr; } .sticky { position: static; } }
+</style>
+</head>
+<body>
+<header class="nav"><div class="nav-in">
+  <div class="brand"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 21l1-11h3l1 11zM8 21h8M10 10l2-4 2 4M12 6V4M7 7l-3-1M17 7l3-1"/></svg>Rihla</div>
+  <span class="grow"></span><span class="who">Manara Admin</span>
+  <button class="btn gray sm" id="theme" aria-label="Toggle light or dark">Appearance</button>
+</div></header>
+
+<main class="wrap"><div class="layout">
+
+  <!-- left: profile + stats -->
+  <aside class="col sticky">
+    <div class="card flush">
+      <div style="height:64px;background:var(--s2)"></div>
+      <div style="padding:0 18px 18px">
+        <div style="margin-top:-30px;width:60px;height:60px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font:700 26px -apple-system,Inter,sans-serif;border:3px solid var(--s1)">M</div>
+        <div class="headline" style="margin-top:10px">Manara Admin</div><div class="caption">Network operations · 60 campuses</div>
+      </div>
+    </div>
+    <div class="list">
+      <div class="li"><div class="main"><b>Students</b><span>🟦 10 · 🟪 10</span></div><span class="headline num">20</span></div>
+      <div class="li"><div class="main"><b>Stamps</b><span>🟦 66 · 🟪 58</span></div><span class="headline num">124</span></div>
+      <div class="li"><div class="main"><b>Connections</b><span>🟦 3 · 🟪 3</span></div><span class="headline num">6</span></div>
+      <div class="li"><div class="main"><b>Events</b><span>10 co-hosted</span></div><span class="headline num">12</span></div>
+    </div>
+    <div class="card"><div class="caption">Outside the network</div>
+      <div class="row between" style="margin-top:8px"><span>Palomar College</span><span class="caption">2 students</span></div>
+      <div class="row between" style="margin-top:6px"><span>Grossmont College</span><span class="caption">1 student</span></div></div>
+  </aside>
+
+  <!-- center: map, composer, feed -->
+  <div class="col">
+    <div class="card flush"><div class="map" id="map" style="border-radius:0;height:420px" role="region" aria-label="Network map"></div>
+      <div class="legend"><span><i style="background:#34a853"></i>Community college</span><span><i style="background:#fbbc04"></i>4-year</span><span><i style="background:#ea4335"></i>Fading, 60+ days</span><span><i style="background:#1a73e8;border-radius:2px;width:16px;height:3px"></i>Link, thickness = activity</span></div></div>
+
+    <div class="card">
+      <div class="row"><div style="width:40px;height:40px;border-radius:50%;background:var(--s2);display:grid;place-items:center;color:var(--accent)"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/></svg></div>
+        <div class="headline">Link two MSAs</div><span class="grow" style="flex:1"></span>
+        <label class="row" style="gap:10px"><span class="caption">Simulate activity</span><input type="checkbox" class="switch" id="sim" aria-label="Simulate activity"></label></div>
+      <div class="row wrapx" style="margin-top:14px"><select class="field" id="a" style="flex:1;min-width:160px" aria-label="Campus A"></select><select class="field" id="b" style="flex:1;min-width:160px" aria-label="Campus B"></select><button class="btn" id="link">Link</button></div>
+    </div>
+
+    <div class="col" id="feed"></div>
+  </div>
+
+  <!-- right: suggestions -->
+  <aside class="col sticky">
+    <div><div class="section-title" style="margin:0 4px 8px">MSAs to reconnect</div><div class="list" id="fading"></div></div>
+    <div><div class="section-title" style="margin:0 4px 8px">Strongest MSAs</div><div class="list" id="strong"></div></div>
+  </aside>
+</div></main>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+UI.initTheme()
+const $ = (id) => document.getElementById(id)
+// [id, name, lat, lng, type, strength, idleDays]
+const C = [['ucsd', 'UC San Diego', 32.8801, -117.234, '4yr', 92, 1], ['mesa', 'San Diego Mesa College', 32.8004, -117.1626, 'cc', 88, 1], ['ucla', 'UCLA', 34.0689, -118.4452, '4yr', 80, 2], ['smc', 'Santa Monica College', 34.0166, -118.4696, 'cc', 74, 3], ['uci', 'UC Irvine', 33.6405, -117.8443, '4yr', 76, 2], ['occ', 'Orange Coast College', 33.6675, -117.9109, 'cc', 66, 3], ['ucr', 'UC Riverside', 33.9737, -117.3281, '4yr', 58, 4], ['rcc', 'Riverside City College', 33.9744, -117.3731, 'cc', 52, 4], ['sjsu', 'San Jose State', 37.3352, -121.8811, '4yr', 70, 2], ['deanza', 'De Anza College', 37.3194, -122.045, 'cc', 64, 2], ['ucb', 'UC Berkeley', 37.8719, -122.2585, '4yr', 60, 3], ['dvc', 'Diablo Valley College', 37.965, -122.0699, 'cc', 46, 5], ['miramar', 'Miramar College', 32.897, -117.142, 'cc', 12, 75], ['foothill', 'Foothill College', 37.3613, -122.1285, 'cc', 8, 90], ['fcc', 'Fresno City College', 36.764, -119.7924, 'cc', 5, 120]]
+const by = Object.fromEntries(C.map((c) => [c[0], c]))
+const LINKS = [['mesa', 'ucsd', 9], ['deanza', 'sjsu', 6], ['smc', 'ucla', 6], ['rcc', 'ucr', 4], ['occ', 'uci', 5], ['dvc', 'ucb', 3]]
+const col = (c) => (c[6] > 60 ? '#ea4335' : c[4] === 'cc' ? '#34a853' : '#fbbc04')
+UI.map($('map'), { center: [35.4, -119.8], zoom: 6, pins: C.map((c) => ({ lat: c[2], lng: c[3], color: col(c), popup: `<b>${c[1]}</b><br>Strength ${c[5]}/100<br>${c[6] > 60 ? `<span style="color:#ea4335">Fading · ${c[6]}d idle</span>` : `Active ${c[6]}d ago`}` })), links: LINKS.map(([a, b, w]) => [[by[a][2], by[a][3]], [by[b][2], by[b][3]], w]) })
+
+$('a').innerHTML = $('b').innerHTML = '<option value="">Choose campus…</option>' + [...C].sort((x, y) => x[1].localeCompare(y[1])).map((c) => `<option value="${c[0]}">${c[1]}</option>`).join('')
+$('link').onclick = () => { if ($('a').value && $('b').value && $('a').value !== $('b').value) UI.toast(`Linked ${by[$('a').value][1]} ↔ ${by[$('b').value][1]}`) }
+
+const SHORT = { ucsd: 'UCSD', mesa: 'Mesa', ucla: 'UCLA', smc: 'SMC', uci: 'UCI', occ: 'OCC', ucr: 'UCR', rcc: 'RCC', sjsu: 'SJSU', deanza: 'De Anza', ucb: 'Berkeley', dvc: 'DVC' }
+const near = (id) => C.filter((c) => c[0] !== id && c[6] < 10 && c[4] !== by[id][4]).sort((a, b) => UI.miles([by[id][2], by[id][3]], [a[2], a[3]]) - UI.miles([by[id][2], by[id][3]], [b[2], b[3]]))[0]
+$('fading').innerHTML = C.filter((c) => c[6] > 60).map((c) => { const s = near(c[0]); return `<div class="li">${UI.crest(c[0], 40)}<div class="main"><b>${c[1]}</b><span>${c[6]} days idle</span></div><button class="btn tint sm" data-t="${s[1]}">Link ${SHORT[s[0]]}</button></div>` }).join('')
+$('fading').addEventListener('click', (e) => { const b = e.target.closest('button'); if (b) { b.textContent = 'Linked'; b.className = 'btn gray sm'; UI.toast('Linked with ' + b.dataset.t) } })
+$('strong').innerHTML = [...C].sort((a, b) => b[5] - a[5]).slice(0, 6).map((c) => `<div class="li">${UI.crest(c[0], 36)}<div class="main"><b>${c[1].replace(' College', '')}</b></div><div class="bar"><i style="width:${c[5]}%"></i></div><span class="end num" style="width:24px;text-align:right">${c[5]}</span></div>`).join('')
+
+const POSTS = [['ucsd', 'UC San Diego', 'Omar K. checked in: Transfer Q&A Brothers', '2m', 'checkin'], ['mesa', 'San Diego Mesa College', 'Co-hosting: Transfer Q&A Brothers', '2m', 'cohost'], ['ucla', 'UCLA', 'Ibrahim S. connected with Tariq B.', '14m', 'connect'], ['sjsu', 'San Jose State', 'New event: Resume + LinkedIn Lab', '1h', 'event'], ['ucr', 'UC Riverside', 'Linked with Riverside City College', '3h', 'link'], ['mesa', 'San Diego Mesa College', 'Maryam A. joined', '5h', 'join']]
+const KIND = { checkin: 'Check-in', cohost: 'Co-host', connect: 'Connection', event: 'Event', link: 'Link', join: 'New member' }
+$('feed').innerHTML = POSTS.map(([c, n, t, w, k]) => `<article class="card post">${UI.crest(c, 40)}<div><div class="meta"><b>${n}</b><span class="caption">${w}</span></div><div class="caption" style="margin-top:2px">${KIND[k]}</div><p style="margin-top:8px">${t}</p></div></article>`).join('')
+let timer; $('sim').onchange = (e) => { clearInterval(timer); if (e.target.checked) timer = setInterval(() => { const p = POSTS[Math.floor(Math.random() * 3)]; UI.toast(p[2]) }, 3000) }
+</script>
+</body>
+</html>

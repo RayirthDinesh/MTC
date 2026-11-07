@@ -20,12 +20,11 @@ function Count({ value }) {
   return <>{v}</>
 }
 
-const Card = ({ label, value, b, s, e }) => (
-  <div className="card !p-5">
-    <p className="text-sm text-mute">{label}</p>
-    <p className="font-display text-5xl text-gold2"><Count value={value} /></p>
-    <p className="mt-1 text-xs text-mute">🟦 {b} · 🟪 {s}{e != null && <> · 🌙 {e}</>}</p>
-  </div>
+const Row = ({ label, value, sub }) => (
+  <li className="flex items-center justify-between gap-3 border-t border-white/10 py-3 first:border-0">
+    <div><p className="font-semibold">{label}</p><p className="text-xs text-mute">{sub}</p></div>
+    <p className="font-display text-2xl tabular-nums"><Count value={value} /></p>
+  </li>
 )
 
 /** Combined totals with brothers/sisters breakdown (admin view only has the full data). */
@@ -36,14 +35,13 @@ export default function StatsCards() {
   const gOf = new Map(users.map((u) => [u.id, u.gender]))
   const stampsOf = (list) => list.reduce((n, u) => n + (u.stampCount ?? u.stamps.length), 0)
   const conn = (g) => connections.filter((c) => gOf.get(c.a) === g).length
-  const aud = (x) => events.filter((e) => e.audience === x).length
+  const co = events.filter((e) => e.coHostId).length
   return (
-    <div className="grid grid-cols-2 gap-4 lg:grid-cols-5">
-      <Card label="Students" value={students.length} b={by('brother').length} s={by('sister').length} />
-      <Card label="Stamps earned" value={stampsOf(students)} b={stampsOf(by('brother'))} s={stampsOf(by('sister'))} />
-      <Card label="Connections" value={connections.length} b={conn('brother')} s={conn('sister')} />
-      <Card label="Events" value={events.length} b={aud('brothers')} s={aud('sisters')} e={aud('everyone')} />
-      <Card label="Co-hosted" value={events.filter((e) => e.coHostId).length} b={events.filter((e) => e.coHostId && e.audience === 'brothers').length} s={events.filter((e) => e.coHostId && e.audience === 'sisters').length} e={events.filter((e) => e.coHostId && e.audience === 'everyone').length} />
-    </div>
+    <ul className="card !py-1">
+      <Row label="Students" value={students.length} sub={`🟦 ${by('brother').length} · 🟪 ${by('sister').length}`} />
+      <Row label="Stamps earned" value={stampsOf(students)} sub={`🟦 ${stampsOf(by('brother'))} · 🟪 ${stampsOf(by('sister'))}`} />
+      <Row label="Connections" value={connections.length} sub={`🟦 ${conn('brother')} · 🟪 ${conn('sister')}`} />
+      <Row label="Events" value={events.length} sub={`${co} co-hosted`} />
+    </ul>
   )
 }

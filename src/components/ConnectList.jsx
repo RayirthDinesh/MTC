@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useStore, useMe } from '../lib/useStore.js'
 import { visibleUsers, connectionsOf, campusById, campusShort, connect, blockUser, reportUser, stampsOf } from '../store.js'
@@ -6,17 +7,22 @@ import { levelOf } from '../lib/rules.js'
 import { stagger, item, spring } from '../lib/motion.js'
 import GenderPill from './GenderPill.jsx'
 import ProfileCard from './ProfileCard.jsx'
+import Crest from './Crest.jsx'
+import TiltCard from './fx/TiltCard.jsx'
 
 function Person({ u, children, onOpen }) {
   return (
-    <motion.li variants={item} className="card flex items-center gap-4 !p-4">
-      <button onClick={onOpen} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gold font-display text-2xl text-[#2a1d00]" aria-label={`View ${u.name}'s profile`}>{u.name[0]}</button>
-      <div className="min-w-0 flex-1">
-        <p className="flex flex-wrap items-center gap-2"><span className="truncate font-medium">{u.name}</span><GenderPill value={u.gender} /></p>
-        <p className="truncate text-sm text-mute">{campusShort(u)} · {u.major || u.position} · {levelOf(stampsOf(u))}{u.target ? ` · → ${campusById(u.target)?.short}` : ''}</p>
+    <motion.li variants={item}><TiltCard className="card flex h-full flex-col items-center !p-0 text-center">
+      <div className="h-14 w-full rounded-t-[14px] bg-black/10" />
+      <button onClick={onOpen} className="-mt-8 rounded-full border-[3px] border-white" aria-label={`View ${u.name}'s profile`}><Crest id={u.campusId} size={64} /></button>
+      <div className="min-w-0 px-3 pt-2">
+        <p className="truncate font-semibold">{u.name}</p>
+        <p className="mt-0.5"><GenderPill value={u.gender} /></p>
+        <p className="mt-1 text-sm text-mute">{campusShort(u)} · {u.major || u.position}</p>
+        <p className="text-xs text-mute">{levelOf(stampsOf(u))}{u.target ? ` · → ${campusById(u.target)?.short}` : ''}</p>
       </div>
-      <div className="flex gap-2">{children}</div>
-    </motion.li>
+      <div className="flex flex-wrap justify-center gap-2 p-3">{children}</div>
+    </TiltCard></motion.li>
   )
 }
 
@@ -24,7 +30,9 @@ function Person({ u, children, onOpen }) {
 export default function ConnectList({ onMessage }) {
   const s = useStore()
   const me = useMe()
-  const [q, setQ] = useState('')
+  const [sp, setSp] = useSearchParams()
+  const q = sp.get('q') ?? ''
+  const setQ = (v) => setSp({ tab: 'Network', ...(v ? { q: v } : {}) }, { replace: true })
   const [filter, setFilter] = useState('all')
   const [viewing, setViewing] = useState(null)
   const [note, setNote] = useState('')
@@ -43,8 +51,8 @@ export default function ConnectList({ onMessage }) {
     return !needle || `${u.name} ${campusById(u.campusId)?.name} ${u.major}`.toLowerCase().includes(needle)
   })
   const doConnect = async (u) => { const r = await connect(u.id); setNote(r.ok ? `Connected with ${u.name}` : r.reason) }
-  const Btn = (u) => <button className="btn btn-gold !px-4 !py-2 text-sm" onClick={() => doConnect(u)}>Connect</button>
-  const list = (arr, render) => <motion.ul variants={stagger} initial="initial" animate="animate" className="grid gap-3">{arr.map(render)}</motion.ul>
+  const Btn = (u) => <button className="btn btn-out !px-4 !py-1.5 text-sm" onClick={() => doConnect(u)}>Connect</button>
+  const list = (arr, render) => <motion.ul variants={stagger} initial="initial" animate="animate" className="grid grid-cols-[repeat(auto-fill,minmax(190px,1fr))] gap-3">{arr.map(render)}</motion.ul>
 
   return (
     <div className="space-y-8">

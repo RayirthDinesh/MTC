@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useMe } from '../lib/useStore.js'
 import { createEvent } from '../store.js'
 import { TRACK_LIST } from '../lib/rules.js'
@@ -9,11 +9,12 @@ const AUDIENCES = [['brothers', '🟦 Brothers'], ['sisters', '🟪 Sisters'], [
 const Field = ({ label, children }) => <label className="block"><span className="mb-1.5 block text-sm text-mute">{label}</span>{children}</label>
 
 /** Create an event: audience, track + stamp, optional co-host. The server generates the 6-char check-in code. */
-export default function EventForm() {
+export default function EventForm({ preset = '', bare = false }) {
   const me = useMe()
   const [f, setF] = useState({ title: '', date: tomorrow(), location: '', audience: 'everyone', track: 'Career', stamp: '', coHostId: '' })
   const [res, setRes] = useState(null)
   const set = (p) => setF((x) => ({ ...x, ...p }))
+  useEffect(() => { if (preset) set({ coHostId: preset }) }, [preset]) // eslint-disable-line react-hooks/exhaustive-deps
   const submit = async (e) => {
     e.preventDefault()
     const r = await createEvent({ ...f, date: new Date(f.date).getTime(), stamp: f.stamp || f.title })
@@ -21,8 +22,8 @@ export default function EventForm() {
     if (r.ok) set({ title: '', stamp: '', location: '', coHostId: '' })
   }
   return (
-    <form onSubmit={submit} className="card space-y-4">
-      <h3 className="text-3xl">Create an event</h3>
+    <form onSubmit={submit} className={`space-y-4 ${bare ? '' : 'card'}`}>
+      <h3 className="text-2xl">Create an event</h3>
       <Field label="Title"><input className="input" required value={f.title} onChange={(e) => set({ title: e.target.value })} /></Field>
       <div className="grid gap-4 sm:grid-cols-2">
         <Field label="Date & time"><input type="datetime-local" className="input" required value={f.date} onChange={(e) => set({ date: e.target.value })} /></Field>

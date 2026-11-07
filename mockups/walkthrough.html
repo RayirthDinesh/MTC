@@ -1,0 +1,444 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Rihla — Walkthrough</title>
+<style>
+:root{--bg:#09090b;--s1:#131316;--s2:#1c1c20;--s3:#2a2a30;--line:rgba(255,255,255,.09);--t1:#f5f5f7;--t2:#a1a1a8;--t3:#6b6b73;--accent:#f0b94a;--ink:#171100;--blue:#4c9aff;--green:#32d46b;--purple:#c27bff;--red:#ff5a52;--sh:none;--out:cubic-bezier(.16,1,.3,1);--spring:cubic-bezier(.34,1.5,.64,1);color-scheme:dark}
+[data-theme=light]{--bg:#f3f2ef;--s1:#fff;--s2:#eeece8;--s3:#dedcd6;--line:rgba(0,0,0,.09);--t1:#14141a;--t2:#5b5b64;--t3:#9a9aa2;--accent:#d99512;--ink:#1a1200;--blue:#0a66c2;--sh:0 0 0 1px rgba(0,0,0,.06);color-scheme:light}
+*{box-sizing:border-box;margin:0}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--t1);font:400 16px/1.5 -apple-system,BlinkMacSystemFont,"SF Pro Text",Inter,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden;transition:background .4s,color .4s}
+button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}input,select{font:inherit;color:inherit}
+.screen{display:none;min-height:100vh;padding-bottom:140px}.screen.active{display:block}
+.wrap{max-width:1128px;margin:0 auto;padding:0 20px}
+.h-xl{font-size:clamp(44px,8.4vw,92px);line-height:1;font-weight:700;letter-spacing:-.045em}
+.h-l{font-size:clamp(30px,4.4vw,50px);line-height:1.06;font-weight:700;letter-spacing:-.035em}
+.h-m{font-size:24px;line-height:1.2;font-weight:650;letter-spacing:-.025em}.h-s{font-size:17px;font-weight:600;letter-spacing:-.012em}
+.lead{font-size:clamp(17px,2vw,21px);color:var(--t2);line-height:1.45;letter-spacing:-.01em}.sub{color:var(--t2)}.cap{font-size:13px;color:var(--t2)}.accent{color:var(--accent)}.mono{font-family:ui-monospace,Menlo,monospace}
+.row{display:flex;align-items:center;gap:12px}.wrapx{flex-wrap:wrap}.between{justify-content:space-between}.grow{flex:1}.stack>*+*{margin-top:16px}.col{display:grid;gap:12px;align-content:start;min-width:0}.num{font-variant-numeric:tabular-nums}
+.top{position:sticky;top:0;z-index:30;background:var(--s1);box-shadow:0 1px 0 var(--line)}
+.top .in{max-width:1128px;margin:0 auto;padding:0 20px;height:56px;display:flex;align-items:center;gap:14px}
+.brand{display:flex;align-items:center;gap:9px;font-weight:700;letter-spacing:-.02em;font-size:18px;white-space:nowrap}.brand svg{width:24px;height:24px;color:var(--accent)}
+.nsearch{height:36px!important;width:230px;border-radius:8px!important;font-size:14px;background:var(--s2)}
+.ntabs{display:flex;gap:2px}.ntab{position:relative;display:flex;flex-direction:column;align-items:center;gap:1px;min-width:70px;padding:8px 6px 7px;font-size:12px;color:var(--t2);transition:color .2s}.ntab svg{width:24px;height:24px;transition:transform .4s var(--spring)}.ntab:hover{color:var(--t1)}.ntab:hover svg{transform:translateY(-2px)}.ntab[aria-selected=true]{color:var(--t1)}
+.ntab::after{content:"";position:absolute;left:8px;right:8px;bottom:-1px;height:2px;border-radius:2px;background:var(--t1);transform:scaleX(0);transition:transform .45s var(--spring)}.ntab[aria-selected=true]::after{transform:none}
+.meb{display:flex;flex-direction:column;align-items:center;font-size:12px;color:var(--t2);padding:4px 8px;border-left:1px solid var(--line);margin-left:6px;padding-left:16px}.meb:hover{color:var(--t1)}.av{display:grid;place-items:center;border-radius:50%;background:var(--accent);color:var(--ink);font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:44px;padding:0 22px;border-radius:999px;background:var(--accent);color:var(--ink);font-weight:600;letter-spacing:-.01em;white-space:nowrap;transition:transform .35s var(--spring),opacity .2s,background .2s}
+.btn:hover{transform:translateY(-1px)}.btn:active{transform:scale(.96);transition-duration:.08s}.btn.lg{height:54px;padding:0 30px;font-size:17px}.btn.sm{height:32px;padding:0 15px;font-size:14px}
+.btn.ghost{background:var(--s2);color:var(--t1)}.btn.tint{background:color-mix(in srgb,var(--accent) 16%,transparent);color:color-mix(in srgb,var(--accent) 75%,var(--t1))}.btn.out{background:none;box-shadow:inset 0 0 0 1.5px var(--blue);color:var(--blue)}.btn[disabled]{opacity:.35;pointer-events:none}
+.btn:focus-visible,.field:focus-visible,.chip:focus-visible,.opt:focus-visible,#rail button:focus-visible,.ntab:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.card{background:var(--s1);border-radius:28px;padding:28px;box-shadow:var(--sh)}.card.flush{padding:0;overflow:hidden}
+.app .card{border-radius:14px;padding:18px}.app .card.flush{padding:0}
+.field{width:100%;height:50px;border-radius:14px;background:var(--s2);padding:0 16px;border:2px solid transparent;transition:border-color .2s,background .2s}.field:focus{border-color:var(--accent);outline:0;background:var(--s1)}.field::placeholder{color:var(--t3)}
+label.lbl{display:block;font-size:13px;color:var(--t2);margin:0 0 8px 4px}
+.pill{display:inline-flex;align-items:center;gap:6px;height:24px;padding:0 10px;border-radius:12px;font-size:12.5px;font-weight:550;background:var(--s2);color:var(--t2);white-space:nowrap}.pill.bro{background:color-mix(in srgb,var(--blue) 15%,transparent);color:var(--blue)}.pill.sis{background:color-mix(in srgb,var(--purple) 17%,transparent);color:var(--purple)}.pill.dist{background:color-mix(in srgb,var(--blue) 13%,transparent);color:var(--blue)}
+.seg{position:relative;display:inline-flex;background:var(--s2);border-radius:999px;padding:4px;max-width:100%;overflow-x:auto;scrollbar-width:none}.seg::-webkit-scrollbar{display:none}
+.seg button{position:relative;z-index:1;padding:8px 18px;border-radius:999px;font-size:14px;font-weight:550;color:var(--t2);white-space:nowrap;transition:color .25s}.seg button[aria-selected=true]{color:var(--t1)}
+.seg .thumb{position:absolute;z-index:0;top:4px;bottom:4px;left:0;width:0;background:var(--s1);box-shadow:0 1px 3px rgba(0,0,0,.2);border-radius:999px;transition:transform .5s var(--spring),width .5s var(--spring)}
+.list>.li{display:flex;align-items:center;gap:12px;padding:12px 2px}.list>.li+.li{border-top:1px solid var(--line)}.li .main{flex:1;min-width:0}.li .main b{display:block;font-weight:600;font-size:15px}.li .main span{font-size:13px;color:var(--t2)}
+.dashes{display:flex;gap:4px}.dashes i{width:20px;height:5px;border-radius:3px;background:var(--s3)}.dashes i.on{background:var(--c)}
+.dot{width:10px;height:10px;border-radius:50%;background:var(--c);flex:none}
+.bar{height:6px;border-radius:3px;background:var(--s3);overflow:hidden}.bar i{display:block;height:100%;background:var(--accent);border-radius:3px;transition:width 1s var(--out)}
+.crest{position:relative;display:block;flex:none;border-radius:50%;overflow:hidden;box-shadow:0 0 0 1px var(--line)}.crest svg{position:absolute;inset:0;width:100%;height:100%}.crest img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#fff;padding:13%}
+.reveal{opacity:0;transform:translateY(28px);transition:opacity .9s var(--out),transform .9s var(--out)}.reveal.in{opacity:1;transform:none}
+.st>*{opacity:0;transform:translateY(14px)}.st.in>*{animation:rise .7s var(--out) both;animation-delay:calc(var(--i,0)*60ms)}@keyframes rise{to{opacity:1;transform:none}}
+@keyframes thump{0%{transform:scale(1.7) rotate(-8deg);opacity:0}60%{opacity:1}100%{transform:scale(1) rotate(var(--r,0deg));opacity:1}}.thump{animation:thump .65s var(--spring) both}
+@keyframes shake{0%,100%{transform:none}25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}.shake{animation:shake .35s}
+/* landing */
+.hero{position:relative;display:grid;grid-template-columns:1.15fr .85fr;gap:48px;align-items:center;min-height:calc(100vh - 60px);padding:40px 0 80px}
+.beam{position:absolute;right:-8%;top:8%;width:760px;height:760px;pointer-events:none;z-index:0}
+.beam i{position:absolute;left:50%;top:50%;width:760px;height:150px;margin-top:-75px;transform-origin:0 50%;background:var(--accent);opacity:.1;clip-path:polygon(0 48%,100% 0,100% 100%,0 52%);animation:sweep 9s ease-in-out infinite alternate}.beam i:nth-child(2){animation-delay:-4.5s;scale:-1 1;opacity:.06}
+@keyframes sweep{from{rotate:-16deg}to{rotate:16deg}}
+.hero>*{position:relative;z-index:1}.word{display:inline-block;overflow:hidden;vertical-align:top;padding-bottom:.08em}.word>span{display:inline-block;transform:translateY(110%);animation:wordin 1s var(--out) forwards;animation-delay:calc(var(--w)*70ms + 150ms)}@keyframes wordin{to{transform:none}}
+.fade-in{opacity:0;animation:rise .9s var(--out) forwards;animation-delay:var(--d,0s)}
+.pcard{width:100%;max-width:340px;margin-left:auto;background:var(--s1);border-radius:26px;padding:24px;box-shadow:0 30px 80px rgba(0,0,0,.18),0 0 0 1px var(--line);transition:transform .5s var(--out);will-change:transform}
+.pcard .stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:18px}.pcard .stamps>div{aspect-ratio:100/116}
+.marquee{overflow:hidden;padding:30px 0;mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 12%,#000 88%,transparent)}
+.marquee .track{display:flex;gap:44px;width:max-content;animation:slide 50s linear infinite}.marquee .track:hover{animation-play-state:paused}@keyframes slide{to{transform:translateX(-50%)}}
+.marquee .it{display:flex;align-items:center;gap:12px;color:var(--t2);font-weight:550;white-space:nowrap}
+.band{padding:110px 0 20px}.sepbox{margin-top:36px;display:grid;grid-template-columns:1fr 1.1fr;gap:56px;align-items:center}
+.feat{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:40px}.feat .card{padding:30px;transition:transform .5s var(--spring)}.feat .card:hover{transform:translateY(-6px)}
+.feat .ico{width:48px;height:48px;border-radius:14px;background:color-mix(in srgb,var(--accent) 16%,transparent);color:var(--accent);display:grid;place-items:center;margin-bottom:56px}.feat .ico svg{width:24px;height:24px}
+.cta{padding:140px 0 60px;text-align:center}
+/* signup */
+.quiz{max-width:520px;margin:0 auto;padding:56px 20px 0}.prog{height:4px;border-radius:2px;background:var(--s3);overflow:hidden;margin-bottom:32px}.prog i{display:block;height:100%;width:0;background:var(--accent);border-radius:2px;transition:width .7s var(--out)}
+.opt{display:flex;align-items:center;gap:16px;width:100%;text-align:left;padding:18px 20px;border-radius:18px;background:var(--s1);box-shadow:inset 0 0 0 2px var(--line);transition:transform .35s var(--spring),background .2s,box-shadow .2s}
+.opt:hover{transform:translateY(-2px)}.opt:active{transform:scale(.98)}.opt[aria-pressed=true]{box-shadow:inset 0 0 0 2px var(--accent);background:color-mix(in srgb,var(--accent) 9%,var(--s1))}
+.opt .em{width:44px;height:44px;border-radius:14px;background:var(--s2);display:grid;place-items:center;font-size:22px;flex:none}.opt b{display:block;font-weight:600}.opt span{font-size:14px;color:var(--t2)}
+.chips{display:flex;flex-wrap:wrap;gap:8px}.chip{padding:9px 16px;border-radius:999px;background:var(--s2);font-size:14px;font-weight:550;transition:transform .3s var(--spring),background .2s,color .2s}.chip[aria-pressed=true]{background:var(--accent);color:var(--ink)}.chip:active{transform:scale(.94)}
+.pick{position:relative}.pick .menu{position:absolute;left:0;right:0;top:80px;background:var(--s1);border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,.25),0 0 0 1px var(--line);padding:6px;z-index:10;max-height:280px;overflow:auto;animation:rise .3s var(--out)}
+.pick .menu button{display:flex;width:100%;align-items:center;gap:12px;padding:9px 12px;border-radius:12px;text-align:left}.pick .menu button:hover{background:var(--s2)}
+.ok{color:var(--green);font-size:13px;margin:6px 4px 0}.bad{color:var(--red);font-size:13px;margin:6px 4px 0}
+/* app */
+.app{background:var(--bg)}.view{animation:rise .5s var(--out) both}
+.tri{display:grid;grid-template-columns:225px minmax(0,1fr) 300px;gap:24px;align-items:start;margin-top:24px}.stick{position:sticky;top:76px}
+.cover{height:60px;background:var(--s3)}.cover.big{height:150px}
+.avlg{margin-top:-34px;border:3px solid var(--s1)}
+.post{padding:0!important}.post .ph{display:flex;gap:10px;padding:14px 16px 8px}.post .pt{padding:0 16px 12px;font-size:15px}
+.post .attach{margin:0 16px 12px;border-radius:12px;background:var(--s2);padding:14px;display:flex;gap:14px;align-items:center}
+.post .acts{display:flex;border-top:1px solid var(--line);padding:2px 6px}.post .acts button{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;height:42px;border-radius:8px;font-size:14px;font-weight:600;color:var(--t2);transition:background .2s,color .2s}.post .acts button:hover{background:var(--s2)}.post .acts button.on{color:var(--blue)}
+.post .acts svg{width:20px;height:20px;transition:transform .5s var(--spring)}.post .acts button.on svg{transform:scale(1.25) rotate(-8deg)}
+.ringwrap{position:relative;width:128px;height:128px;flex:none}.ringwrap svg{transform:rotate(-90deg)}.ringwrap circle{fill:none;stroke-width:9}.ringwrap .bg{stroke:var(--s3)}.ringwrap .fg{stroke:var(--accent);stroke-linecap:round;stroke-dasharray:100 100;transition:stroke-dashoffset 1.2s var(--out)}.ringwrap .n{position:absolute;inset:0;display:grid;place-items:center;font-size:40px;font-weight:700;letter-spacing:-.04em}
+.stampgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(100px,1fr));gap:18px}.stampgrid>div{aspect-ratio:100/116}.stampgrid svg{width:100%;height:100%;display:block}
+.pgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px}.pcell{text-align:center;overflow:hidden;transition:transform .45s var(--spring)}.pcell:hover{transform:translateY(-4px)}.pcell .cover{height:54px}.pcell .body{padding:0 14px 16px}.pcell .crest{margin:-32px auto 10px;border:3px solid var(--s1)}
+.msgwrap{display:grid;grid-template-columns:300px 1fr;min-height:480px}.mlist{border-right:1px solid var(--line);overflow:auto}.mrow{display:flex;gap:12px;align-items:center;width:100%;text-align:left;padding:14px 16px;transition:background .2s}.mrow:hover{background:var(--s2)}.mrow.on{background:var(--s2);box-shadow:inset 3px 0 0 var(--accent)}.mrow .main{min-width:0;flex:1}.mrow b{display:block;font-weight:600;font-size:15px}.mrow span{font-size:13px;color:var(--t2);display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mpane{display:flex;flex-direction:column;min-width:0}#thread{flex:1;padding:20px;display:flex;flex-direction:column;gap:8px;overflow:auto;max-height:380px}
+.bub{max-width:76%;padding:10px 16px;border-radius:20px;animation:pop .45s var(--spring) both;transform-origin:bottom}@keyframes pop{from{opacity:0;transform:scale(.8) translateY(10px)}}
+.bub.out{align-self:flex-end;background:var(--blue);color:#fff;border-bottom-right-radius:6px}.bub.in{align-self:flex-start;background:var(--s2);border-bottom-left-radius:6px}
+.typing{display:flex;gap:4px;padding:14px 16px}.typing i{width:7px;height:7px;border-radius:50%;background:var(--t3);animation:bob 1s infinite}.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}@keyframes bob{50%{transform:translateY(-5px);background:var(--t1)}}
+.sheet-scrim{position:fixed;inset:0;z-index:80;background:rgba(0,0,0,.5);opacity:0;pointer-events:none;transition:opacity .35s;display:grid;place-items:center;padding:20px}.sheet-scrim.open{opacity:1;pointer-events:auto}
+.sheet{width:min(420px,100%);background:color-mix(in srgb,var(--s1) 88%,transparent);backdrop-filter:blur(40px) saturate(180%);-webkit-backdrop-filter:blur(40px) saturate(180%);border-radius:28px;padding:34px 30px 26px;text-align:center;transform:translateY(60px) scale(.92);opacity:0;transition:transform .6s var(--spring),opacity .3s}.sheet-scrim.open .sheet{transform:none;opacity:1}
+.toast{position:fixed;left:50%;bottom:110px;z-index:90;background:#222;color:#fff;padding:12px 20px;border-radius:999px;font-size:14px;font-weight:550;transform:translate(-50%,200%);transition:transform .6s var(--spring);box-shadow:0 10px 40px rgba(0,0,0,.4)}.toast.show{transform:translate(-50%,0)}
+.map{height:380px;border-radius:14px;overflow:hidden;background:#e5e3df;position:relative}.nokey{position:absolute;left:12px;bottom:12px;background:#fff;color:#202124;font-size:12px;padding:6px 10px;border-radius:8px;box-shadow:0 1px 4px rgba(0,0,0,.3)}
+.apost{display:grid;grid-template-columns:44px 1fr;gap:14px;animation:ap .7s var(--out) both}@keyframes ap{from{opacity:0;transform:translateY(-24px) scale(.97)}}
+.switch{appearance:none;width:51px;height:31px;border-radius:16px;background:var(--s3);position:relative;cursor:pointer;transition:background .25s;flex:none}.switch::after{content:"";position:absolute;top:2px;left:2px;width:27px;height:27px;border-radius:50%;background:#fff;box-shadow:0 2px 4px rgba(0,0,0,.3);transition:transform .45s var(--spring)}.switch:checked{background:var(--green)}.switch:checked::after{transform:translateX(20px)}
+.flash{animation:flash 1.4s var(--out)}@keyframes flash{from{background:color-mix(in srgb,var(--accent) 30%,transparent)}}
+.expand{display:grid;grid-template-rows:0fr;transition:grid-template-rows .55s var(--out)}.expand.open{grid-template-rows:1fr}.expand>div{overflow:hidden}
+#rail{position:fixed;left:50%;bottom:22px;transform:translateX(-50%);z-index:70;display:flex;align-items:center;gap:4px;padding:7px;border-radius:999px;background:color-mix(in srgb,var(--s1) 82%,transparent);backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);box-shadow:0 12px 50px rgba(0,0,0,.3),0 0 0 1px var(--line);max-width:calc(100vw - 16px)}
+#rail .step{display:flex;align-items:center;gap:8px;height:38px;padding:0 10px;border-radius:999px;font-size:13px;font-weight:600;color:var(--t2);transition:background .35s var(--out),color .25s,padding .5s var(--spring)}#rail .step b{display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:var(--s2);font-size:11px}#rail .step span{display:none;white-space:nowrap}#rail .step.on{background:var(--accent);color:var(--ink);padding:0 16px 0 8px}#rail .step.on b{background:rgba(0,0,0,.15)}#rail .step.on span{display:inline}
+#rail .nav{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;transition:background .2s,transform .3s var(--spring)}#rail .nav:hover{background:var(--s2)}#rail .nav:active{transform:scale(.9)}#rail .nav[disabled]{opacity:.3;pointer-events:none}#rail .sep{width:1px;height:22px;background:var(--line);margin:0 2px}
+@media(max-width:980px){.hero,.sepbox{grid-template-columns:1fr}.pcard{margin:0 auto}.feat{grid-template-columns:1fr}.tri{grid-template-columns:1fr}.stick{position:static}.msgwrap{grid-template-columns:1fr}.mlist{border-right:0;border-bottom:1px solid var(--line);max-height:180px}.nsearch{display:none}.ntab{min-width:52px}.ntab span{display:none}.beam{opacity:.6}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}.reveal,.st>*{opacity:1;transform:none}.word>span{transform:none}}
+</style>
+</head>
+<body>
+
+<section class="screen" id="s-landing">
+  <header class="top" style="background:color-mix(in srgb,var(--bg) 75%,transparent);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)"><div class="in"><div class="brand" data-lh>Rihla</div><span class="grow"></span><button class="btn sm" data-step="1">Get started</button></div></header>
+  <div class="wrap">
+    <div class="hero">
+      <div class="beam" aria-hidden="true"><i></i><i></i></div>
+      <div>
+        <h1 class="h-xl" id="headline" aria-label="Travel to seek knowledge. Carry the proof."></h1>
+        <p class="lead fade-in" style="--d:.9s;margin-top:28px;max-width:30em">Show up at an MSA event, earn a stamp. Your passport becomes your profile, and your network across every campus.</p>
+        <div class="row wrapx fade-in" style="--d:1.05s;margin-top:36px;gap:14px"><button class="btn lg" data-step="1">Get your passport</button><button class="btn lg ghost" data-scroll="#separate">How it works</button></div>
+      </div>
+      <div class="fade-in" style="--d:.5s"><div class="pcard" id="tilt">
+        <div class="row between"><span class="cap" style="font-weight:700;letter-spacing:.05em">RIHLA PASSPORT</span><span class="pill bro">Brothers</span></div>
+        <div class="row" style="margin-top:14px;gap:12px"><span data-crest="mesa" data-size="46"></span><div><div class="h-s">Omar K.</div><div class="cap">Mesa → UCSD · Transfer</div></div></div>
+        <div class="stamps" id="heroStamps"></div>
+        <div class="bar" style="margin-top:20px"><i id="heroBar" style="width:20%"></i></div>
+        <div class="row between cap" style="margin-top:8px"><span>Explorer</span><span id="heroCount">1 / 5</span></div></div></div>
+    </div>
+  </div>
+  <div class="marquee" aria-label="Campuses in the network"><div class="track" id="marq"></div></div>
+  <div class="wrap band" id="separate"><div class="sepbox">
+    <div class="reveal"><h2 class="h-l">Two spaces.<br>No overlap.</h2><p class="lead" style="margin-top:20px;max-width:24em">Brothers and sisters each get their own network. Profiles, search, suggestions and chat never cross, by design.</p>
+      <div class="seg" id="sepSeg" style="margin-top:30px"><button data-v="brother">🟦 Brothers</button><button data-v="sister">🟪 Sisters</button></div></div>
+    <div class="card reveal" style="padding:10px 24px"><div class="list st in" id="sepList"></div></div></div></div>
+  <div class="wrap band"><div class="reveal"><h2 class="h-l" style="max-width:12em">Everything a journey needs.</h2></div><div class="feat" id="feat"></div></div>
+  <div class="wrap cta reveal"><h2 class="h-l">Your journey starts at the next event.</h2><button class="btn lg" data-step="1" style="margin-top:34px">Get your passport</button></div>
+</section>
+
+<section class="screen" id="s-signup">
+  <header class="top"><div class="in"><div class="brand" data-lh>Rihla</div><span class="grow"></span><button class="btn sm ghost" data-step="0">Close</button></div></header>
+  <div class="quiz"><div class="prog"><i id="qProg"></i></div><div id="qBody"></div></div>
+</section>
+
+<section class="screen app" id="s-student"><header class="top" id="sNav"></header>
+  <div class="wrap" id="sBody"></div></section>
+
+<section class="screen app" id="s-campus"><header class="top" id="lNav"></header>
+  <div class="wrap" style="margin-top:24px">
+    <div class="card flush" id="lHead"></div>
+    <div class="tri" style="grid-template-columns:260px minmax(0,1fr) 300px;margin-top:16px">
+      <aside class="col stick"><div class="card"><div class="h-s" style="margin-bottom:4px">Page analytics</div><div class="cap">Last 30 days</div><div class="list" id="lStats" style="margin-top:6px"></div></div></aside>
+      <div class="col" id="lMain"></div>
+      <aside class="col stick" id="lSide"></aside>
+    </div></div></section>
+
+<section class="screen app" id="s-admin"><header class="top" id="aNav"></header>
+  <div class="wrap"><div class="tri" style="grid-template-columns:250px minmax(0,1fr) 300px">
+    <aside class="col stick">
+      <div class="card flush"><div class="cover big" style="height:72px"></div><div style="padding:0 18px 18px"><div class="av avlg" style="width:64px;height:64px;font-size:28px">M</div><div class="h-s" style="margin-top:10px">Manara Admin</div><div class="cap">Network operations · 60 campuses</div></div></div>
+      <div class="card list" style="padding:4px 18px" id="aStats"></div>
+      <div class="card"><div class="cap">Outside the network</div><div class="row between" style="margin-top:10px"><span>Palomar College</span><span class="cap">2</span></div><div class="row between" style="margin-top:8px"><span>Grossmont College</span><span class="cap">1</span></div></div>
+    </aside>
+    <div class="col">
+      <div class="card flush"><div class="map" id="aMap" style="border-radius:0;height:440px"></div>
+        <div class="row wrapx cap" style="padding:12px 18px;gap:20px"><span><i class="dot" style="--c:#34a853;display:inline-block;margin-right:7px"></i>Community college</span><span><i class="dot" style="--c:#fbbc04;display:inline-block;margin-right:7px"></i>4-year</span><span><i class="dot" style="--c:#ea4335;display:inline-block;margin-right:7px"></i>Fading, 60+ days</span><span><i style="display:inline-block;width:16px;height:3px;background:#1a73e8;vertical-align:middle;margin-right:7px"></i>Link</span></div></div>
+      <div class="card stack"><div class="row between"><div class="h-s">Link two MSAs</div><label class="row cap" style="gap:12px">Simulate activity<input type="checkbox" class="switch" id="sim" aria-label="Simulate activity"></label></div>
+        <div class="row wrapx"><select class="field" id="la" style="flex:1;min-width:150px" aria-label="Campus A"></select><select class="field" id="lb" style="flex:1;min-width:150px" aria-label="Campus B"></select><button class="btn" id="linkBtn">Link</button></div></div>
+      <div class="col" id="feed"></div>
+    </div>
+    <aside class="col stick">
+      <div class="card"><div class="h-s">MSAs to reconnect</div><div class="list" id="fading" style="margin-top:4px"></div></div>
+      <div class="card"><div class="h-s">Strongest MSAs</div><div class="list" id="strong" style="margin-top:4px"></div></div>
+    </aside></div></div></section>
+
+<nav id="rail" aria-label="Walkthrough"></nav>
+<div class="sheet-scrim" id="sheet" role="dialog" aria-modal="true"><div class="sheet" id="sheetBody"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+const $ = (s, r = document) => r.querySelector(s), $$ = (s, r = document) => [...r.querySelectorAll(s)]
+const LH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9.5 21l1-11h3l1 11zM8 21h8M10 10l2-4 2 4M12 6V4M7 7l-3-1M17 7l3-1"/></svg>'
+$$('[data-lh]').forEach((b) => b.insertAdjacentHTML('afterbegin', LH))
+
+/* ---------- data ---------- */
+// id, short, name, bg, fg, lat, lng, type, strength, idleDays, domain  (logos load from each school's own domain; monogram if blocked)
+const CAM = [['ucsd','UCSD','UC San Diego','#182B49','#C69214',32.8801,-117.234,'4yr',92,1,'ucsd.edu'],['mesa','MESA','San Diego Mesa College','#1B5E3B','#F2B705',32.8004,-117.1626,'cc',88,1,'sdmesa.edu'],['ucla','UCLA','UCLA','#2774AE','#FFD100',34.0689,-118.4452,'4yr',80,2,'ucla.edu'],['smc','SMC','Santa Monica College','#00205B','#fff',34.0166,-118.4696,'cc',74,3,'smc.edu'],['uci','UCI','UC Irvine','#0064A4','#FFD200',33.6405,-117.8443,'4yr',76,2,'uci.edu'],['occ','OCC','Orange Coast College','#7A1F2B','#fff',33.6675,-117.9109,'cc',66,3,'orangecoastcollege.edu'],['ucr','UCR','UC Riverside','#2D6CC0','#F1AB00',33.9737,-117.3281,'4yr',58,4,'ucr.edu'],['rcc','RCC','Riverside City College','#0A4D2E','#fff',33.9744,-117.3731,'cc',52,4,'rcc.edu'],['usc','USC','USC','#990000','#FFC72C',34.0224,-118.2851,'4yr',60,4,'usc.edu'],['sjsu','SJSU','San Jose State','#0055A2','#E5A823',37.3352,-121.8811,'4yr',70,2,'sjsu.edu'],['deanza','DA','De Anza College','#B31B1B','#fff',37.3194,-122.045,'cc',64,2,'deanza.edu'],['ucb','CAL','UC Berkeley','#003262','#FDB515',37.8719,-122.2585,'4yr',60,3,'berkeley.edu'],['stanford','SU','Stanford','#8C1515','#fff',37.4275,-122.1697,'4yr',50,6,'stanford.edu'],['dvc','DVC','Diablo Valley College','#14466B','#fff',37.965,-122.0699,'cc',46,5,'dvc.edu'],['miramar','MIRA','Miramar College','#444','#fff',32.897,-117.142,'cc',12,75,'sdmiramar.edu'],['foothill','FOOT','Foothill College','#444','#fff',37.3613,-122.1285,'cc',8,90,'foothill.edu'],['fcc','FCC','Fresno City College','#444','#fff',36.764,-119.7924,'cc',5,120,'fresnocitycollege.edu']]
+const C = Object.fromEntries(CAM.map((c) => [c[0], { id: c[0], short: c[1], name: c[2], bg: c[3], fg: c[4], lat: c[5], lng: c[6], type: c[7], str: c[8], idle: c[9], dom: c[10] }]))
+const TRACK = { Career: '#ff9f0a', Leadership: '#2fb958', Transfer: '#2f7df6', Deen: '#a855f7' }
+const crest = (id, size = 40) => { const c = C[id] || { short: '?', bg: '#555', fg: '#fff', name: '' }, t = c.short, fs = t.length <= 2 ? 17 : t.length === 3 ? 13.5 : t.length === 4 ? 11.5 : 10
+  const img = c.dom ? `<img src="https://www.google.com/s2/favicons?domain=${c.dom}&sz=128" alt="" loading="lazy" onerror="this.remove()">` : ''
+  return `<span class="crest" style="width:${size}px;height:${size}px" role="img" aria-label="${c.name} logo"><svg viewBox="0 0 48 48"><circle cx="24" cy="24" r="24" fill="${c.bg}"/><circle cx="24" cy="24" r="20" fill="none" stroke="${c.fg}" stroke-width="1.5"/><text x="24" y="24.5" text-anchor="middle" dominant-baseline="central" font-family="-apple-system,Inter,sans-serif" font-weight="800" font-size="${fs}" fill="${c.fg}">${t}</text></svg>${img}</span>` }
+const stamp = (code, label, track = 'Career') => `<svg viewBox="0 0 100 116" style="color:${TRACK[track]}" role="img" aria-label="${label} stamp from ${code}"><path d="M8 112V48C8 26 30 10 50 3c20 7 42 23 42 45v64z" fill="currentColor" fill-opacity=".09" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><g fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M46.5 66l1.2-16h4.6l1.2 16zM44.5 50h11M47 47.5Q50 38 53 47.5M50 38v-3M42 44l-7-3M58 44l7-3M41 51l-8 1M59 51l8 1M43 66h14"/></g><text x="50" y="87" text-anchor="middle" font-family="-apple-system,Inter,sans-serif" font-size="13" font-weight="700" fill="currentColor">${code}</text><text x="50" y="102" text-anchor="middle" font-family="-apple-system,Inter,sans-serif" font-size="7.5" fill="currentColor" fill-opacity=".85" letter-spacing=".08em">${label.toUpperCase().slice(0, 16)}</text></svg>`
+const emptyStamp = () => '<svg viewBox="0 0 100 116" style="color:var(--t3)"><path d="M8 112V48C8 26 30 10 50 3c20 7 42 23 42 45v64z" fill="none" stroke="currentColor" stroke-opacity=".6" stroke-width="1.5" stroke-dasharray="3 5"/></svg>'
+const GL = { Career: '<rect x="20" y="30" width="20" height="14" rx="2.5"/><path d="M26 30v-3.5h8V30M20 37h20"/>', Leadership: '<path d="M30 24l3.2 6.8 7.3.8-5.4 5 1.5 7.3L30 40l-6.6 3.9 1.5-7.3-5.4-5 7.3-.8z"/>', Transfer: '<path d="M22 43l17-17M29 26h10v10"/>', Deen: '<path d="M35 24a10 10 0 1 0 0 20 8 8 0 1 1 0-20z"/>' }
+const badge = (t, size = 60) => `<svg width="${size}" height="${size * 1.17}" viewBox="0 0 60 70" role="img" aria-label="${t} badge" style="color:${TRACK[t]}"><path d="M4 66V30C4 17 17 7 30 2c13 5 26 15 26 28v36z" fill="currentColor" fill-opacity=".13" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">${GL[t]}</g><text x="30" y="60" text-anchor="middle" font-family="-apple-system,Inter,sans-serif" font-size="7" font-weight="700" fill="currentColor" letter-spacing=".06em">${t.toUpperCase()}</text></svg>`
+const PEOPLE = { brother: [['ucsd', 'Yusuf A.', 'Computer Science'], ['ucla', 'Ibrahim S.', 'Economics'], ['smc', 'Tariq B.', 'Film'], ['deanza', 'Zaid M.', 'Business']], sister: [['mesa', 'Maryam A.', 'Biology'], ['ucla', 'Layla M.', 'Neuroscience'], ['smc', 'Hana T.', 'Communications'], ['deanza', 'Amina Y.', 'Engineering']] }
+const linked = [['mesa', 'ucsd', 9], ['deanza', 'sjsu', 6], ['smc', 'ucla', 6], ['rcc', 'ucr', 4], ['occ', 'uci', 5], ['dvc', 'ucb', 3]]
+const miles = (a, b) => { const r = (d) => d * Math.PI / 180, h = Math.sin(r(b[0] - a[0]) / 2) ** 2 + Math.cos(r(a[0])) * Math.cos(r(b[0])) * Math.sin(r(b[1] - a[1]) / 2) ** 2; return 3958.8 * 2 * Math.asin(Math.sqrt(h)) }
+
+/* ---------- helpers ---------- */
+const toast = (m) => { const t = $('#toast'); t.textContent = m; t.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => t.classList.remove('show'), 2400) }
+const countTo = (el, to, ms = 1000) => { const from = +el.dataset.v || 0; el.dataset.v = to; const t0 = performance.now(); const tick = (t) => { const k = Math.min(1, (t - t0) / ms), e = 1 - (1 - k) ** 4; el.textContent = Math.round(from + (to - from) * e); if (k < 1) requestAnimationFrame(tick) }; requestAnimationFrame(tick) }
+const confetti = (x, y) => { const cols = ['#f0b94a', '#fff', '#2f7df6', '#2fb958']; for (let i = 0; i < 26; i++) { const d = document.createElement('i'); d.style.cssText = `position:fixed;left:${x}px;top:${y}px;width:${5 + Math.random() * 5}px;height:${5 + Math.random() * 5}px;border-radius:50%;pointer-events:none;z-index:99;background:${cols[i % 4]}`; document.body.appendChild(d); const a = Math.random() * Math.PI * 2, v = 80 + Math.random() * 160; d.animate([{ transform: 'translate(0,0)', opacity: 1 }, { transform: `translate(${Math.cos(a) * v}px,${Math.sin(a) * v + 120}px)`, opacity: 0 }], { duration: 1100 + Math.random() * 400, easing: 'cubic-bezier(.16,1,.3,1)' }).onfinish = () => d.remove() } }
+const sheet = (html) => { $('#sheetBody').innerHTML = html; $('#sheet').classList.add('open') }
+const closeSheet = () => $('#sheet').classList.remove('open')
+$('#sheet').addEventListener('click', (e) => { if (e.target.id === 'sheet' || e.target.closest('[data-close]')) closeSheet() })
+const seg = (el, onChange, initial) => { const th = document.createElement('i'); th.className = 'thumb'; el.prepend(th); const bs = $$('button', el); const place = (b) => { th.style.width = b.offsetWidth + 'px'; th.style.transform = `translateX(${b.offsetLeft - 4}px)` }
+  const pick = (b, fire = true) => { bs.forEach((x) => x.setAttribute('aria-selected', x === b)); place(b); if (fire) onChange?.(b.dataset.v) }
+  bs.forEach((b) => b.addEventListener('click', () => pick(b))); const first = bs.find((b) => b.dataset.v === initial) || bs[0]; bs.forEach((x) => x.setAttribute('aria-selected', x === first)); requestAnimationFrame(() => place(first)); el._place = () => place(bs.find((b) => b.getAttribute('aria-selected') === 'true')); return el }
+addEventListener('resize', () => $$('.seg').forEach((s) => s._place?.()))
+const reveal = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); reveal.unobserve(e.target) } }), { threshold: .15 })
+const watch = (root = document) => $$('.reveal,.st', root).forEach((e) => reveal.observe(e))
+const GKEY = '' // paste a Google Maps JavaScript API key here for pins, links and pulses; empty = plain Google Maps embed
+let gReady
+const loadG = () => (gReady ||= new Promise((res, rej) => { if (!GKEY) return rej(); window.__gm = res; const s = document.createElement('script'); s.src = `https://maps.googleapis.com/maps/api/js?key=${GKEY}&callback=__gm&v=weekly`; s.onerror = rej; document.head.appendChild(s) }))
+const ll = (p) => ({ lat: p[0], lng: p[1] })
+const mkMap = (el, o) => { const m = { run: (f) => m.ready.then(f).catch(() => {}) }
+  m.ready = loadG().then(() => { const g = new google.maps.Map(el, { center: o.center ? ll(o.center) : undefined, zoom: o.zoom || 6, mapTypeControl: false, streetViewControl: false, fullscreenControl: false, gestureHandling: 'cooperative' }); if (o.bounds) { const b = new google.maps.LatLngBounds(); o.bounds.forEach((p) => b.extend(ll(p))); g.fitBounds(b, 50) } m.g = g; return g })
+  m.ready.catch(() => { const c = o.center || o.bounds[0]; el.innerHTML = `<iframe title="Google Map" loading="lazy" style="width:100%;height:100%;border:0" src="https://maps.google.com/maps?q=${c[0]},${c[1]}&z=${o.zoom || 10}&output=embed"></iframe><div class="nokey">Add a Google Maps key (GKEY) to show pins and links</div>` })
+  return m }
+const PIN = 'M14 1C6.8 1 1 6.7 1 13.7 1 23.4 14 37 14 37s13-13.6 13-23.3C27 6.7 21.2 1 14 1z'
+const addPin = (m, lat, lng, color, popup, i = 0) => m.run((g) => setTimeout(() => { const mk = new google.maps.Marker({ map: g, position: { lat, lng }, animation: google.maps.Animation.DROP, icon: { path: PIN, fillColor: color, fillOpacity: 1, strokeColor: '#000', strokeOpacity: .3, strokeWeight: 1, anchor: new google.maps.Point(14, 37) } }); if (popup) { const w = new google.maps.InfoWindow({ content: `<div style="color:#202124">${popup}</div>` }); mk.addListener('click', () => w.open(g, mk)) } }, i * 45))
+const youAt = (m, lat, lng) => m.run((g) => new google.maps.Marker({ map: g, position: { lat, lng }, clickable: false, icon: { path: google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: '#1a73e8', fillOpacity: 1, strokeColor: '#fff', strokeWeight: 3 } }))
+const pulseAt = (m, lat, lng) => m.run((g) => { const max = 1.2e6 / 2 ** g.getZoom(), c = new google.maps.Circle({ map: g, center: { lat, lng }, radius: 1, strokeColor: '#1a73e8', strokeWeight: 2, fillColor: '#1a73e8', fillOpacity: .3, clickable: false }), t0 = performance.now()
+  const f = (t) => { const k = (t - t0) / 1600; if (k >= 1) return c.setMap(null); c.setRadius(max * (1 - (1 - k) ** 3)); c.setOptions({ fillOpacity: .3 * (1 - k), strokeOpacity: 1 - k }); requestAnimationFrame(f) }; requestAnimationFrame(f) })
+const drawLine = (m, a, b, w) => m.run((g) => { const l = new google.maps.Polyline({ map: g, strokeColor: '#1a73e8', strokeOpacity: .85, strokeWeight: w, path: [ll([a.lat, a.lng])] }), t0 = performance.now()
+  const f = (t) => { const k = Math.min(1, (t - t0) / 1000), e = 1 - (1 - k) ** 3; l.setPath([ll([a.lat, a.lng]), { lat: a.lat + (b.lat - a.lat) * e, lng: a.lng + (b.lng - a.lng) * e }]); if (k < 1) requestAnimationFrame(f) }; requestAnimationFrame(f) })
+const partnerOf = (id) => { const l = linked.find((x) => x[0] === id || x[1] === id); return l ? C[l[0] === id ? l[1] : l[0]] : Object.values(C).filter((c) => c.id !== id && c.type !== C[id].type && c.idle < 10).sort((a, b) => miles([C[id].lat, C[id].lng], [a.lat, a.lng]) - miles([C[id].lat, C[id].lng], [b.lat, b.lng]))[0] }
+const hydrateCrests = (root = document) => $$('[data-crest]', root).forEach((n) => (n.outerHTML = crest(n.dataset.crest, +n.dataset.size || 40)))
+
+/* ---------- state ---------- */
+const ME = { role: 'student', gender: 'brother', name: 'Omar K.', username: 'omark', campus: 'mesa', other: '', transferring: true, target: 'ucsd', major: 'Computer Science', interests: ['Transfer', 'Career'], position: 'President' }
+let stamps = [['MESA', 'Panel', 'Transfer'], ['UCSD', 'Q&A', 'Transfer'], ['UCLA', 'Halaqa', 'Deen'], ['UCI', 'Summit', 'Leadership']]
+const CONN = new Set()
+const LV = ['Explorer', 'Traveler', 'Navigator', 'Manara Fellow'], lvIdx = (n) => (n >= 15 ? 3 : n >= 10 ? 2 : n >= 5 ? 1 : 0)
+const CODES = { MESA42: ['UCSD', 'Mixer', 'Transfer'], LEAD88: ['UCI', 'Summit II', 'Leadership'], FNDR21: ['UCLA', 'Founders', 'Career'], HOOP55: ['SDSU', 'Iftar', 'Leadership'], HALQ01: ['UCLA', 'Halaqa II', 'Deen'], RESU12: ['SJSU', 'Resume Lab', 'Career'] }
+const campusName = () => (ME.campus === 'other' ? ME.other : C[ME.campus]?.name) || 'San Diego Mesa College'
+const campusShort = () => (ME.campus === 'other' ? ME.other : C[ME.campus]?.short) || 'Mesa'
+const homeId = () => (ME.campus && ME.campus !== 'other' ? ME.campus : ME.campus === 'other' ? 'x' : 'mesa')
+const pillHtml = (g) => (g === 'sister' ? '<span class="pill sis">🟪 Sisters</span>' : '<span class="pill bro">🟦 Brothers</span>')
+const IC = { Home: 'M4 11l8-7 8 7v9h-5v-6H9v6H4z', Passport: 'M6 3h12v18H6zM9 8h6M9 12h6M9 16h3', Network: 'M9 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM3 20c0-3.5 3-5.5 6-5.5s6 2 6 5.5M17 10a2.5 2.5 0 1 0 0-5M18 14.6c2 .5 3 2 3 4.4', Messaging: 'M4 5h16v11H10l-6 4z', Events: 'M4 6h16v14H4zM4 10h16M8 3v4M16 3v4', Page: 'M4 20V8l8-4 8 4v12zM9 20v-6h6v6' }
+const ico = (n) => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${IC[n]}"/></svg>`
+const navShell = (tabs, who) => `<div class="in"><div class="brand">${LH}Rihla</div><input class="field nsearch" id="nsearch" placeholder="Search" aria-label="Search" autocomplete="off"><span class="grow"></span><nav class="ntabs">${tabs.map(([n, active]) => `<button class="ntab" data-tab="${n}" aria-selected="${!!active}">${ico(n)}<span>${n}</span></button>`).join('')}</nav><button class="meb" ${tabs.length > 1 ? 'data-tab="Me"' : ''}><span class="av" style="width:26px;height:26px;font-size:13px">${who[0]}</span><span>Me</span></button></div>`
+
+/* ---------- router / rail ---------- */
+const STEPS = [{ n: 'Landing', s: 's-landing' }, { n: 'Sign up', s: 's-signup' }, { n: 'Home', s: 's-student', tab: 'Home' }, { n: 'Passport', s: 's-student', tab: 'Passport' }, { n: 'Network', s: 's-student', tab: 'Network' }, { n: 'Messaging', s: 's-student', tab: 'Messaging' }, { n: 'Events near you', s: 's-student', tab: 'Events' }, { n: 'Campus leader', s: 's-campus' }, { n: 'Admin', s: 's-admin' }]
+let cur = -1, curEl = null
+const ARROW = (d) => `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg>`
+function drawRail() { $('#rail').innerHTML = `<button class="nav" id="prev" aria-label="Previous">${ARROW('M15 18l-6-6 6-6')}</button>` + STEPS.map((s, i) => `<button class="step ${i === cur ? 'on' : ''}" data-go="${i}" aria-label="${s.n}"><b>${i + 1}</b><span>${s.n}</span></button>`).join('') + `<button class="nav" id="next" aria-label="Next">${ARROW('M9 18l6-6-6-6')}</button><i class="sep"></i><button class="nav" id="themeBtn" aria-label="Toggle theme">◐</button>`
+  $('#prev').disabled = cur <= 0; $('#next').disabled = cur >= STEPS.length - 1 }
+function goStep(i) {
+  i = Math.max(0, Math.min(STEPS.length - 1, i)); if (i === cur) return; const st = STEPS[i], prev = curEl, next = $('#' + st.s); cur = i; drawRail()
+  if (next !== prev) { curEl = next; next.getAnimations().forEach((x) => x.cancel()); next.style.cssText = ''; next.classList.add('active'); next.animate([{ opacity: 0, transform: 'translateY(26px) scale(.99)', filter: 'blur(10px)' }, { opacity: 1, transform: 'none', filter: 'blur(0)' }], { duration: 750, easing: 'cubic-bezier(.16,1,.3,1)' })
+    if (prev) { prev.style.cssText = 'position:absolute;top:0;left:0;right:0'; const fo = prev.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, fill: 'forwards' }); fo.onfinish = () => { if (prev !== curEl) { prev.classList.remove('active'); prev.style.cssText = '' } fo.cancel() } }
+    scrollTo({ top: 0, behavior: 'instant' }); ON[st.s]?.() }
+  if (st.tab) setTab(st.tab) }
+$('#rail').addEventListener('click', (e) => { const g = e.target.closest('[data-go]'); if (g) goStep(+g.dataset.go); if (e.target.closest('#prev')) goStep(cur - 1); if (e.target.closest('#next')) goStep(cur + 1); if (e.target.closest('#themeBtn')) document.documentElement.dataset.theme = document.documentElement.dataset.theme === 'light' ? 'dark' : 'light' })
+document.addEventListener('click', (e) => { const s = e.target.closest('[data-step]'); if (s) goStep(+s.dataset.step); const sc = e.target.closest('[data-scroll]'); if (sc) $(sc.dataset.scroll).scrollIntoView({ behavior: 'smooth' }) })
+addEventListener('keydown', (e) => { if (/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName)) return; if (e.key === 'ArrowRight') goStep(cur + 1); if (e.key === 'ArrowLeft') goStep(cur - 1); if (e.key === 'Escape') closeSheet() })
+
+/* ---------- LANDING ---------- */
+{ let w = 0
+  $('#headline').innerHTML = 'Travel to seek knowledge.|Carry the proof.'.split('|').map((line, li) => line.split(' ').map((t) => `<span class="word"><span style="--w:${w++}" ${li ? 'class="accent"' : ''}>${t}</span></span>`).join(' ')).join('<br>')
+  const hs = $('#heroStamps'), HS = [['MESA', 'Panel', 'Transfer'], ['UCSD', 'Q&A', 'Transfer'], ['UCLA', 'Halaqa', 'Deen'], ['UCI', 'Summit', 'Leadership'], ['SJSU', 'Resume', 'Career'], ['SDSU', 'Iftar', 'Leadership']]
+  hs.innerHTML = HS.map(() => '<div></div>').join(''); let k = 0
+  const loop = () => { const cells = $$('div', hs); if (k >= 6) { cells.forEach((c) => (c.innerHTML = '')); k = 0; $('#heroBar').style.width = '0%'; $('#heroCount').textContent = '0 / 5'; return }
+    const c = cells[k]; c.innerHTML = stamp(...HS[k]); c.firstChild.classList.add('thump'); c.firstChild.style.setProperty('--r', ((k * 37) % 9) - 4 + 'deg'); k++; $('#heroBar').style.width = Math.min(100, k * 20) + '%'; $('#heroCount').textContent = Math.min(k, 5) + ' / 5' }
+  loop(); setInterval(loop, 1300)
+  const t = $('#tilt'), box = t.parentElement
+  box.addEventListener('pointermove', (e) => { const r = box.getBoundingClientRect(), x = (e.clientX - r.left) / r.width - .5, y = (e.clientY - r.top) / r.height - .5; t.style.transform = `perspective(900px) rotateY(${x * 14}deg) rotateX(${-y * 12}deg)` }); box.addEventListener('pointerleave', () => (t.style.transform = ''))
+  $('#marq').innerHTML = [...CAM, ...CAM].map((c) => `<div class="it">${crest(c[0], 38)}${c[2]}</div>`).join('')
+  hydrateCrests($('#s-landing'))
+  const sepRender = (g) => { $('#sepList').classList.remove('in'); $('#sepList').innerHTML = PEOPLE[g].map(([c, n, m], i) => `<div class="li" style="--i:${i}">${crest(c, 44)}<div class="main"><b>${n}</b><span>${C[c].name} · ${m}</span></div>${pillHtml(g)}</div>`).join(''); void $('#sepList').offsetWidth; $('#sepList').classList.add('in') }
+  seg($('#sepSeg'), sepRender, 'brother'); sepRender('brother')
+  const F = [['M4 12a8 8 0 1 0 16 0 8 8 0 0 0-16 0zm8-4v4l3 2', 'Rihla Passport', 'Stamps, badges and levels. Every event you attend adds to your journey. Deen progress stays private.'], ['M16 11a4 4 0 1 0-8 0M4 20c0-4 4-6 8-6s8 2 8 6', 'A network that fits', 'Find students by campus, major or transfer path, and message people who made the jump you are planning.'], ['M12 21s-7-6.2-7-11a7 7 0 0 1 14 0c0 4.8-7 11-7 11zM12 12a2 2 0 1 0 0-4 2 2 0 0 0 0 4z', 'A live network map', 'Manara sees every campus at once, links MSAs as sister campuses, and spots the ones fading.']]
+  $('#feat').innerHTML = F.map(([d, t, b], i) => `<div class="card reveal" style="transition-delay:${i * 90}ms"><div class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="${d}"/></svg></div><div class="h-s">${t}</div><p class="sub" style="margin-top:8px;font-size:15px">${b}</p></div>`).join('') }
+const ON = { 's-landing': () => watch($('#s-landing')) }
+
+/* ---------- SIGN UP ---------- */
+const Q = { i: 0 }; let qFresh = true
+const qSteps = () => (ME.role === 'leader' ? ['role', 'space', 'who', 'position'] : ME.role === 'admin' ? ['role', 'space', 'who'] : ['role', 'space', 'who', 'details', 'plan'])
+const opt = (v, em, t, s, on, key) => `<button class="opt" data-k="${key}" data-v="${v}" aria-pressed="${on}"><span class="em">${em}</span><span><b>${t}</b><span>${s}</span></span></button>`
+const nameOk = () => ME.name.trim() && /^[a-z0-9_]{3,20}$/.test(ME.username) && ME.username !== 'omark' && (ME.role === 'admin' || (ME.campus && (ME.campus !== 'other' || ME.other.trim())))
+function qRender(dir = 1) {
+  const steps = qSteps(), step = steps[Q.i]; $('#qProg').style.width = ((Q.i + 1) / steps.length) * 100 + '%'
+  const last = Q.i === steps.length - 1; let h = '', ok = true
+  if (step === 'role') h = `<h1 class="h-l">Who are you?</h1><div class="stack" style="margin-top:28px">${opt('student', '🎓', 'Student', 'Passport, network, messaging', ME.role === 'student', 'role')}${opt('leader', '🕌', 'Campus leader', 'Run your MSA page and events', ME.role === 'leader', 'role')}${opt('admin', '🧭', 'Admin', 'Live network map, link MSAs', ME.role === 'admin', 'role')}</div>`
+  if (step === 'space') { h = `<h1 class="h-l">Which space?</h1><p class="sub" style="margin:12px 0 28px">Brothers and sisters have separate spaces. You only see and message people in yours.</p><div class="stack">${opt('brother', '🟦', 'Brother', 'Brothers space', ME.gender === 'brother', 'gender')}${opt('sister', '🟪', 'Sister', 'Sisters space', ME.gender === 'sister', 'gender')}</div>`; ok = !!ME.gender }
+  if (step === 'who') { const q = (Q.q || '').toLowerCase(), list = CAM.filter((c) => !q || c[2].toLowerCase().includes(q)).slice(0, 6), sel = ME.campus && ME.campus !== 'other' ? C[ME.campus] : null
+    h = `<h1 class="h-l">Tell us about you</h1><div class="stack" style="margin-top:28px"><div><label class="lbl">Full name</label><input class="field" id="qName" value="${qFresh ? '' : ME.name}" autocomplete="off"></div>
+      <div><label class="lbl">Username</label><input class="field" id="qUser" value="${qFresh ? '' : ME.username}" autocomplete="off"><div id="qUserMsg"></div></div>
+      ${ME.role !== 'admin' ? `<div class="pick"><label class="lbl">Your college</label>${sel || ME.campus === 'other' ? `<button class="field row" id="qClear" style="gap:12px;text-align:left">${sel ? crest(sel.id, 30) + sel.name : '🏫 Not listed'}<span class="grow"></span><span class="cap">Change</span></button>` : `<input class="field" id="qCamp" placeholder="Search colleges" value="${Q.q || ''}" autocomplete="off">`}
+        ${!sel && ME.campus !== 'other' && Q.open ? `<div class="menu">${list.map((c) => `<button data-pick="${c[0]}">${crest(c[0], 30)}<span>${c[2]}</span></button>`).join('')}<button data-pick="other">🏫 <span>My college isn't listed…</span></button></div>` : ''}</div>
+        ${ME.campus === 'other' ? `<div><label class="lbl">College name</label><input class="field" id="qOther" value="${ME.other}" autocomplete="off"></div><div class="seg" id="qType"><button data-v="cc">Community college</button><button data-v="4yr">4-year university</button></div>` : ''}` : ''}</div>`
+    ok = nameOk() }
+  if (step === 'details') { h = `<h1 class="h-l">Your journey</h1><div class="stack" style="margin-top:28px"><div class="seg" id="qTr"><button data-v="yes">Transferring</button><button data-v="no">Not transferring</button></div>
+      ${ME.transferring ? `<div><label class="lbl">Target campus</label><select class="field" id="qTarget">${CAM.filter((c) => c[7] === '4yr').map((c) => `<option value="${c[0]}" ${ME.target === c[0] ? 'selected' : ''}>${c[2]}</option>`).join('')}</select></div>` : ''}
+      <div><label class="lbl">Major</label><input class="field" id="qMajor" value="${ME.major}"></div>
+      <div><label class="lbl">Interests</label><div class="chips">${Object.keys(TRACK).map((t) => `<button class="chip" data-int="${t}" aria-pressed="${ME.interests.includes(t)}">${t}</button>`).join('')}</div></div></div>`; ok = ME.major.trim() }
+  if (step === 'position') h = `<h1 class="h-l">Your position</h1><div class="chips" style="margin-top:28px">${['President', 'Vice President', 'Events Chair', 'Treasurer', 'Secretary', 'Outreach Chair'].map((p) => `<button class="chip" data-pos="${p}" aria-pressed="${ME.position === p}">${p}</button>`).join('')}</div>`
+  if (step === 'plan') { const track = ME.transferring ? 'Transfer' : ME.interests[0] || 'Career', ppl = PEOPLE[ME.gender].slice(0, 3), sis = C[ME.campus] ? partnerOf(ME.campus) : null
+    h = `<h1 class="h-l">Your Rihla plan</h1><div class="card st in" style="margin-top:28px;padding:8px 24px"><div class="list">
+      <div class="li" style="--i:0"><span class="dot" style="--c:${TRACK[track]}"></span><div class="main"><b>First track</b><span>${track}</span></div>${pillHtml(ME.gender)}</div>
+      <div class="li" style="--i:1">${sis ? crest(sis.id, 36) : '<span style="width:36px"></span>'}<div class="main"><b>Sister campus</b><span>${sis ? sis.name : 'None yet. Ask your MSA to join Manara Connect.'}</span></div></div>
+      ${[['ucsd', 'Transfer Q&A', 'Fri'], ['uci', 'Leadership Summit', 'Sat'], ['ucla', 'Founders Night', 'Tue']].map((e, i) => `<div class="li" style="--i:${i + 2}">${crest(e[0], 36)}<div class="main"><b>${e[1]}</b><span>${e[2]} · suggested event</span></div></div>`).join('')}
+      ${ppl.map((p, i) => `<div class="li" style="--i:${i + 5}">${crest(p[0], 36)}<div class="main"><b>${p[1]}</b><span>${C[p[0]].short} · ${p[2]} · suggested connection</span></div></div>`).join('')}</div></div>` }
+  const body = $('#qBody'); body.innerHTML = `<div class="qin">${h}<div class="row between" style="margin-top:34px"><button class="btn ghost" id="qBack">Back</button><span class="row" style="gap:10px">${Q.i === 0 ? '<button class="btn tint" id="qFill">Fill for me</button>' : ''}<button class="btn" id="qNext" ${ok ? '' : 'disabled'}>${last ? 'Enter Rihla' : 'Continue'}</button></span></div></div>`
+  $('.qin', body).animate([{ opacity: 0, transform: `translateX(${dir * 40}px)` }, { opacity: 1, transform: 'none' }], { duration: 550, easing: 'cubic-bezier(.16,1,.3,1)' })
+  if (step === 'who') { if (ME.campus === 'other') seg($('#qType'), (v) => (ME.otherType = v), ME.otherType || 'cc'); $('#qCamp')?.addEventListener('focus', () => { if (!Q.open) { Q.open = true; qRender(0); $('#qCamp')?.focus() } }) }
+  if (step === 'details') seg($('#qTr'), (v) => { ME.transferring = v === 'yes'; qRender(0) }, ME.transferring ? 'yes' : 'no')
+  if (step === 'plan') watch(body) }
+$('#qBody').addEventListener('input', (e) => { const id = e.target.id
+  if (id === 'qName') { ME.name = e.target.value; qFresh = false } if (id === 'qMajor') ME.major = e.target.value; if (id === 'qOther') ME.other = e.target.value
+  if (id === 'qUser') { ME.username = e.target.value.toLowerCase().trim(); qFresh = false; const fmt = /^[a-z0-9_]{3,20}$/.test(ME.username); $('#qUserMsg').innerHTML = !ME.username ? '' : !fmt ? '<div class="bad">3–20 letters, numbers or _</div>' : ME.username === 'omark' ? '<div class="bad">That username is taken</div>' : '<div class="ok">✓ Available</div>' }
+  if (id === 'qCamp') { Q.q = e.target.value; Q.open = true; const pos = e.target.selectionStart; qRender(0); const n = $('#qCamp'); n?.focus(); n?.setSelectionRange(pos, pos); return }
+  const s = qSteps()[Q.i]; if (s === 'who') $('#qNext').disabled = !nameOk(); if (s === 'details') $('#qNext').disabled = !ME.major.trim() })
+$('#qBody').addEventListener('change', (e) => { if (e.target.id === 'qTarget') ME.target = e.target.value })
+$('#qBody').addEventListener('click', (e) => { const t = e.target
+  const o = t.closest('.opt'); if (o) { ME[o.dataset.k] = o.dataset.v; $$('.opt').forEach((x) => x.setAttribute('aria-pressed', x === o)); $('#qNext').disabled = false; return }
+  const p = t.closest('[data-pick]'); if (p) { ME.campus = p.dataset.pick; Q.open = false; Q.q = ''; qRender(0); return }
+  if (t.closest('#qClear')) { ME.campus = ''; Q.open = true; qRender(0); setTimeout(() => $('#qCamp')?.focus(), 30); return }
+  const i = t.closest('[data-int]'); if (i) { const v = i.dataset.int; ME.interests = ME.interests.includes(v) ? ME.interests.filter((x) => x !== v) : [...ME.interests, v]; i.setAttribute('aria-pressed', ME.interests.includes(v)); return }
+  const po = t.closest('[data-pos]'); if (po) { ME.position = po.dataset.pos; $$('[data-pos]').forEach((x) => x.setAttribute('aria-pressed', x === po)); return }
+  if (t.closest('#qBack')) { if (Q.i === 0) goStep(0); else { Q.i--; qRender(-1) } return }
+  if (t.closest('#qFill')) { Object.assign(ME, { role: 'student', gender: ME.gender || 'brother', name: 'Omar K.', username: 'omar_k', campus: 'mesa', transferring: true, target: 'ucsd', major: 'Computer Science' }); qFresh = false; Q.i = qSteps().length - 1; qRender(1); return }
+  if (t.closest('#qNext')) { if (Q.i < qSteps().length - 1) { Q.i++; Q.open = false; qRender(1) } else { goStep(ME.role === 'leader' ? 7 : ME.role === 'admin' ? 8 : 2); toast('Welcome to Rihla, ' + ME.name.split(' ')[0]) } } })
+ON['s-signup'] = () => { Q.i = 0; qFresh = true; ME.role = 'student'; ME.gender = ''; ME.campus = ''; qRender(1) }
+
+/* ---------- STUDENT (personal profile layout) ---------- */
+let sTab = 'Home'
+const studentNav = () => { $('#sNav').innerHTML = navShell(['Home', 'Passport', 'Network', 'Messaging', 'Events'].map((n) => [n, n === sTab]), ME.name) }
+ON['s-student'] = () => { studentNav() }
+$('#sNav').addEventListener('click', (e) => { const t = e.target.closest('[data-tab]'); if (t) { const i = STEPS.findIndex((s) => s.tab === t.dataset.tab); if (i >= 0) goStep(i); else setTab(t.dataset.tab) } })
+$('#sNav').addEventListener('input', (e) => { if (e.target.id === 'nsearch') { if (sTab !== 'Network') { const i = STEPS.findIndex((s) => s.tab === 'Network'); goStep(i); $('#nsearch').focus() } const q = $('#srch'); if (q) { q.value = e.target.value; q.dispatchEvent(new Event('input')) } } })
+function setTab(t) { sTab = t; if (t !== 'Me') { const i = STEPS.findIndex((s) => s.tab === t); if (i >= 0 && i !== cur) { cur = i; drawRail() } } const q = $('#nsearch')?.value; studentNav(); if (q) $('#nsearch').value = q; sRender() }
+function sRender() { $('#sBody').innerHTML = `<div class="view" id="v">${VIEW[sTab]()}</div>`; hydrateCrests($('#sBody')); AFTER[sTab]?.() }
+const tracksOf = () => Object.fromEntries(Object.keys(TRACK).map((t) => [t, stamps.filter((s) => s[2] === t).length]))
+const mini = () => { const n = stamps.length; return `<div class="card flush"><div class="cover"></div><div style="padding:0 16px 16px;text-align:center"><div class="av avlg" style="width:68px;height:68px;font-size:30px;margin-inline:auto">${ME.name[0]}</div><div class="h-s" style="margin-top:8px">${ME.name}</div><div class="cap">${ME.major}</div><div class="row" style="justify-content:center;margin-top:10px;gap:8px">${crest(homeId(), 22)}<span class="cap">${campusName()}</span></div></div>
+  <div class="list" style="padding:4px 16px 8px;border-top:1px solid var(--line)"><div class="li"><div class="main"><span>Stamps</span></div><b class="num" style="color:var(--blue)">${n}</b></div><div class="li"><div class="main"><span>Level</span></div><b style="color:var(--blue)">${LV[lvIdx(n)]}</b></div><div class="li"><div class="main"><span>Connections</span></div><b class="num" style="color:var(--blue)">${CONN.size}</b></div></div></div>` }
+const ciHtml = (compact) => `<form class="card ${compact ? '' : 'row'}" id="ciForm" style="${compact ? '' : 'margin-top:12px'}"><div class="row" style="width:100%"><span class="av" style="width:44px;height:44px;font-size:18px;flex:none">${ME.name[0]}</span><input class="field mono" id="code" placeholder="Enter an event code to check in" style="letter-spacing:.12em;text-transform:uppercase;border-radius:999px" maxlength="6" autocomplete="off" value="MESA42"><button class="btn">Check in</button></div></form>`
+const FEEDP = () => { const p = PEOPLE[ME.gender]; return [
+  { c: 'ucsd', n: 'UC San Diego MSA', s: 'Organization · 2h', t: 'Transfer Q&A is Friday at 6pm, co-hosted with Mesa MSA. Bring questions.', ev: ['Transfer Q&A', 'Fri 6:00 pm · UCSD', 'Transfer'], k: 41 },
+  { c: p[0][0], n: p[0][1], s: `${C[p[0][0]].short} · 5h`, t: 'Earned the Leadership stamp at the UCI Summit.', st: ['UCI', 'Summit', 'Leadership'], k: 18 },
+  { c: 'ucla', n: 'UCLA MSA', s: 'Organization · 1d', t: 'Founders Night brings alumni founders to campus. Open to everyone.', ev: ['Founders Night', 'Tue 7:00 pm · UCLA', 'Career'], k: 63 },
+  { c: p[1][0], n: p[1][1], s: `${C[p[1][0]].short} · 2d`, t: 'Joined Rihla. Looking for students transferring to UCSD.', k: 9 }] }
+const postHtml = (p, i) => `<article class="card post st in" style="--i:${i}"><div class="ph">${crest(p.c, 48)}<div class="grow"><b>${p.n}</b><div class="cap">${p.s}</div></div></div><div class="pt">${p.t}</div>
+  ${p.ev ? `<div class="attach"><div style="width:44px;height:50px">${stamp(p.ev[0].slice(0, 4).toUpperCase(), p.ev[0], p.ev[2]).replace(/<text.*<\/text>/g, '')}</div><div><b>${p.ev[0]}</b><div class="cap">${p.ev[1]} · earns a ${p.ev[2]} stamp</div></div></div>` : ''}${p.st ? `<div class="attach"><div style="width:64px">${stamp(...p.st)}</div><div><b>${p.st[1]}</b><div class="cap">${p.st[2]} stamp · ${p.st[0]}</div></div></div>` : ''}
+  <div class="cap" style="padding:0 16px 8px"><span class="num" data-n="${p.k}">${p.k}</span> celebrations</div>
+  <div class="acts"><button data-like><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.5 6.7 19.4l1.2-6L3.4 9.3l6-.7z"/></svg>Celebrate</button>${p.ev ? '<button data-going><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12l5 5L20 6"/></svg>I\'m going</button>' : '<button data-msg><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v11H10l-6 4z"/></svg>Message</button>'}</div></article>`
+const sugg = () => PEOPLE[ME.gender].filter((p) => !CONN.has(p[1])).slice(0, 3).map((p) => `<div class="li">${crest(p[0], 44)}<div class="main"><b>${p[1]}</b><span>${C[p[0]].short} · ${p[2]}</span></div><button class="btn sm out" data-c="${p[1]}">Connect</button></div>`).join('') || '<div class="cap" style="padding:10px 0">You are connected with everyone nearby.</div>'
+const VIEW = {
+  Home() { const home = C[ME.campus] || C.mesa, ev = [['ucsd', 'Transfer Q&A'], ['uci', 'Leadership Summit'], ['ucla', 'Founders Night']].map(([c, t]) => ({ c, t, mi: Math.round(miles([home.lat, home.lng], [C[c].lat, C[c].lng])) })).sort((a, b) => a.mi - b.mi)
+    return `<div class="tri"><aside class="col stick">${mini()}</aside><div class="col">${ciHtml(true)}${FEEDP().map(postHtml).join('')}</div><aside class="col stick"><div class="card"><div class="h-s">Add to your network</div><div class="list" id="sugg" style="margin-top:4px">${sugg()}</div></div><div class="card"><div class="h-s">Events near you</div><div class="list" style="margin-top:4px">${ev.map((e) => `<div class="li">${crest(e.c, 40)}<div class="main"><b>${e.t}</b><span>${C[e.c].short}</span></div><span class="pill dist num">${e.mi} mi</span></div>`).join('')}</div></div></aside></div>` },
+  Passport() { const n = stamps.length, L = lvIdx(n), next = [5, 10, 15, 15][L], prog = tracksOf()
+    return `<div style="max-width:760px;margin:24px auto 0" class="col"><div class="card"><div class="row between wrapx" style="gap:24px"><div><div class="h-m">${ME.name}</div><div class="sub">${campusName()} · ${ME.major}</div><div class="row" style="margin-top:14px;gap:8px">${pillHtml(ME.gender)}${ME.target ? `<span class="pill">Transfer → ${C[ME.target].short}</span>` : ''}</div></div>
+      <div class="ringwrap"><svg viewBox="0 0 128 128" width="128" height="128"><circle class="bg" cx="64" cy="64" r="55"/><circle class="fg" id="ring" cx="64" cy="64" r="55" pathLength="100" stroke-dashoffset="100"/></svg><div class="n num" id="cnt" data-v="0">0</div></div></div>
+      <div class="row between" style="margin-top:22px;padding-top:18px;border-top:1px solid var(--line)"><div><div class="cap">Level</div><div class="h-s">${LV[L]}</div></div><div class="cap">${L === 3 ? 'Top level' : `${next - n} stamp${next - n > 1 ? 's' : ''} to ${LV[L + 1]}`}</div></div></div>
+    ${ciHtml(true)}<div class="cap" style="margin:-4px 8px 0">Try <span class="mono">MESA42</span> · <span class="mono">LEAD88</span> · <span class="mono">FNDR21</span> · <span class="mono">HALQ01</span></div>
+    <div class="card"><div class="h-s">Tracks</div><div class="list" style="margin-top:4px">${Object.keys(TRACK).map((t) => `<div class="li"><span class="dot" style="--c:${TRACK[t]}"></span><div class="main"><b>${t}</b>${t === 'Deen' ? '<span>🔒 Private</span>' : ''}</div><div class="dashes">${[0, 1, 2, 3, 4].map((i) => `<i class="${prog[t] > i ? 'on' : ''}" style="--c:${TRACK[t]}"></i>`).join('')}</div><span class="cap num" style="width:30px;text-align:right">${Math.min(prog[t], 5)}/5</span></div>`).join('')}</div></div>
+    <div class="card"><div class="h-s" style="margin-bottom:16px">Stamps</div><div class="stampgrid" id="stampGrid">${stamps.map((s, i) => `<div style="transform:rotate(${((i * 37) % 9) - 4}deg)">${stamp(...s)}</div>`).join('')}${Array.from({ length: Math.max(0, Math.max(10, Math.ceil(n / 5) * 5) - n) }, () => `<div>${emptyStamp()}</div>`).join('')}</div></div>
+    <div class="card"><div class="h-s" style="margin-bottom:16px">Badges</div><div class="row wrapx" style="gap:30px;align-items:flex-end"><div style="text-align:center">${crest(homeId(), 64)}<div class="cap" style="margin-top:8px">${campusShort()}</div></div>${Object.keys(TRACK).filter((t) => prog[t] >= 3).map((t) => `<div style="text-align:center">${badge(t)}</div>`).join('')}</div></div></div>` },
+  Me() { const n = stamps.length, prog = tracksOf()
+    return `<div style="max-width:760px;margin:24px auto 0" class="col"><div class="card flush"><div class="cover big"></div><div style="padding:0 28px 26px"><div class="av avlg" style="width:104px;height:104px;font-size:44px;margin-top:-52px">${ME.name[0]}</div>
+      <div class="row between wrapx" style="margin-top:12px;align-items:flex-start"><div><div class="row" style="gap:12px"><div class="h-m">${ME.name}</div>${pillHtml(ME.gender)}</div><div class="sub">${ME.major} · ${campusName()}</div><div class="cap" style="margin-top:4px">${LV[lvIdx(n)]} · ${n} stamps · ${CONN.size} connections</div></div><div class="col" style="gap:8px">${crest(homeId(), 48)}</div></div></div></div>
+    <div class="card"><div class="h-s">Journey</div><div class="list" style="margin-top:6px"><div class="li">${crest(homeId(), 48)}<div class="main"><b>${campusName()}</b><span>Student · ${ME.major}</span></div></div>${ME.target ? `<div class="li">${crest(ME.target, 48)}<div class="main"><b>${C[ME.target].name}</b><span>Transfer goal</span></div></div>` : ''}</div></div>
+    <div class="card"><div class="h-s" style="margin-bottom:14px">Public badges</div><div class="row wrapx" style="gap:26px;align-items:flex-end"><div style="text-align:center">${crest(homeId(), 60)}<div class="cap" style="margin-top:8px">${campusShort()}</div></div>${Object.keys(TRACK).filter((t) => t !== 'Deen' && prog[t] >= 3).map((t) => `<div style="text-align:center">${badge(t, 56)}</div>`).join('')}</div><div class="cap" style="margin-top:20px;padding:14px 18px;border-radius:12px;background:var(--s2)">🔒 Your Deen progress is private. Only you can see it.</div></div></div>` },
+  Network() { return `<div class="tri" style="grid-template-columns:225px minmax(0,1fr)"><aside class="col stick"><div class="card"><div class="h-s">Manage my network</div><div class="list" style="margin-top:6px"><div class="li"><div class="main"><b>Connections</b></div><b class="num" id="ccount">${CONN.size}</b></div><div class="li"><div class="main"><b>Campuses followed</b></div><b>${ME.target ? 2 : 1}</b></div></div></div><div class="card cap">${pillHtml(ME.gender)}<br><br>Only people in your space appear here.</div></aside>
+    <div class="col"><input class="field" id="srch" placeholder="Search by name, campus or major" aria-label="Search" style="border-radius:999px;background:var(--s1)"><div class="pgrid st in" id="people"></div></div></div>` },
+  Messaging() { return `<div class="card flush msgwrap" style="margin-top:24px"><div class="mlist" id="mlist"></div><div class="mpane"><div class="row" id="mhead" style="padding:14px 20px;border-bottom:1px solid var(--line)"></div><div id="thread"></div><form class="row" id="msgForm" style="padding:12px 16px;border-top:1px solid var(--line)"><input class="field" id="msg" placeholder="Write a message" autocomplete="off" aria-label="Message" style="border-radius:999px"><button class="btn">Send</button></form></div></div>` },
+  Events() { return `<div class="row between wrapx" style="margin:24px 0 14px"><div><div class="h-m">Events near you</div><div class="sub">From ${campusName()}</div></div><button class="btn tint sm" id="loc">📍 Use my location</button></div><div class="map" id="eMap"></div><div class="card" style="margin-top:12px"><div class="list st in" id="near"></div></div>` } }
+const bindCi = () => { const f = $('#ciForm'); if (!f) return; f.onsubmit = (e) => { e.preventDefault(); const c = $('#code').value.trim().toUpperCase(), hit = CODES[c]; if (!hit) { $('#code').classList.add('shake'); setTimeout(() => $('#code').classList.remove('shake'), 400); toast('That code is not valid'); return }
+  if (stamps.some((s) => s[1] === hit[1])) { toast('Already stamped'); return } const before = lvIdx(stamps.length); stamps.push(hit); const r = f.getBoundingClientRect(); confetti(r.left + r.width / 2, r.top); sRender(); toast('Stamp earned · ' + hit[1])
+  if (lvIdx(stamps.length) > before) setTimeout(() => sheet(`<div style="width:64px;height:64px;margin:0 auto 18px;color:var(--accent)">${LH}</div><div class="h-m">You're now a ${LV[lvIdx(stamps.length)]}</div><p class="sub" style="margin:8px 0 22px">${stamps.length} stamps in. Keep traveling.</p><button class="btn lg" data-close style="width:100%">Continue</button>`), 700) } }
+const connectBtn = (b) => { CONN.add(b.dataset.c); b.className = 'btn sm ghost'; b.textContent = '✓ Connected'; b.animate([{ transform: 'scale(.85)' }, { transform: 'none' }], { duration: 500, easing: 'cubic-bezier(.34,1.5,.64,1)' }); toast('Connected with ' + b.dataset.c); const cc = $('#ccount'); if (cc) cc.textContent = CONN.size }
+const THREADS = {}; let msel = 0
+const AFTER = {
+  Home() { bindCi(); $('#sBody').onclick = (e) => { const b = e.target.closest('[data-c]'); if (b) return connectBtn(b)
+    const l = e.target.closest('[data-like]'); if (l) { const on = l.classList.toggle('on'), n = l.closest('.post').querySelector('[data-n]'); n.textContent = +n.dataset.n + (on ? 1 : 0); if (on) { const r = l.getBoundingClientRect(); confetti(r.left + 30, r.top + 10) } }
+    const g = e.target.closest('[data-going]'); if (g) { const on = g.classList.toggle('on'); g.lastChild.textContent = on ? "You're going" : "I'm going"; if (on) toast('Added to your events') }
+    const m = e.target.closest('[data-msg]'); if (m) { const i = STEPS.findIndex((s) => s.tab === 'Messaging'); goStep(i) } } },
+  Passport() { const n = stamps.length, L = lvIdx(n), base = [0, 5, 10, 15][L], next = [5, 10, 15, 15][L]; requestAnimationFrame(() => { $('#ring').style.strokeDashoffset = 100 - (L === 3 ? 100 : ((n - base) / (next - base)) * 100); countTo($('#cnt'), n, 1100) })
+    $$('#stampGrid > div:not(:has(path[stroke-dasharray]))').forEach((d, i) => { d.firstElementChild.style.animation = `thump .7s var(--spring) ${i * 90 + 150}ms both` }); bindCi() },
+  Network() { const list = PEOPLE[ME.gender]; const draw = (q = '') => { const f = list.filter((p) => `${p[1]} ${C[p[0]].name} ${p[2]}`.toLowerCase().includes(q.toLowerCase())); $('#people').classList.remove('in'); $('#people').innerHTML = f.length ? f.map((p, i) => `<div class="card flush pcell" style="--i:${i}"><div class="cover"></div><div class="body">${crest(p[0], 64)}<b>${p[1]}</b><div class="cap" style="margin-bottom:12px">${C[p[0]].short} · ${p[2]}</div><button class="btn sm ${CONN.has(p[1]) ? 'ghost' : 'out'}" data-c="${p[1]}">${CONN.has(p[1]) ? '✓ Connected' : 'Connect'}</button></div></div>`).join('') : '<div class="cap">No one matches.</div>'; void $('#people').offsetWidth; $('#people').classList.add('in') }
+    draw(); $('#srch').oninput = (e) => draw(e.target.value); $('#people').onclick = (e) => { const b = e.target.closest('[data-c]'); if (b && !CONN.has(b.dataset.c)) connectBtn(b) } },
+  Messaging() { const list = PEOPLE[ME.gender]; if (!THREADS[list[0][1]]) { list.forEach((p) => (THREADS[p[1]] = [])); THREADS[list[0][1]] = [['in', 'Salam! How was the transfer to UCSD?'], ['out', 'Wa alaykum salam. Honestly smooth. Meet at the panel?'], ['in', 'InshaAllah. Saving you a seat.']]; THREADS[list[1][1]] = [['in', 'Are you coming to Founders Night?']] }
+    const th = $('#thread'), add = (d, t) => th.insertAdjacentHTML('beforeend', `<div class="bub ${d}">${t}</div>`), scroll = () => (th.scrollTop = th.scrollHeight)
+    const drawList = () => ($('#mlist').innerHTML = list.map((p, i) => { const t = THREADS[p[1]], last = t[t.length - 1]; return `<button class="mrow ${i === msel ? 'on' : ''}" data-i="${i}">${crest(p[0], 46)}<div class="main"><b>${p[1]}</b><span>${last ? last[1] : C[p[0]].short + ' · ' + p[2]}</span></div></button>` }).join(''))
+    const open = () => { const p = list[msel]; $('#mhead').innerHTML = `${crest(p[0], 40)}<div class="grow"><b>${p[1]}</b><div class="cap">${C[p[0]].name}</div></div>${pillHtml(ME.gender)}`; th.innerHTML = ''; THREADS[p[1]].forEach(([d, t], i) => setTimeout(() => { add(d, t); scroll() }, i * 260)); drawList() }
+    $('#mlist').onclick = (e) => { const r = e.target.closest('[data-i]'); if (r) { msel = +r.dataset.i; open() } }; msel = 0; open()
+    $('#msgForm').onsubmit = (e) => { e.preventDefault(); const v = $('#msg').value.trim(); if (!v) return; const key = list[msel][1]; THREADS[key].push(['out', v]); add('out', v); $('#msg').value = ''; scroll(); drawList(); setTimeout(() => { th.insertAdjacentHTML('beforeend', '<div class="bub in typing" id="typ"><i></i><i></i><i></i></div>'); scroll() }, 350)
+      setTimeout(() => { $('#typ')?.remove(); const r = ['Jazakallah khair!', 'See you there 🙌', 'Sounds good.'][Math.floor(Math.random() * 3)]; THREADS[key].push(['in', r]); if (list[msel][1] === key) { add('in', r); scroll() } drawList() }, 1700) } },
+  Events() { const home = C[ME.campus] || C.mesa, me = [home.lat, home.lng], EV = [['ucsd', 'Transfer Q&A', 'Fri · Mesa × UCSD'], ['uci', 'Leadership Summit', 'Sat · UCI × OCC'], ['ucr', 'Career Circle', 'Sun · UCR × RCC'], ['ucla', 'Founders Night', 'Tue · UCLA × SMC'], ['sjsu', 'Resume Lab', 'Thu · SJSU × De Anza']]
+    const near = EV.map((e) => ({ e, mi: miles(me, [C[e[0]].lat, C[e[0]].lng]) })).filter((x) => x.mi <= 160).sort((a, b) => a.mi - b.mi)
+    $('#near').innerHTML = near.map(({ e, mi }, i) => `<div class="li" style="--i:${i}">${crest(e[0], 48)}<div class="main"><b>${e[1]}</b><span>${e[2]}</span></div><span class="pill dist num">${Math.max(1, Math.round(mi))} mi</span></div>`).join('')
+    const m = mkMap($('#eMap'), { bounds: [me, ...near.map((x) => [C[x.e[0]].lat, C[x.e[0]].lng])] }); youAt(m, me[0], me[1]); pulseAt(m, me[0], me[1])
+    near.forEach(({ e }, i) => addPin(m, C[e[0]].lat, C[e[0]].lng, '#ea4335', `<b>${e[1]}</b><br>${e[2]}`, i)); $('#loc').onclick = () => { toast('Location permission would be requested here'); pulseAt(m, me[0], me[1]) } } }
+
+/* ---------- CAMPUS LEADER (organization page layout) ---------- */
+const LC = () => (ME.role === 'leader' && C[ME.campus] ? C[ME.campus] : C.ucsd)
+const EV = [{ t: 'Transfer Q&A Brothers', a: 'brothers', tr: 'Transfer', co: 'mesa', code: 'TRNB09', n: 7, w: '2d' }, { t: 'Transfer Q&A Sisters', a: 'sisters', tr: 'Transfer', co: 'mesa', code: 'TRNS09', n: 5, w: '2d' }]
+const F = { t: '', a: 'everyone', tr: 'Career', co: '', open: false }
+const aud = (a) => (a === 'brothers' ? '<span class="pill bro">🟦 Brothers</span>' : a === 'sisters' ? '<span class="pill sis">🟪 Sisters</span>' : '<span class="pill">🌙 Everyone</span>')
+const evPost = (e, i, fl) => `<article class="card post ${fl ? 'flash' : ''}"><div class="ph">${crest(LC().id, 48)}<div class="grow"><b>${LC().name} MSA</b><div class="cap">${e.w || 'now'} · posted by ${ME.role === 'leader' ? ME.name : 'Ahmad Z.'}</div></div>${aud(e.a)}</div><div class="pt"><b>${e.t}</b>${e.co ? `<div class="cap">Co-hosted with ${C[e.co].name}</div>` : ''}</div><div class="attach"><div style="width:44px;height:50px">${stamp('✓', e.tr, e.tr).replace(/<text.*<\/text>/g, '')}</div><div class="grow"><div class="cap">${e.tr} stamp · check-in code</div><b class="mono accent" style="letter-spacing:.16em" data-code="${e.code}">${e.code}</b></div><div style="text-align:right"><b class="num">${e.n}</b><div class="cap">checked in</div></div></div></article>`
+function lRender() {
+  const lc = LC(), pt = partnerOf(lc.id)
+  $('#lNav').innerHTML = navShell([['Page', true]], ME.role === 'leader' ? ME.name : 'Ahmad Z.'); $('#lNav .ntabs').insertAdjacentHTML('beforeend', '')
+  $('#lHead').innerHTML = `<div class="cover big"></div><div style="padding:0 24px 22px"><div style="margin-top:-52px">${crest(lc.id, 104).replace('class="crest"', 'class="crest" ').replace('box-shadow', 'box-shadow')}</div><div class="row between wrapx" style="margin-top:12px;align-items:flex-start"><div><div class="h-m">${lc.name} Muslim Student Association</div><div class="sub">${lc.type === 'cc' ? 'Community college' : 'University'} · ${EV.length} events · 48 followers</div><div class="cap" style="margin-top:4px">${ME.role === 'leader' ? ME.position : 'President'} · ${ME.role === 'leader' ? ME.name : 'Ahmad Z.'}</div></div><div class="row"><button class="btn" id="openForm">+ Create event</button><button class="btn out" id="share">Share page</button></div></div></div>`
+  $('#lStats').innerHTML = [['Events', EV.length], ['Check-ins', EV.reduce((s, e) => s + e.n, 0)], ['Co-hosted', EV.filter((e) => e.co).length]].map(([l, v]) => `<div class="li"><div class="main"><b>${l}</b></div><b class="num h-s" data-v="0" data-to="${v}">0</b></div>`).join(''); $$('#lStats [data-to]').forEach((n) => countTo(n, +n.dataset.to, 900))
+  $('#lMain').innerHTML = `<div class="card"><div class="row"><span class="av" style="width:48px;height:48px;font-size:20px;flex:none">${(ME.role === 'leader' ? ME.name : 'Ahmad Z.')[0]}</span><button class="field" id="startEv" style="text-align:left;color:var(--t3);border-radius:999px;font-weight:550">Start an event…</button></div>
+    <div class="expand ${F.open ? 'open' : ''}" id="expand"><div><div class="stack" style="padding-top:18px"><div><label class="lbl">Title</label><input class="field" id="fT" placeholder="Brothers Basketball Night" value="${F.t}" autocomplete="off"></div>
+      <div><label class="lbl">Audience</label><div class="seg" id="fA"><button data-v="brothers">🟦 Brothers</button><button data-v="sisters">🟪 Sisters</button><button data-v="everyone">🌙 Everyone</button></div></div>
+      <div><label class="lbl">Track</label><div class="chips">${Object.keys(TRACK).map((t) => `<button class="chip" data-tr="${t}" aria-pressed="${F.tr === t}">${t}</button>`).join('')}</div></div>
+      <div><label class="lbl">Co-host</label><select class="field" id="fC"><option value="">No co-host</option>${pt ? `<optgroup label="Suggested"><option value="${pt.id}" ${F.co === pt.id ? 'selected' : ''}>${pt.name} · sister campus</option></optgroup>` : ''}<optgroup label="All campuses">${CAM.filter((c) => c[0] !== lc.id && c[0] !== pt?.id).map((c) => `<option value="${c[0]}" ${F.co === c[0] ? 'selected' : ''}>${c[2]}</option>`).join('')}</optgroup></select></div>
+      <button class="btn lg" id="fGo" style="width:100%" ${F.t.trim() ? '' : 'disabled'}>Post event</button></div></div></div></div><div class="col" id="evList"></div>`
+  seg($('#fA'), (v) => (F.a = v), F.a); $('#evList').innerHTML = EV.map((e, i) => evPost(e, i)).join('')
+  $('#lSide').innerHTML = `<div class="card"><div class="h-s">Co-host suggestions</div><div class="list" style="margin-top:4px">${[pt, ...Object.values(C).filter((c) => c.id !== lc.id && c.id !== pt?.id && c.idle < 10).sort((a, b) => miles([lc.lat, lc.lng], [a.lat, a.lng]) - miles([lc.lat, lc.lng], [b.lat, b.lng])).slice(0, 2)].filter(Boolean).map((c) => `<div class="li">${crest(c.id, 44)}<div class="main"><b>${c.name.replace(' College', '')}</b><span>${Math.round(miles([lc.lat, lc.lng], [c.lat, c.lng]))} mi away</span></div><button class="btn sm out" data-inv="${c.id}">Invite</button></div>`).join('')}</div></div>`
+  hydrateCrests($('#s-campus')) }
+$('#s-campus').addEventListener('input', (e) => { if (e.target.id === 'fT') { F.t = e.target.value; $('#fGo').disabled = !F.t.trim() } })
+$('#s-campus').addEventListener('change', (e) => { if (e.target.id === 'fC') F.co = e.target.value })
+$('#s-campus').addEventListener('click', (e) => { const t = e.target
+  if (t.closest('#startEv') || t.closest('#openForm')) { F.open = !F.open || t.closest('#openForm') ? true : false; $('#expand').classList.toggle('open', F.open); if (F.open) setTimeout(() => $('#fT').focus(), 300); return }
+  if (t.closest('#share')) return toast('Page link copied')
+  const c = t.closest('[data-tr]'); if (c) { F.tr = c.dataset.tr; $$('[data-tr]').forEach((x) => x.setAttribute('aria-pressed', x === c)); return }
+  const inv = t.closest('[data-inv]'); if (inv) { inv.textContent = 'Invited'; inv.className = 'btn sm ghost'; toast('Co-host invite sent'); return }
+  if (t.closest('#fGo')) { const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', rnd = () => A[Math.floor(Math.random() * 32)], code = Array.from({ length: 6 }, rnd).join(''); EV.unshift({ t: F.t, a: F.a, tr: F.tr, co: F.co, code, n: 0 }); F.t = ''; F.co = ''; F.open = false; lRender()
+    const el = $('#evList [data-code]'); let k = 0; const iv = setInterval(() => { el.textContent = Array.from({ length: 6 }, (_, i) => (i < k ? code[i] : rnd())).join(''); if (++k > 6) { clearInterval(iv); el.textContent = code } }, 90); $('#evList .post').animate([{ opacity: 0, transform: 'translateY(-20px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 600, easing: 'cubic-bezier(.34,1.5,.64,1)' }); toast('Event posted') } })
+ON['s-campus'] = () => lRender()
+
+/* ---------- ADMIN ---------- */
+let aMap, aInit = false, simTimer; const AST = { students: 20, stamps: 124, conn: 6, events: 12 }
+const FEED = [['ucsd', 'Omar K. checked in: Transfer Q&A Brothers', 'Check-in', '2m'], ['mesa', 'Co-hosting: Transfer Q&A Brothers', 'Co-host', '2m'], ['sjsu', 'New event: Resume + LinkedIn Lab', 'Event', '1h'], ['ucr', 'Linked with Riverside City College', 'Link', '3h']]
+const SIMS = [['ucla', 'Ibrahim S. checked in: Founders Night', 'Check-in'], ['uci', 'Ali H. connected with Hamza R.', 'Connection'], ['deanza', 'Amina Y. checked in: Resume Lab', 'Check-in'], ['mesa', 'Maryam A. joined', 'New member'], ['smc', 'Hana T. connected with Layla M.', 'Connection'], ['sjsu', 'Adam F. checked in: Resume Lab', 'Check-in']]
+const post = ([c, t, k, w], top = true) => $('#feed').insertAdjacentHTML(top ? 'afterbegin' : 'beforeend', `<article class="card apost">${crest(c, 44)}<div><div class="row between"><b>${C[c].name}</b><span class="cap">${w || 'now'}</span></div><div class="cap">${k}</div><p style="margin-top:6px">${t}</p></div></article>`)
+function aStats() { const rows = [['Students', AST.students, '🟦 10 · 🟪 10'], ['Stamps', AST.stamps, '🟦 66 · 🟪 58'], ['Connections', AST.conn, '🟦 3 · 🟪 3'], ['Events', AST.events, '10 co-hosted']]
+  if (!$('#aStats .li')) $('#aStats').innerHTML = rows.map(([l, v, s]) => `<div class="li"><div class="main"><b>${l}</b><span>${s}</span></div><span class="h-s num" data-v="0" data-k="${l}">0</span></div>`).join(''); rows.forEach(([l, v]) => countTo($(`[data-k="${l}"]`), v, 900)) }
+function fadingList() { $('#fading').innerHTML = Object.values(C).filter((c) => c.idle > 60).map((c) => { const s = partnerOf(c.id); return `<div class="li">${crest(c.id, 42)}<div class="main"><b>${c.name.replace(' College', '')}</b><span>${c.idle} days idle</span></div><button class="btn sm out" data-f="${c.id}" data-s="${s.id}">Link ${s.short}</button></div>` }).join('')
+  $('#strong').innerHTML = Object.values(C).sort((a, b) => b.str - a.str).slice(0, 6).map((c) => `<div class="li">${crest(c.id, 38)}<div class="main"><b>${c.name.replace(' College', '')}</b></div><div class="bar" style="width:64px"><i style="width:0" data-w="${c.str}"></i></div><span class="cap num" style="width:24px;text-align:right">${c.str}</span></div>`).join(''); requestAnimationFrame(() => $$('#strong [data-w]').forEach((i) => (i.style.width = i.dataset.w + '%'))) }
+ON['s-admin'] = () => { $('#aNav').innerHTML = navShell([['Page', true]], 'Manara'); aStats(); if (aInit) return; aInit = true; fadingList()
+  $('#la').innerHTML = $('#lb').innerHTML = '<option value="">Choose campus…</option>' + Object.values(C).sort((a, b) => a.name.localeCompare(b.name)).map((c) => `<option value="${c.id}">${c.name}</option>`).join(''); FEED.forEach((p) => post(p, false))
+  aMap = mkMap($('#aMap'), { center: [35.4, -119.6], zoom: 6 }); Object.values(C).forEach((c, i) => addPin(aMap, c.lat, c.lng, c.idle > 60 ? '#ea4335' : c.type === 'cc' ? '#34a853' : '#fbbc04', `<b>${c.name}</b><br>Strength ${c.str}/100<br>${c.idle > 60 ? `<span style="color:#ea4335">Fading · ${c.idle}d idle</span>` : `Active ${c.idle}d ago`}`, i)); setTimeout(() => linked.forEach(([a, b, w]) => drawLine(aMap, C[a], C[b], w)), 900) }
+const doLink = (a, b) => { drawLine(aMap, C[a], C[b], 5); post([a, `Linked with ${C[b].name}`, 'Link', 'now']); toast(`Linked ${C[a].short} ↔ ${C[b].short}`) }
+$('#linkBtn').onclick = () => { const a = $('#la').value, b = $('#lb').value; if (a && b && a !== b) doLink(a, b) }
+$('#fading').onclick = (e) => { const b = e.target.closest('[data-f]'); if (!b) return; doLink(b.dataset.f, b.dataset.s); b.textContent = 'Linked'; b.className = 'btn sm ghost' }
+$('#sim').onchange = (e) => { clearInterval(simTimer); if (!e.target.checked) return; const tick = () => { const s = SIMS[Math.floor(Math.random() * SIMS.length)]; post([...s, 'now']); pulseAt(aMap, C[s[0]].lat, C[s[0]].lng); if (s[2] === 'Check-in') AST.stamps++; if (s[2] === 'Connection') AST.conn++; aStats() }; tick(); simTimer = setInterval(tick, 2600) }
+
+goStep(0)
+</script>
+</body>
+</html>
