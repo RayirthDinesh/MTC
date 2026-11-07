@@ -80,7 +80,7 @@ export default function Landing() {
             transition={{ duration: 1, delay: 0.2, ease }}
             className="relative mx-auto w-full max-w-[330px]"
           >
-            <PassportCard stamps={['Mesa', 'UCSD', 'SDSU', 'UCLA', '']} filled={4} photo="/people/brother.jpg" />
+            <PassportCard stamps={['mesa', 'ucsd', 'ucla', 'uci', '']} filled={4} campusId="mesa" />
             <p className="mt-5 text-center font-mono text-[10px] tracking-[0.18em] text-mute/70 uppercase">
               drag it
             </p>
