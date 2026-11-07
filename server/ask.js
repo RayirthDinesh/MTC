@@ -6,9 +6,12 @@
 // message instead of failing, so the demo never shows a broken tab.
 import { spawn } from 'node:child_process'
 import { existsSync } from 'node:fs'
+import { homedir } from 'node:os'
+import { delimiter, join } from 'node:path'
 
-const BIN = [process.env.CLAUDE_CODE_EXECPATH, '/usr/local/bin/claude', '/opt/homebrew/bin/claude']
-  .find((p) => p && existsSync(p))
+// CLAUDE_BIN override, the VS Code extension path, common install dirs, then anything named `claude` on PATH.
+const BIN = [process.env.CLAUDE_BIN, process.env.CLAUDE_CODE_EXECPATH, join(homedir(), '.local/bin/claude'), '/usr/local/bin/claude', '/opt/homebrew/bin/claude',
+  ...(process.env.PATH ?? '').split(delimiter).map((d) => join(d, 'claude'))].find((p) => p && existsSync(p))
 
 export const aiAvailable = () => Boolean(BIN)
 

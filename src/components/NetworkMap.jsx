@@ -38,5 +38,8 @@ export default function NetworkMap({ picked = [], onPick, className = 'h-[520px]
     if (g) fresh.forEach((a) => { const c = campusById(a.campusId); pulse(g.maps, g.map, c.lat, c.lng) })
   }, [s.activity, g])
 
-  return <GMap center={[36.2, -118.2]} zoom={6} onMap={(map, maps) => setG({ map, maps })} className={`w-full ${className}`} label="Map of Manara West campuses" />
+  // same pins/links for the no-key embed fallback
+  const fbPins = CAMPUSES.map((c) => ({ id: c.id, lat: c.lat, lng: c.lng, color: isFading(c.id, s) ? PIN.fading : PIN[c.type], title: c.name, sub: `${c.type === 'cc' ? 'Community college' : '4-year university'} · strength ${strength(c.id, s)}/100` }))
+  const fbLines = s.links.map((l) => { const a = campusById(l.a), b = campusById(l.b); return { a: [a.lat, a.lng], b: [b.lat, b.lng], w: 3 + Math.min(11, pairActivity(l.a, l.b, s) / 2.5) } })
+  return <GMap center={[36.2, -118.2]} zoom={6} pins={fbPins} lines={fbLines} onPin={(id) => pickRef.current?.(id)} onMap={(map, maps) => setG({ map, maps })} className={`w-full ${className}`} label="Map of Manara West campuses" />
 }

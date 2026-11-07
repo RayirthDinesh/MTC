@@ -56,6 +56,12 @@ export default function NearbyEvents() {
     return () => { you.setMap(null); pins.forEach((p) => p.setMap(null)); iw.close() }
   }, [g, origin?.lat, origin?.lng, shown]) // eslint-disable-line react-hooks/exhaustive-deps
 
+  // same pins for the no-key embed fallback
+  const byCampus = shown.reduce((m, e) => ((m[e.campusId] ??= []).push(e), m), {})
+  const fbPins = origin ? [{ id: 'you', lat: origin.lat, lng: origin.lng, you: true, title: 'You are here' },
+    ...Object.entries(byCampus).map(([id, evs]) => { const c = campusById(id); return { id, lat: c.lat, lng: c.lng, color: PIN.event, title: c.name, sub: evs.map((e) => `${e.title} · ${fmt(e.date)}`).join(' | ') } })] : []
+  const fbBounds = fbPins.map((p) => [p.lat, p.lng])
+
   return (
     <section className="space-y-4" aria-label="Events near you">
       <div className="flex flex-wrap items-end justify-between gap-2">
@@ -66,7 +72,7 @@ export default function NearbyEvents() {
       {geoErr && <p role="alert" className="text-sm text-fading">{geoErr}</p>}
       {origin && <>
         {!within && <p className="text-sm text-mute">Nothing within {RADIUS} miles. Showing the closest upcoming events.</p>}
-        <GMap center={[origin.lat, origin.lng]} zoom={9} onMap={(map, maps) => setG({ map, maps })} className="h-80 rounded-2xl" label="Map of nearby events" />
+        <GMap center={[origin.lat, origin.lng]} zoom={9} bounds={fbBounds} pins={fbPins} onMap={(map, maps) => setG({ map, maps })} className="h-80 rounded-2xl" label="Map of nearby events" />
         <ul className="card !p-4">
           {shown.length ? shown.map((e) => (
             <li key={e.id} className="flex items-center gap-3 border-t border-white/10 py-3 first:border-0">
