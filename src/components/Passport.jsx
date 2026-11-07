@@ -1,11 +1,11 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useStore, useMe } from '../lib/useStore.js'
-import { checkIn, campusById, campusName, stampsOf } from '../store.js'
+import { checkIn, campusById, campusName, campusShort, stampsOf } from '../store.js'
 import { LEVELS, levelIndex, trackProgress, starsOf, badgesOf, TRACK_LIST, MILESTONES } from '../lib/rules.js'
 import { fireConfetti, LevelUpModal } from './Celebrate.jsx'
 import GenderPill from './GenderPill.jsx'
-import Stamp, { EmptyStamp, TRACK_INK } from './Stamp.jsx'
+import Stamp, { Badge, EmptyStamp, TRACK_INK } from './Stamp.jsx'
 import { spring } from '../lib/motion.js'
 
 const NEXT = [5, 10, 15, 15]
@@ -82,8 +82,11 @@ export default function Passport() {
 
       <div className="card">
         <h3 className="mb-3 text-2xl">Badges</h3>
-        {badges.length ? <div className="flex flex-wrap gap-2">{badges.map((b) => <span key={b} className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-sm text-gold2">🏅 {b}{b.startsWith('Deen') ? ' · private' : ''}</span>)}</div>
-          : <p className="text-mute">Earn 3 stamps in a track for its badge.</p>}
+        <div className="flex flex-wrap gap-3">
+          <Badge track="College" label={campusShort(me)} className="w-20 drop-shadow-[0_4px_6px_rgba(0,0,0,.5)]" />
+          {badges.map((b) => { const t = b.replace(' Badge', ''); return <Badge key={b} track={t} label={t} private={t === 'Deen'} className="w-20 drop-shadow-[0_4px_6px_rgba(0,0,0,.5)]" /> })}
+        </div>
+        {!badges.length && <p className="mt-2 text-sm text-mute">Earn 3 stamps in a track for its badge.</p>}
       </div>
 
       <div className="card">

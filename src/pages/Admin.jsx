@@ -47,7 +47,7 @@ export default function Admin() {
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
         <div>
           <NetworkMap picked={[a, b]} onPick={pick} />
-          <p className="mt-2 flex flex-wrap gap-4 text-xs text-mute"><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-cc" />Community college</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-full bg-gold" />4-year</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-full border-2 border-fading" />Fading (60+ days idle)</span><span>Line thickness = cross-campus activity</span></p>
+          <p className="mt-2 flex flex-wrap gap-4 text-xs text-mute"><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-full" style={{ background: '#34a853' }} />Community college</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-full" style={{ background: '#fbbc04' }} />4-year</span><span><i className="mr-1 inline-block h-2.5 w-2.5 rounded-full" style={{ background: '#ea4335' }} />Fading (60+ days idle)</span><span><i className="mr-1 inline-block h-0.5 w-4 align-middle" style={{ background: '#1a73e8' }} />Link · thickness = activity</span></p>
         </div>
         <div className="space-y-4">
           <div className="card space-y-3">

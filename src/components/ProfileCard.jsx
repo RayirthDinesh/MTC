@@ -1,7 +1,8 @@
 import { useStore } from '../lib/useStore.js'
-import { campusById, campusName, stampsOf } from '../store.js'
+import { campusById, campusName, campusShort, stampsOf } from '../store.js'
 import { LEVELS, levelIndex, trackProgress, badgesOf, starsOf } from '../lib/rules.js'
 import GenderPill from './GenderPill.jsx'
+import { Badge } from './Stamp.jsx'
 
 /** LinkedIn-style profile. Deen progress is only shown to the owner (the server also strips it for others). */
 export default function ProfileCard({ user, owner = false }) {
@@ -23,7 +24,9 @@ export default function ProfileCard({ user, owner = false }) {
             <div><p className="text-mute">Stars</p><p className="text-lg">{starsOf(prog)} ★</p></div>
           </div>
           <div className="mt-4 flex flex-wrap gap-2">
-            {badges.length ? badges.map((b) => <span key={b} className="rounded-full border border-gold/40 bg-gold/10 px-3 py-1 text-sm text-gold2">🏅 {b}</span>) : <span className="text-sm text-mute">No badges yet</span>}
+            <Badge track="College" label={campusShort(user)} className="w-16" />
+            {badges.map((b) => { const t = b.replace(' Badge', ''); return <Badge key={b} track={t} label={t} private={owner && t === 'Deen'} className="w-16" /> })}
+            {!badges.length && <span className="self-center text-sm text-mute">No track badges yet</span>}
           </div>
           {owner && <p className="mt-4 rounded-xl bg-white/5 px-3 py-2 text-sm text-mute">🔒 Your Deen progress is private. Only you can see it.</p>}
         </>}

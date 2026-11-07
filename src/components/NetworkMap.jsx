@@ -1,12 +1,24 @@
 import { useEffect, useRef, useState } from 'react'
 import L from 'leaflet'
-import { MapContainer, TileLayer, CircleMarker, Polyline, Marker, Popup, Tooltip } from 'react-leaflet'
+import { MapContainer, TileLayer, ZoomControl, Polyline, Marker, Popup, Tooltip } from 'react-leaflet'
 import { useStore } from '../lib/useStore.js'
 import { CAMPUSES } from '../data/seed.js'
 import { campusById, pairActivity, strength, isFading, lastActivityTs } from '../store.js'
 
+// Google-Maps look: light street tiles, teardrop pins (green = community college, yellow = 4-year, red = fading), blue links.
+const PIN = { cc: '#34a853', '4yr': '#fbbc04', fading: '#ea4335' }
+const LINK = '#1a73e8'
+const icons = new Map()
+const pin = (color, picked) => {
+  const key = color + picked
+  if (!icons.has(key)) icons.set(key, L.divIcon({
+    className: `gpin${picked ? ' gpin-picked' : ''}`,
+    html: `<svg viewBox="0 0 28 38" width="28" height="38" aria-hidden="true"><path d="M14 1C6.8 1 1 6.7 1 13.7 1 23.4 14 37 14 37s13-13.6 13-23.3C27 6.7 21.2 1 14 1z" fill="${color}" stroke="rgba(0,0,0,.35)" stroke-width="1.2"/><circle cx="14" cy="13.5" r="5" fill="#fff" fill-opacity=".92"/></svg>`,
+    iconSize: [28, 38], iconAnchor: [14, 37], popupAnchor: [0, -34],
+  }))
+  return icons.get(key)
+}
 const pulseIcon = L.divIcon({ className: 'pulse-wrap', html: '<span class="pulse"></span>', iconSize: [28, 28], iconAnchor: [14, 14] })
-const COLOR = { cc: '#2db5a6', '4yr': '#e3b04b' }
 
 /** Live map. Pulses fire when a NEW activity row arrives (existing rows at load never pulse). */
 export default function NetworkMap({ picked = [], onPick }) {
@@ -15,8 +27,8 @@ export default function NetworkMap({ picked = [], onPick }) {
   const [pulses, setPulses] = useState([])
   useEffect(() => {
     if (seen.current === null) { seen.current = new Set(s.activity.map((a) => a.id)); return }
-    const fresh = s.activity.filter((a) => !seen.current.has(a.id) && a.campusId)
-    fresh.forEach((a) => seen.current.add(a.id))
+    const fresh = s.activity.filter((a) => !seen.current.has(a.id) && CAMPUSES.some((c) => c.id === a.campusId))
+    s.activity.forEach((a) => seen.current.add(a.id))
     if (!fresh.length) return
     const ps = fresh.map((a) => ({ key: a.id, campusId: a.campusId }))
     setPulses((p) => [...p, ...ps])
@@ -26,12 +38,13 @@ export default function NetworkMap({ picked = [], onPick }) {
 
   const days = (c) => { const t = lastActivityTs(c.id, s); return t ? Math.floor((Date.now() - t) / 86400000) : null }
   return (
-    <MapContainer center={[36.6, -119.6]} zoom={6} scrollWheelZoom className="h-[520px] w-full rounded-3xl border border-white/10" aria-label="Map of Manara West campuses">
-      <TileLayer attribution="Tiles &copy; Esri" maxZoom={16} url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}" />
+    <MapContainer center={[36.2, -118.2]} zoom={6} zoomControl={false} scrollWheelZoom className="gmap h-[520px] w-full overflow-hidden rounded-2xl border border-white/10" aria-label="Map of Manara West campuses">
+      <TileLayer attribution="Tiles &copy; Esri" maxZoom={19} url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/{z}/{y}/{x}" />
+      <ZoomControl position="bottomright" />
       {s.links.map((l) => {
         const a = campusById(l.a), b = campusById(l.b), w = pairActivity(l.a, l.b, s)
         return (
-          <Polyline key={l.a + l.b} positions={[[a.lat, a.lng], [b.lat, b.lng]]} pathOptions={{ color: '#f6d58a', weight: 2 + Math.min(12, w / 2.5), opacity: 0.75, lineCap: 'round' }}>
+          <Polyline key={l.a + l.b} positions={[[a.lat, a.lng], [b.lat, b.lng]]} pathOptions={{ color: LINK, weight: 3 + Math.min(11, w / 2.5), opacity: 0.8, lineCap: 'round' }}>
             <Tooltip sticky>{a.short} ↔ {b.short} · activity {w}</Tooltip>
           </Polyline>
         )
@@ -39,15 +52,17 @@ export default function NetworkMap({ picked = [], onPick }) {
       {CAMPUSES.map((c) => {
         const fading = isFading(c.id, s), on = picked.includes(c.id)
         return (
-          <span key={c.id}>
-            {fading && <CircleMarker center={[c.lat, c.lng]} radius={15} pathOptions={{ color: '#ff5c5c', weight: 3, fill: false }} interactive={false} />}
-            <CircleMarker center={[c.lat, c.lng]} radius={on ? 11 : 8} pathOptions={{ color: on ? '#fff' : '#070d20', weight: on ? 3 : 2, fillColor: COLOR[c.type], fillOpacity: 1 }} eventHandlers={{ click: () => onPick?.(c.id) }}>
-              <Popup><b>{c.name}</b><br />{c.type === 'cc' ? 'Community college' : '4-year university'}<br />Strength {strength(c.id, s)}/100<br />Students {s.users.filter((u) => u.campusId === c.id && u.role === 'student').length}<br />{fading ? <span style={{ color: '#ff5c5c' }}>Fading · {days(c)}d idle</span> : `Active ${days(c)}d ago`}</Popup>
-            </CircleMarker>
-          </span>
+          <Marker key={c.id} position={[c.lat, c.lng]} icon={pin(fading ? PIN.fading : PIN[c.type], on)} zIndexOffset={on ? 1000 : fading ? 500 : 0} eventHandlers={{ click: () => onPick?.(c.id) }}>
+            <Popup>
+              <b className="gmap-title">{c.name}</b>
+              <div className="gmap-sub">{c.type === 'cc' ? 'Community college' : '4-year university'}</div>
+              <div>Strength <b>{strength(c.id, s)}</b>/100 · {s.users.filter((u) => u.campusId === c.id && u.role === 'student').length} students</div>
+              <div style={{ color: fading ? PIN.fading : '#188038' }}>{fading ? `Fading · ${days(c)}d idle` : `Active ${days(c)}d ago`}</div>
+            </Popup>
+          </Marker>
         )
       })}
-      {pulses.map((p) => { const c = campusById(p.campusId); return <Marker key={p.key} position={[c.lat, c.lng]} icon={pulseIcon} interactive={false} /> })}
+      {pulses.map((p) => { const c = campusById(p.campusId); return <Marker key={p.key} position={[c.lat, c.lng]} icon={pulseIcon} interactive={false} zIndexOffset={2000} /> })}
     </MapContainer>
   )
 }
