@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { motion } from 'framer-motion'
 import { useStore, useMe } from '../lib/useStore.js'
-import { checkIn, campusById, stampsOf } from '../store.js'
+import { checkIn, campusById, campusName, stampsOf } from '../store.js'
 import { LEVELS, levelIndex, trackProgress, starsOf, badgesOf, TRACK_LIST, MILESTONES } from '../lib/rules.js'
 import { fireConfetti, LevelUpModal } from './Celebrate.jsx'
 import GenderPill from './GenderPill.jsx'
@@ -45,7 +45,7 @@ export default function Passport() {
           <GenderPill value={me.gender} />
         </div>
         <h2 className="mt-3 text-5xl">{me.name}</h2>
-        <p className="text-mute">{campusById(me.campusId)?.name} · {me.major}{me.target ? ` → ${campusById(me.target)?.short}` : ''}</p>
+        <p className="text-mute">{campusName(me)} · {me.major}{me.target ? ` → ${campusById(me.target)?.short}` : ''}</p>
         <div className="mt-5 flex items-end justify-between">
           <div><p className="text-sm text-mute">Level</p><p className="font-display text-3xl text-gold2">{LEVELS[L]}</p></div>
           <div className="text-right"><p className="text-sm text-mute">Stars</p><p className="font-display text-3xl text-gold2">{'★'.repeat(Math.min(5, Math.ceil(starsOf(prog) / 4)))}<span className="text-mute">{' '}{starsOf(prog)}</span></p></div>

@@ -1,6 +1,6 @@
 import { Link, useNavigate } from 'react-router-dom'
 import { useMe } from '../lib/useStore.js'
-import { logout, reset, campusById } from '../store.js'
+import { reset, campusShort } from '../store.js'
 import GenderPill from './GenderPill.jsx'
 
 export default function Navbar() {
@@ -12,9 +12,8 @@ export default function Navbar() {
       <div className="flex items-center gap-3 text-sm">
         {me && (
           <>
-            <span className="hidden sm:inline text-mute">{me.name}{me.campusId ? ` · ${campusById(me.campusId)?.short}` : ''}</span>
+            <span className="hidden sm:inline text-mute">{me.name}{me.campusId ? ` · ${campusShort(me)}` : ''}</span>
             {me.role !== 'admin' && <GenderPill value={me.gender} />}
-            <button className="btn btn-glass !py-1.5" onClick={() => { logout(); nav('/') }}>Log out</button>
           </>
         )}
         <button className="btn btn-glass !py-1.5" onClick={() => { reset(); nav('/') }}>Reset demo</button>

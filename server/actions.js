@@ -6,19 +6,20 @@ import { LEVELS, levelIndex, sameGender, audienceOk, TRACK_LIST } from '../src/l
 const id = (p) => p + Date.now().toString(36) + Math.random().toString(36).slice(2, 6)
 const no = (reason, forbidden = false) => ({ ok: false, reason, ...(forbidden && { forbidden: true }) })
 const campusOk = (c) => CAMPUSES.some((x) => x.id === c)
+export const OTHER = 'other' // a college outside the Manara network (students only)
 const AUDIENCES = ['brothers', 'sisters', 'everyone']
 
 const rowUser = (r, stamps = []) => ({
   id: r.id, username: r.username, role: r.role, gender: r.gender, name: r.name, campusId: r.campus_id, position: r.position,
   campusType: r.campus_type, major: r.major, transferring: !!r.transferring, target: r.target,
-  interests: JSON.parse(r.interests || '[]'), track: r.track, stamps, stampCount: stamps.length,
+  interests: JSON.parse(r.interests || '[]'), track: r.track, otherCampus: r.other_campus, stamps, stampCount: stamps.length,
 })
 export const getUser = (uid) => {
   if (!uid) return null
   const r = db.prepare('SELECT * FROM users WHERE id=?').get(uid)
   return r ? rowUser(r) : null
 }
-const log = (type, campusId, userId, text) =>
+const log = (type, campusId, userId, text) => campusId === OTHER ? null :
   db.prepare('INSERT INTO activity VALUES(?,?,?,?,?,?)').run(id('act'), type, campusId ?? null, userId ?? null, text, Date.now())
 const stampCount = (uid) => db.prepare('SELECT COUNT(*) n FROM attendance WHERE user_id=?').get(uid).n
 
@@ -129,19 +130,18 @@ export const actions = {
     if (!String(b.name ?? '').trim()) return no('Name required')
     if (!/^[a-z0-9_]{3,20}$/.test(username)) return no('Username must be 3-20 letters, numbers or _')
     if (usernameTaken(username)) return no('That username is taken')
-    if (b.role !== 'admin' && !campusOk(b.campusId)) return no('Pick your campus')
+    const other = b.role === 'student' && b.campusId === OTHER
+    const otherName = other ? String(b.otherCampus ?? '').trim().slice(0, 80) : null
+    if (b.role !== 'admin' && !other && !campusOk(b.campusId)) return no('Pick your campus')
+    if (other && !otherName) return no('Enter your college name')
     const uid = id('u'), campus = b.role === 'admin' ? null : b.campusId
-    db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)').run(uid, username, b.role, b.gender, String(b.name).trim(), campus,
-      b.role === 'leader' ? String(b.position ?? '') : null, b.role === 'student' ? (CAMPUSES.find((c) => c.id === campus)?.type ?? null) : null,
+    db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(uid, username, b.role, b.gender, String(b.name).trim(), campus,
+      b.role === 'leader' ? String(b.position ?? '') : null, b.role === 'student' ? (other ? (b.campusType === 'cc' ? 'cc' : '4yr') : (CAMPUSES.find((c) => c.id === campus)?.type ?? null)) : null,
       b.role === 'student' ? String(b.major ?? '') : null, b.transferring ? 1 : 0, b.transferring ? (campusOk(b.target) ? b.target : null) : null,
       JSON.stringify(Array.isArray(b.interests) ? b.interests.filter((t) => TRACK_LIST.includes(t)) : []),
-      b.role === 'student' ? (TRACK_LIST.includes(b.track) ? b.track : 'Career') : null)
+      b.role === 'student' ? (TRACK_LIST.includes(b.track) ? b.track : 'Career') : null, otherName)
     if (campus) log('join', campus, uid, `${String(b.name).trim()} joined`)
     return { ok: true, id: uid }
-  },
-  login(_me, b) {
-    const r = db.prepare('SELECT id FROM users WHERE username=?').get(String(b.username ?? '').trim().toLowerCase())
-    return r ? { ok: true, id: r.id } : no('No account with that username')
   },
   checkIn(me, b) {
     if (me?.role !== 'student') return no('Students only', true)

@@ -87,7 +87,7 @@ Mentors and the Starter Kit are passport tracks with pre-filled data, not separa
 
 ## User flow
 
-1. **Landing page** → Sign Up (plus a Demo login dropdown to jump into any seeded account).
+1. **Landing page** → Sign Up. There is no login: the only way in is the Front Door quiz. Students whose college is not in the Manara list pick "My college isn't listed" and type it; admins see those colleges as invite targets.
 2. **Front Door quiz**
    - Step 1: role: Student / Campus Leader / Admin
    - Step 2: Brother or Sister

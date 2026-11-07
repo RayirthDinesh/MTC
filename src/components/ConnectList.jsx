@@ -1,20 +1,19 @@
 import { useMemo, useState } from 'react'
 import { AnimatePresence, motion } from 'framer-motion'
 import { useStore, useMe } from '../lib/useStore.js'
-import { visibleUsers, connectionsOf, campusById, connect, blockUser, reportUser, stampsOf } from '../store.js'
+import { visibleUsers, connectionsOf, campusById, campusShort, connect, blockUser, reportUser, stampsOf } from '../store.js'
 import { levelOf } from '../lib/rules.js'
 import { stagger, item, spring } from '../lib/motion.js'
 import GenderPill from './GenderPill.jsx'
 import ProfileCard from './ProfileCard.jsx'
 
 function Person({ u, children, onOpen }) {
-  const c = campusById(u.campusId)
   return (
     <motion.li variants={item} className="card flex items-center gap-4 !p-4">
       <button onClick={onOpen} className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-gold font-display text-2xl text-[#2a1d00]" aria-label={`View ${u.name}'s profile`}>{u.name[0]}</button>
       <div className="min-w-0 flex-1">
         <p className="flex flex-wrap items-center gap-2"><span className="truncate font-medium">{u.name}</span><GenderPill value={u.gender} /></p>
-        <p className="truncate text-sm text-mute">{c?.short} · {u.major || u.position} · {levelOf(stampsOf(u))}{u.target ? ` · → ${campusById(u.target)?.short}` : ''}</p>
+        <p className="truncate text-sm text-mute">{campusShort(u)} · {u.major || u.position} · {levelOf(stampsOf(u))}{u.target ? ` · → ${campusById(u.target)?.short}` : ''}</p>
       </div>
       <div className="flex gap-2">{children}</div>
     </motion.li>

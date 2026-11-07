@@ -1,11 +1,8 @@
-// Landing: pitch, problem, features, the boundary, and two ways in —
-// Sign up (Front Door quiz) or log in with a username.
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+// Landing: pitch, problem, features, the boundary, and one way in —
+// Sign up (Front Door quiz) only. No login.
+import { Link } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { loginByUsername } from '../store.js'
 import { CAMPUSES, EVENTS } from '../data/seed.js'
-import { HOME } from '../App.jsx'
 import Beam from '../components/landing/Beam.jsx'
 import CampusMarquee from '../components/landing/CampusMarquee.jsx'
 import Reveal from '../components/landing/Reveal.jsx'
@@ -52,17 +49,6 @@ const FEATURES = [
 const GATED = ['Profiles', 'Search', 'Suggestions', 'Connections', 'Chat', 'Mentors', 'Events']
 
 export default function Landing() {
-  const nav = useNavigate()
-  const [name, setName] = useState('')
-  const [err, setErr] = useState('')
-
-  const submit = async (e) => {
-    e.preventDefault()
-    const u = await loginByUsername(name)
-    if (!u) return setErr('No account with that username. Sign up instead?')
-    nav(HOME[u.role])
-  }
-
   const ccCount = CAMPUSES.filter((c) => c.type === 'cc').length
 
   return (
@@ -117,29 +103,6 @@ export default function Landing() {
             <Link to="/signup" className="btn btn-gold">
               Get your Rihla Passport →
             </Link>
-            <form onSubmit={submit} className="flex flex-col gap-2">
-              <div className="flex gap-2">
-                <input
-                  className="input w-56!"
-                  aria-label="Username"
-                  placeholder="Username"
-                  autoComplete="username"
-                  value={name}
-                  onChange={(e) => {
-                    setName(e.target.value)
-                    setErr('')
-                  }}
-                />
-                <button className="btn btn-glass" type="submit" disabled={!name.trim()}>
-                  Log in
-                </button>
-              </div>
-              {err && (
-                <p role="alert" className="text-sm text-fading">
-                  {err}
-                </p>
-              )}
-            </form>
           </motion.div>
 
           <motion.div

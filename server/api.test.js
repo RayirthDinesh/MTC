@@ -66,9 +66,9 @@ test('only leaders create events; only owner invites co-host; only admin links',
   assert.equal(e.ok, true); assert.equal(e.code.length, 6)
   assert.equal((await post('inviteCoHost', 'l2', { eventId: e.id, campusId: 'ucr' })).status, 403) // l2 is Mesa
   assert.equal((await post('inviteCoHost', 'l1', { eventId: e.id, campusId: 'ucla' })).ok, true)
-  assert.equal((await post('linkCampuses', 'b1', { a: 'mesa', b: 'sdsu' })).status, 403)
+  assert.equal((await post('linkCampuses', 'b1', { a: 'mesa', b: 'csusm' })).status, 403)
   assert.equal((await post('linkCampuses', 'a1', { a: 'mesa', b: 'ucsd' })).ok, false) // duplicate
-  assert.equal((await post('linkCampuses', 'a1', { a: 'miramar', b: 'sdsu' })).ok, true)
+  assert.equal((await post('linkCampuses', 'a1', { a: 'miramar', b: 'csusm' })).ok, true)
 })
 
 test('signUp validates and enforces unique usernames; Deen stamps hidden from others', async () => {
@@ -88,4 +88,18 @@ test('plan preview is same-space and code-free', async () => {
   assert.equal(p.people.length, 3)
   assert.equal(p.people.every((x) => genders.get(x.id) === 'sister'), true)
   assert.equal(p.events.every((e) => e.code === undefined && e.audience !== 'brothers'), true)
+})
+
+test('students from an unlisted college can sign up; leaders and bad campuses cannot', async () => {
+  const ok = await post('signUp', null, { role: 'student', gender: 'brother', name: 'Out B', username: 'outb', campusId: 'other', otherCampus: 'Palomar College', campusType: 'cc', major: 'CS' })
+  assert.equal(ok.ok, true)
+  const me = (await get('/api/state', ok.id)).users.find((u) => u.id === ok.id)
+  assert.equal(me.otherCampus, 'Palomar College'); assert.equal(me.campusType, 'cc')
+  assert.equal((await post('signUp', null, { role: 'student', gender: 'brother', name: 'X', username: 'outb2', campusId: 'other' })).ok, false) // needs a name
+  assert.equal((await post('signUp', null, { role: 'leader', gender: 'brother', name: 'X', username: 'outl', campusId: 'other', otherCampus: 'Z' })).ok, false)
+  assert.equal((await post('signUp', null, { role: 'student', gender: 'brother', name: 'X', username: 'outc', campusId: 'nowhere' })).ok, false)
+})
+
+test('login endpoint is gone', async () => {
+  assert.equal((await post('login', null, { username: 'omark' })).status, 404)
 })

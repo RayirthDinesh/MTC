@@ -58,12 +58,6 @@ export async function signUp(user) {
   if (j.ok) { uid = j.id; ss.set(uid); await refresh() }
   return j
 }
-export async function loginByUsername(name) {
-  const j = await call('login', { username: name })
-  if (!j.ok) return null
-  uid = j.id; ss.set(uid); await refresh()
-  return currentUser()
-}
 export const logout = () => { uid = null; ss.set(null); return refresh() }
 export const reset = async () => { await call('reset'); uid = null; ss.set(null); await refresh() }
 export const checkIn = (code) => call('checkIn', { code })
@@ -80,7 +74,11 @@ export const usernameTaken = async (u) => (await (await fetch(`/api/username/${e
 export const fetchPlan = async (q) => (await fetch(`/api/plan?${new URLSearchParams(q)}`)).json()
 
 // ---------- selectors ----------
-export const campusById = (id) => CAMPUSES.find((c) => c.id === id)
+// Students outside the Manara network sign up with campusId 'other' + a free-text college name.
+const OTHER_CAMPUS = { id: 'other', name: 'Other college', short: 'Other', type: '4yr' }
+export const campusById = (id) => (id === 'other' ? OTHER_CAMPUS : CAMPUSES.find((c) => c.id === id))
+export const campusName = (u) => (u?.campusId === 'other' ? u.otherCampus || OTHER_CAMPUS.name : campusById(u?.campusId)?.name)
+export const campusShort = (u) => (u?.campusId === 'other' ? u.otherCampus || OTHER_CAMPUS.short : campusById(u?.campusId)?.short)
 export const userById = (id, s = state) => s.users.find((u) => u.id === id)
 export const currentUser = (s = state) => userById(s.currentUserId, s)
 export const stampsOf = (u) => u?.stampCount ?? u?.stamps?.length ?? 0

@@ -27,6 +27,7 @@ const Field = ({ label, children }) => <label className="block"><span className=
 function suggest(f, links) {
   const track = f.transferring ? 'Transfer' : f.interests[0] ?? 'Career'
   const here = campus(f.campusId)
+  if (!here) return { track, sister: null } // college outside the network: no sister campus yet
   const linked = links.find((l) => l.a === f.campusId || l.b === f.campusId)
   const d = (c) => (c.lat - here.lat) ** 2 + (c.lng - here.lng) ** 2
   const sister = campus(linked ? (linked.a === f.campusId ? linked.b : linked.a) : CAMPUSES.filter((c) => c.type !== here.type).sort((a, b) => d(a) - d(b))[0].id)
@@ -36,7 +37,7 @@ function suggest(f, links) {
 export default function Signup() {
   const nav = useNavigate()
   const [i, setI] = useState(0)
-  const [f, setF] = useState({ role: '', gender: '', name: '', username: '', campusId: '', transferring: null, target: '', major: '', interests: [], position: '' })
+  const [f, setF] = useState({ role: '', gender: '', name: '', username: '', campusId: '', otherCampus: '', otherType: 'cc', transferring: null, target: '', major: '', interests: [], position: '' })
   const { links } = useStore()
   const [taken, setTaken] = useState(false)
   const [pl, setPl] = useState(null)
@@ -49,7 +50,7 @@ export default function Signup() {
   useEffect(() => {
     if (!fmtOk) return setTaken(false)
     let live = true
-    const t = setTimeout(() => usernameTaken(uname).then((v) => live && setTaken(v)), 250)
+    const t = setTimeout(() => usernameTaken(uname).then((v) => live && setTaken(v)).catch(() => {}), 250)
     return () => { live = false; clearTimeout(t) }
   }, [uname, fmtOk])
   useEffect(() => {
@@ -60,15 +61,16 @@ export default function Signup() {
   }, [step, f.gender, f.campusId, f.target, f.major])
   const unameErr = !uname ? '' : !fmtOk ? '3–20 letters, numbers or _' : taken ? 'That username is taken' : ''
   const needsCampus = f.role !== 'admin'
+  const ctype = f.campusId === 'other' ? f.otherType : campus(f.campusId)?.type
   const ok = {
     role: !!f.role, space: !!f.gender,
-    who: f.name.trim() && uname && !unameErr && (!needsCampus || f.campusId),
+    who: f.name.trim() && uname && !unameErr && (!needsCampus || (f.campusId && (f.campusId !== 'other' || f.otherCampus.trim()))),
     details: f.role === 'leader' ? !!f.position : f.transferring !== null && f.major.trim() && (!f.transferring || f.target),
     plan: true,
   }[step]
   const last = i === steps.length - 1
   const finish = async () => {
-    const base = { role: f.role, gender: f.gender, name: f.name.trim(), username: uname, campusId: needsCampus ? f.campusId : null }
+    const base = { role: f.role, gender: f.gender, name: f.name.trim(), username: uname, campusId: needsCampus ? f.campusId : null, ...(f.campusId === 'other' && { otherCampus: f.otherCampus.trim(), campusType: f.otherType }) }
     const body = f.role === 'leader' ? { ...base, position: f.position }
       : f.role === 'student' ? { ...base, transferring: f.transferring, target: f.transferring ? f.target : null, major: f.major.trim(), interests: f.interests, track: suggest(f, links).track }
       : base
@@ -110,9 +112,17 @@ export default function Signup() {
               <select className="input" value={f.campusId} onChange={(e) => set({ campusId: e.target.value })}>
                 <option value="" disabled>Choose your campus…</option>
                 {['cc', '4yr'].map((t) => <optgroup key={t} label={t === 'cc' ? 'Community colleges' : '4-year universities'}>
-                  {CAMPUSES.filter((c) => c.type === t).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+                  {CAMPUSES.filter((c) => c.type === t).sort((a, b) => a.name.localeCompare(b.name)).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
                 </optgroup>)}
+                {f.role === 'student' && <option value="other">My college isn't listed…</option>}
               </select></Field>}
+            {f.role === 'student' && f.campusId === 'other' && <>
+              <p className="text-sm text-mute">No problem. You can still join. Tell us your college and we'll connect you with the network.</p>
+              <Field label="Your college"><input className="input" value={f.otherCampus} maxLength={80} onChange={(e) => set({ otherCampus: e.target.value })} /></Field>
+              <div className="grid grid-cols-2 gap-3">
+                <Choice on={f.otherType === 'cc'} onClick={() => set({ otherType: 'cc' })}>Community college</Choice>
+                <Choice on={f.otherType === '4yr'} onClick={() => set({ otherType: '4yr' })}>4-year university</Choice>
+              </div></>}
           </>}
           {step === 'details' && f.role === 'leader' && <>
             <h1 className="text-4xl">Your position</h1>
@@ -120,7 +130,7 @@ export default function Signup() {
           </>}
           {step === 'details' && f.role === 'student' && <>
             <h1 className="text-4xl">Your journey</h1>
-            <p className="text-sm text-mute">Campus type: {campus(f.campusId).type === 'cc' ? 'Community college' : '4-year university'}</p>
+            <p className="text-sm text-mute">Campus type: {ctype === 'cc' ? 'Community college' : '4-year university'}</p>
             <div className="grid grid-cols-2 gap-3">
               <Choice on={f.transferring === true} onClick={() => set({ transferring: true })}>Transferring</Choice>
               <Choice on={f.transferring === false} onClick={() => set({ transferring: false, target: '' })}>Not transferring</Choice>
@@ -139,7 +149,7 @@ export default function Signup() {
           {step === 'plan' && pl && (() => { const p = { ...suggest(f, links), ...pl }; return <>
             <h1 className="text-4xl">Your Rihla Plan</h1>
             <p><span className="text-mute">First track:</span> <span className="text-gold">{p.track}</span> <GenderPill value={f.gender} /></p>
-            <p><span className="text-mute">Sister campus:</span> {p.sister.name}</p>
+            <p><span className="text-mute">Sister campus:</span> {p.sister ? p.sister.name : 'None yet. Ask your MSA to join Manara Connect.'}</p>
             <div><p className="mb-1 text-mute">Suggested events</p><ul className="list-disc pl-5">{p.events.map((e) => <li key={e.id}>{e.title} · {campus(e.campusId).short}</li>)}</ul></div>
             <div><p className="mb-1 text-mute">People to connect with</p><ul className="list-disc pl-5">{p.people.map((u) => <li key={u.id}>{u.name} · {campus(u.campusId).short}</li>)}</ul></div>
           </> })()}

@@ -9,7 +9,7 @@ const SCHEMA = `
 CREATE TABLE IF NOT EXISTS users(
   id TEXT PRIMARY KEY, username TEXT UNIQUE NOT NULL, role TEXT NOT NULL, gender TEXT NOT NULL, name TEXT NOT NULL,
   campus_id TEXT, position TEXT, campus_type TEXT, major TEXT, transferring INTEGER DEFAULT 0, target TEXT,
-  interests TEXT DEFAULT '[]', track TEXT);
+  interests TEXT DEFAULT '[]', track TEXT, other_campus TEXT);
 CREATE TABLE IF NOT EXISTS events(
   id TEXT PRIMARY KEY, title TEXT NOT NULL, campus_id TEXT NOT NULL, co_host_id TEXT, audience TEXT NOT NULL,
   track TEXT, stamp TEXT, code TEXT UNIQUE NOT NULL, location TEXT, date INTEGER NOT NULL);
@@ -24,6 +24,7 @@ CREATE INDEX IF NOT EXISTS idx_activity_ts ON activity(ts);
 CREATE INDEX IF NOT EXISTS idx_messages_pair ON messages(from_id, to_id);
 `
 db.exec(SCHEMA)
+try { db.exec('ALTER TABLE users ADD COLUMN other_campus TEXT') } catch { /* column already exists */ }
 
 export const tx = (fn) => {
   db.exec('BEGIN')
@@ -34,7 +35,7 @@ export function seedDb(now = Date.now()) {
   const s = buildSeed(now)
   tx(() => {
     for (const t of ['users', 'events', 'attendance', 'connections', 'messages', 'activity', 'links', 'blocks', 'reports']) db.exec(`DELETE FROM ${t}`)
-    const iu = db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?)')
+    const iu = db.prepare('INSERT INTO users VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,NULL)')
     const ia = db.prepare('INSERT INTO attendance VALUES(?,?,?)')
     for (const u of s.users) {
       iu.run(u.id, u.username, u.role, u.gender, u.name, u.campusId ?? null, u.position ?? null, u.campusType ?? null,

@@ -12,7 +12,7 @@ const Pick = ({ label, value, onChange }) => (
   <label className="block"><span className="mb-1 block text-sm text-mute">{label}</span>
     <select className="input" value={value} onChange={(e) => onChange(e.target.value)}>
       <option value="">Choose campus…</option>
-      {CAMPUSES.map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
+      {[...CAMPUSES].sort((x, y) => x.name.localeCompare(y.name)).map((c) => <option key={c.id} value={c.id}>{c.name}</option>)}
     </select></label>
 )
 
@@ -35,6 +35,7 @@ export default function Admin() {
   const now = Date.now()
   const ranked = CAMPUSES.map((c) => ({ c, str: strength(c.id, s), fading: isFading(c.id, s), idle: Math.floor((now - lastActivityTs(c.id, s)) / 86400000) })).sort((x, y) => y.str - x.str)
   const fading = ranked.filter((r) => r.fading)
+  const outside = Object.entries(s.users.filter((u) => u.campusId === 'other').reduce((m, u) => ({ ...m, [u.otherCampus]: (m[u.otherCampus] ?? 0) + 1 }), {})).sort((x, y) => y[1] - x[1])
 
   return (
     <div className="space-y-8">
@@ -62,7 +63,7 @@ export default function Admin() {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-[1fr_340px]">
-        <div className="card overflow-x-auto !p-4">
+        <div className="card max-h-[560px] overflow-auto !p-4">
           <h3 className="mb-2 text-2xl">Connection strength</h3>
           <table className="w-full text-sm"><thead className="text-left text-mute"><tr><th className="py-1">#</th><th>Campus</th><th>Type</th><th>Strength</th><th>Last active</th></tr></thead>
             <tbody>{ranked.map(({ c, str, fading: f, idle }, i) => (
@@ -74,6 +75,9 @@ export default function Admin() {
           <div className="card !p-4"><h3 className="mb-2 text-2xl text-fading">Fading MSAs</h3>
             {fading.length ? <ul className="space-y-1 text-sm">{fading.map(({ c, idle }) => <li key={c.id} className="flex justify-between"><span>{c.name}</span><span className="text-fading">{idle}d</span></li>)}</ul> : <p className="text-mute">All campuses are active.</p>}
             <p className="mt-2 text-xs text-mute">Tip: link a fading MSA to a sister campus.</p></div>
+          <div className="card !p-4"><h3 className="mb-2 text-2xl">Outside the network</h3>
+            {outside.length ? <ul className="space-y-1 text-sm">{outside.map(([n, k]) => <li key={n} className="flex justify-between"><span>{n}</span><span className="text-mute">{k} student{k > 1 ? 's' : ''}</span></li>)}</ul> : <p className="text-mute">No students from unaffiliated colleges yet.</p>}
+            <p className="mt-2 text-xs text-mute">Colleges to invite into Manara Connect.</p></div>
           <ProfileCard user={me} />
         </div>
       </div>
