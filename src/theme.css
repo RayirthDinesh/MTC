@@ -12,6 +12,13 @@
   --color-bro: #5b8cff;
   --color-sis: #b58cff;
   --color-fading: #ff5c5c;
+  /* Dawn palette — the landing page travels night → pre-dawn → sunrise.
+     Additive only; nothing above changed. */
+  --color-dusk: #241548;
+  --color-violet: #7c5cff;
+  --color-plum: #b06ab3;
+  --color-ember: #ff7a3d;
+  --color-sun: #ffc247;
   --font-display: "Instrument Serif", serif;
   --font-sans: "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", monospace;
@@ -19,7 +26,9 @@
 }
 
 html { scroll-behavior: smooth; }
-body { background: var(--color-ink); color: var(--color-cream); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+/* clip, not hidden: `hidden` would make body a scroll container and break
+   position:sticky in the pinned landing sections. */
+body { background: var(--color-ink); color: var(--color-cream); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: clip; }
 h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05; }
 
 .card { background: linear-gradient(180deg, #ffffff0d, #ffffff04); border: 1px solid #ffffff17; border-radius: 22px; padding: 24px; }
