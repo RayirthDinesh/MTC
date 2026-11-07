@@ -127,7 +127,7 @@ export default function PassportCard({
             <div className="flex items-start justify-between">
               <div>
                 <p className="font-mono text-[9px] tracking-[0.22em] text-gold/80 uppercase">Manara West</p>
-                <p className="font-display text-[19px] leading-tight text-cream">Rihla Passport</p>
+                <p className="font-display text-[18px] font-medium leading-tight text-cream">Rihla Passport</p>
               </div>
               <Khatam size={22} stroke="var(--color-gold)" width={1.1} />
             </div>
@@ -135,7 +135,7 @@ export default function PassportCard({
             <div className="mt-4 flex items-center gap-3">
               <Holder photo={photo} name={name} />
               <div className="min-w-0">
-                <p className="truncate font-display text-[26px] leading-none text-cream">{name}</p>
+                <p className="truncate font-display text-[25px] font-semibold leading-none text-cream">{name}</p>
                 <p className="mt-1 truncate text-[11px] text-mute">{route}</p>
                 <p className="mt-1.5 inline-block rounded-full px-2 py-0.5 font-mono text-[9px] tracking-wider uppercase"
                    style={space === 'sister'

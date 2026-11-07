@@ -19,7 +19,7 @@
   --color-plum: #b06ab3;
   --color-ember: #ff7a3d;
   --color-sun: #ffc247;
-  --font-display: "Instrument Serif", serif;
+  --font-display: "Inter Tight", "Geist", system-ui, sans-serif;
   --font-sans: "Geist", system-ui, sans-serif;
   --font-mono: "Geist Mono", monospace;
   --font-ar: "Amiri", serif;
@@ -29,7 +29,7 @@ html { scroll-behavior: smooth; }
 /* clip, not hidden: `hidden` would make body a scroll container and break
    position:sticky in the pinned landing sections. */
 body { background: var(--color-ink); color: var(--color-cream); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; overflow-x: clip; }
-h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 600; letter-spacing: -0.038em; line-height: 1.02; }
 
 .card { background: linear-gradient(180deg, #ffffff0d, #ffffff04); border: 1px solid #ffffff17; border-radius: 22px; padding: 24px; }
 .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 14px; font-weight: 500; cursor: pointer; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }

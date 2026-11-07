@@ -36,31 +36,3 @@ export default function Khatam({ size = 28, stroke = 'currentColor', width = 1, 
     </svg>
   )
 }
-
-/** Horizontal rule with a star at its centre. Separates the page's chapters. */
-export function StarRule({ className = '' }) {
-  return (
-    <div className={`flex items-center gap-4 ${className}`} aria-hidden="true">
-      <span className="h-px flex-1 bg-gradient-to-r from-transparent to-gold/30" />
-      <Khatam size={20} stroke="var(--color-gold)" width={1} />
-      <span className="h-px flex-1 bg-gradient-to-l from-transparent to-gold/30" />
-    </div>
-  )
-}
-
-/** Tiling geometric field used as a faint background texture. */
-export function KhatamField({ className = '', opacity = 0.1 }) {
-  return (
-    <svg className={className} aria-hidden="true" style={{ opacity }}>
-      <defs>
-        <pattern id="khatam-field" width="90" height="90" patternUnits="userSpaceOnUse">
-          <g transform="translate(45 45)" fill="none" stroke="currentColor" strokeWidth="0.7">
-            <KhatamPath r={30} />
-            <circle r="18" />
-          </g>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="url(#khatam-field)" />
-    </svg>
-  )
-}
