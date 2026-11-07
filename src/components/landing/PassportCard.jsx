@@ -1,7 +1,6 @@
 import { useRef, useState } from 'react'
 import { motion, useMotionValue, useSpring, useTransform, useReducedMotion } from 'framer-motion'
 import { KhatamPath } from './Khatam.jsx'
-import Crest from '../Crest.jsx'
 
 const SOFT = { stiffness: 220, damping: 22, mass: 0.6 }
 
@@ -137,7 +136,7 @@ function Photo({ photo, name }) {
   )
 }
 
-/** A circular stamp with the campus logo, struck at a slight angle. `label` is a campus id. Empty slots stay faint. */
+/** An inked circular stamp, struck at a slight angle. Empty slots stay faint. */
 function Stamp({ label, on, index }) {
   const tilt = ((index * 37) % 17) - 8
   if (!on || !label) {
@@ -148,10 +147,10 @@ function Stamp({ label, on, index }) {
       initial={{ scale: 2.2, opacity: 0, rotate: tilt - 24 }}
       animate={{ scale: 1, opacity: 1, rotate: tilt }}
       transition={{ type: 'spring', stiffness: 500, damping: 18 }}
-      className="grid size-[46px] place-items-center rounded-full border-2"
-      style={{ borderColor: '#9a6b1f' }}
+      className="grid size-[46px] place-items-center rounded-full border-2 text-center font-mono text-[7.5px] leading-[1.1] tracking-wide uppercase"
+      style={{ borderColor: '#9a6b1f', color: '#9a6b1f', opacity: 0.85 }}
     >
-      <Crest id={label} size={34} />
+      {label}
     </motion.span>
   )
 }
