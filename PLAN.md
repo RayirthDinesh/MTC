@@ -1,7 +1,7 @@
 # Manara Rihla: build plan
 
 Stack: Vite + React + Tailwind + React Router + react-leaflet + framer-motion. No backend: localStorage + `storage` event.
-Visual spec and mockup: open `plan.html`.
+Visual spec and mockup: open `plan.html`. Goals, features, and full spec: [PRODUCT.md](PRODUCT.md).
 
 ## Shared contract (frozen after feat/foundation)
 - `src/store.js`: `getState`, `subscribe`, `reset`; actions `signUp login logout checkIn connect sendMessage createEvent inviteCoHost linkCampuses logActivity`; selectors `visibleUsers(viewer)` (only place gender filter lives), `sameGender`, `levelOf`, `strength`.
