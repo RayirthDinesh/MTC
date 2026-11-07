@@ -1,15 +1,10 @@
 // Landing. Three sections: the pitch, the one thing that makes us different,
 // the way in. Everything else lives inside the product.
-import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
-import { loginByUsername } from '../store.js'
 import { CAMPUSES } from '../data/seed.js'
-import { HOME } from '../App.jsx'
 import NightSky from '../components/landing/NightSky.jsx'
 import PassportCard from '../components/landing/PassportCard.jsx'
 import ProfileShowcase from '../components/landing/ProfileShowcase.jsx'
-import DemoLogin from '../components/landing/DemoLogin.jsx'
 import MagneticButton from '../components/landing/MagneticButton.jsx'
 import Reveal from '../components/landing/Reveal.jsx'
 
@@ -21,17 +16,6 @@ const rise = (delay) => ({
 })
 
 export default function Landing() {
-  const nav = useNavigate()
-  const [name, setName] = useState('')
-  const [err, setErr] = useState('')
-
-  const submit = (e) => {
-    e.preventDefault()
-    const u = loginByUsername(name)
-    if (!u) return setErr('No account with that username.')
-    nav(HOME[u.role])
-  }
-
   return (
     <div>
       {/* ------------------------------------------------------------ hero */}
@@ -63,26 +47,6 @@ export default function Landing() {
               <MagneticButton to="/signup" variant="sun">
                 Get your passport
               </MagneticButton>
-              <DemoLogin />
-              <form onSubmit={submit} className="flex flex-col gap-1.5">
-                <div className="flex gap-2">
-                  <input
-                    className="input w-40!"
-                    aria-label="Username"
-                    placeholder="Username"
-                    autoComplete="username"
-                    value={name}
-                    onChange={(e) => {
-                      setName(e.target.value)
-                      setErr('')
-                    }}
-                  />
-                  <button className="btn btn-glass" type="submit" disabled={!name.trim()}>
-                    Log in
-                  </button>
-                </div>
-                {err && <p role="alert" className="text-[13px] text-fading">{err}</p>}
-              </form>
             </motion.div>
           </div>
 

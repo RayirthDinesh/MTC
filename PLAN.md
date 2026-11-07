@@ -1,6 +1,6 @@
 # Manara Rihla: build plan
 
-Stack: Vite + React + Tailwind + React Router + react-leaflet + framer-motion. No backend: localStorage + `storage` event.
+Stack: Vite + React + Tailwind + React Router + react-leaflet + framer-motion. Backend: Express + SQLite (`node:sqlite`, file `rihla.db`), live updates over SSE (`/api/stream`). Run `npm run dev` (API :3001 + Vite :5173). Tests: `npm test`. Identity is a username kept in sessionStorage, so two tabs can be two users.
 Visual spec and mockup: open `plan.html`. Goals, features, and full spec: [PRODUCT.md](PRODUCT.md).
 
 ## Shared contract (frozen after feat/foundation)
