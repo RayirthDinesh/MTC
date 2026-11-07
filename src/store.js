@@ -6,7 +6,7 @@ import { LEVELS, levelIndex, levelOf, sameGender, audienceOk } from './lib/rules
 export { LEVELS, levelIndex, levelOf, sameGender }
 
 const DAY = 86400000
-const EMPTY = { ready: false, currentUserId: null, users: [], events: [], links: [], connections: [], messages: [], activity: [], blocks: [], reports: [] }
+const EMPTY = { ready: false, currentUserId: null, users: [], events: [], links: [], connections: [], messages: [], activity: [], blocks: [], reports: [], network: [], inbox: [] }
 const ss = {
   get: () => { try { return sessionStorage.getItem('rihla.uid') } catch { return null } },
   set: (v) => { try { v ? sessionStorage.setItem('rihla.uid', v) : sessionStorage.removeItem('rihla.uid') } catch { /* private mode */ } },
@@ -70,6 +70,20 @@ export const unlinkCampuses = (a, b) => call('unlinkCampuses', { a, b })
 export const blockUser = (target) => call('block', { target })
 export const reportUser = (target, reason = '') => call('report', { target, reason })
 export const simulate = () => call('simulate')
+export const requestJoin = (eventId, note = '') => call('requestJoin', { eventId, note })
+export const respondJoin = (requestId, accept) => call('respondJoin', { requestId, accept })
+/** Ask Rihla. Not an action: no state change, so no refresh and no broadcast. */
+export async function askRihla(question) {
+  try {
+    const r = await fetch('/api/ask', {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-user-id': uid ?? '' },
+      body: JSON.stringify({ question }),
+    })
+    return await r.json()
+  } catch { return { ok: false, reason: 'Network error.' } }
+}
+export const aiAvailable = async () => { try { return (await (await fetch('/api/ai')).json()).available } catch { return false } }
 export const usernameTaken = async (u) => (await (await fetch(`/api/username/${encodeURIComponent(u)}`)).json()).taken
 export const fetchPlan = async (q) => (await fetch(`/api/plan?${new URLSearchParams(q)}`)).json()
 

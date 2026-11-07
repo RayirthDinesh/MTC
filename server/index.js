@@ -2,6 +2,7 @@
 import express from 'express'
 import { pathToFileURL } from 'node:url'
 import { view, plan, actions, getUser, usernameTaken } from './actions.js'
+import { ask, aiAvailable } from './ask.js'
 
 export const app = express()
 app.use(express.json({ limit: '20kb' }))
@@ -20,6 +21,19 @@ app.get('/api/stream', (req, res) => {
 app.get('/api/state', (req, res) => res.json(view(actor(req))))
 app.get('/api/plan', (req, res) => res.json(plan(req.query)))
 app.get('/api/username/:u', (req, res) => res.json({ taken: usernameTaken(req.params.u) }))
+
+app.get('/api/ai', (_req, res) => res.json({ available: aiAvailable() }))
+
+app.post('/api/ask', async (req, res) => {
+  const me = actor(req)
+  // A little context so answers are about this student, not students in general.
+  const context = me
+    ? [`Name: ${me.name}`, `Role: ${me.role}`, me.major && `Major: ${me.major}`,
+       me.track && `Track: ${me.track}`, me.transferring && 'Is transferring',
+       `Stamps: ${me.stampCount ?? 0}`].filter(Boolean).join('\n')
+    : ''
+  res.json(await ask(req.body?.question, context))
+})
 
 app.post('/api/:action', (req, res) => {
   const fn = Object.hasOwn(actions, req.params.action) ? actions[req.params.action] : null
