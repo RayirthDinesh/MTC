@@ -16,7 +16,7 @@ const PROFILES = [
     name: 'Aisha Noor',
     sub: 'CS · Mesa → UCSD',
     accent: '#b58cff',
-    cover: 'linear-gradient(110deg,#7c5cff,#b06ab3 60%,#ff7a3d)',
+    cover: '#7c5cff',
     feed: ['Fatima Z. · UCSD', 'Sumayya P. · Berkeley', 'Khadija A. · De Anza'],
   },
   {
@@ -25,7 +25,7 @@ const PROFILES = [
     name: 'Omar Khalid',
     sub: 'CS · Mesa → UCSD',
     accent: '#5b8cff',
-    cover: 'linear-gradient(110deg,#1b3a8f,#3f6bd8 60%,#ffc247)',
+    cover: '#3f6bd8',
     feed: ['Bilal R. · UCSD', 'Idris M. · SDSU', 'Yusuf A. · De Anza'],
   },
 ]

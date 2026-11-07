@@ -51,7 +51,7 @@ export default function Landing() {
             >
               Travel to seek knowledge.
               <br />
-              <span className="rihla-dawn">Carry the proof.</span>
+              <span className="text-sun">Carry the proof.</span>
             </motion.h1>
 
             <motion.p {...rise(0.16)} className="mt-6 max-w-[42ch] text-[17px] text-mute">
@@ -92,7 +92,7 @@ export default function Landing() {
             transition={{ duration: 1, delay: 0.2, ease }}
             className="relative mx-auto w-full max-w-[330px]"
           >
-            <PassportCard stamps={['Mesa', 'UCSD', 'SDSU', 'UCLA', '', '']} filled={4} photo="/people/brother.jpg" />
+            <PassportCard stamps={['Mesa', 'UCSD', 'SDSU', 'UCLA', '']} filled={4} photo="/people/brother.jpg" />
             <p className="mt-5 text-center font-mono text-[10px] tracking-[0.18em] text-mute/70 uppercase">
               drag it
             </p>
@@ -129,15 +129,6 @@ export default function Landing() {
       <footer className="border-t border-white/10 py-8 text-center text-[13px] text-mute">
         Manara Rihla · {CAMPUSES.length} campuses live
       </footer>
-
-      <style>{`
-        .rihla-dawn {
-          background: linear-gradient(100deg,#ffc247,#ff7a3d 55%,#b06ab3);
-          -webkit-background-clip: text;
-          background-clip: text;
-          color: transparent;
-        }
-      `}</style>
     </div>
   )
 }
