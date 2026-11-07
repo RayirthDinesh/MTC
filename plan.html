@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Manara Rihla — Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<style>
+:root{
+  --ink:#070D20;--navy:#0B1530;--navy2:#111E42;--line:rgba(255,255,255,.09);
+  --gold:#E3B04B;--gold2:#F6D58A;--cream:#F6EFDD;--mute:#93A0C2;
+  --teal:#2DB5A6;--bro:#5B8CFF;--sis:#B58CFF;--red:#FF5C5C;
+  --spring:cubic-bezier(.34,1.56,.64,1);--out:cubic-bezier(.16,1,.3,1);
+}
+*{box-sizing:border-box;margin:0}
+html{scroll-behavior:smooth}
+body{background:var(--ink);color:var(--cream);font:400 16px/1.55 Geist,system-ui,sans-serif;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+h1,h2,h3{font-family:"Instrument Serif",serif;font-weight:400;letter-spacing:-.02em;line-height:1.02}
+h1{font-size:clamp(52px,10vw,120px)}
+h2{font-size:clamp(36px,6vw,64px);margin-bottom:12px}
+h3{font-size:26px}
+.mono{font-family:"Geist Mono",monospace;font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--gold)}
+.ar{font-family:Amiri,serif;color:var(--gold)}
+p.lead{color:var(--mute);max-width:60ch;font-size:18px}
+section{padding:110px 0 20px;position:relative}
+nav{position:fixed;top:12px;left:50%;translate:-50% 0;z-index:50;display:flex;gap:4px;padding:6px;border-radius:999px;background:rgba(17,30,66,.55);backdrop-filter:blur(18px) saturate(1.6);border:1px solid var(--line);box-shadow:0 8px 30px #0008, inset 0 1px 0 #fff1;max-width:96vw;overflow-x:auto}
+nav a{color:var(--mute);text-decoration:none;font-size:13px;padding:7px 13px;border-radius:999px;transition:all .3s var(--out);white-space:nowrap}
+nav a:hover{color:var(--cream);background:#ffffff12}
+.hero{min-height:100svh;display:grid;align-content:center;padding-top:80px;overflow:hidden;position:relative}
+.hero svg.pat{position:absolute;inset:-20%;width:140%;height:140%;opacity:.16;animation:spin 140s linear infinite;pointer-events:none}
+.beam{position:absolute;top:-10%;left:50%;width:70vw;height:120%;translate:-50% 0;background:conic-gradient(from 180deg at 50% 0%,transparent 160deg,#E3B04B33 175deg,#F6D58A55 180deg,#E3B04B33 185deg,transparent 200deg);transform-origin:50% 0;animation:sweep 9s ease-in-out infinite alternate;pointer-events:none}
+@keyframes sweep{from{rotate:-22deg}to{rotate:22deg}}
+@keyframes spin{to{rotate:360deg}}
+.hero .wrap{position:relative}
+.hero h1 em{color:var(--gold);font-style:normal}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-top:28px}
+.chip{padding:6px 12px;border-radius:999px;border:1px solid var(--line);font-size:13px;color:var(--mute);background:#ffffff06}
+.rv{opacity:0;translate:0 28px;filter:blur(6px);transition:all .9s var(--out)}
+.rv.in{opacity:1;translate:0 0;filter:none}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:13px 22px;border-radius:14px;border:0;font:500 15px Geist;cursor:pointer;position:relative;overflow:hidden;text-decoration:none;transition:transform .35s var(--spring),box-shadow .35s var(--out)}
+.btn:active{transform:scale(.96)}
+.gold{background:linear-gradient(180deg,var(--gold2),var(--gold));color:#2a1d00;box-shadow:0 1px 0 #fff8 inset,0 8px 20px #0007}
+.gold:hover{box-shadow:0 1px 0 #fff8 inset,0 12px 28px #000a;transform:translateY(-2px)}
+.gold::after{content:"";position:absolute;inset:0;background:linear-gradient(105deg,transparent 35%,#fff9 50%,transparent 65%);translate:-120% 0;transition:translate .7s var(--out)}
+.gold:hover::after{translate:120% 0}
+.glass{background:#ffffff10;color:var(--cream);backdrop-filter:blur(14px);box-shadow:inset 0 1px 0 #fff2,inset 0 0 0 1px var(--line)}
+.glass:hover{background:#ffffff1c}
+.ghost{background:none;color:var(--gold);box-shadow:inset 0 0 0 1px #E3B04B55}
+.ghost:hover{background:#E3B04B14}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(auto-fit,minmax(320px,1fr))}
+.g3{grid-template-columns:repeat(auto-fit,minmax(250px,1fr))}
+.card{background:linear-gradient(180deg,#ffffff0d,#ffffff04);border:1px solid var(--line);border-radius:22px;padding:24px;position:relative;overflow:hidden;transition:transform .5s var(--out),border-color .3s,opacity .9s var(--out),filter .9s var(--out),translate .9s var(--out)}
+.card:hover{transform:translateY(-4px);border-color:#E3B04B55}
+.card::before{content:"";position:absolute;inset:0;background:radial-gradient(400px circle at var(--mx,50%) var(--my,0%),#E3B04B18,transparent 60%);opacity:0;transition:opacity .3s;pointer-events:none}
+.card:hover::before{opacity:1}
+.sw{display:flex;gap:10px;flex-wrap:wrap;margin-top:18px}
+.sw div{width:96px;border-radius:14px;overflow:hidden;border:1px solid var(--line);font:11px "Geist Mono";color:var(--mute)}
+.sw i{display:block;height:56px}.sw span{display:block;padding:6px 8px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:500}
+.pb{background:#5B8CFF22;color:#9DB9FF}.ps{background:#B58CFF22;color:#D2B8FF}
+.demo{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:28px;align-items:center;margin-top:36px}
+.pp{perspective:1200px}
+.pass{aspect-ratio:3/4;max-width:340px;margin:auto;border-radius:22px;padding:22px;background:linear-gradient(155deg,#16275a,#0B1530 60%);border:1px solid #E3B04B66;box-shadow:0 30px 80px #000a,inset 0 1px 0 #fff2;transform-style:preserve-3d;transition:transform .5s var(--out);position:relative;overflow:hidden}
+.pass::after{content:"";position:absolute;inset:0;background:radial-gradient(300px circle at var(--gx,30%) var(--gy,0%),#F6D58A30,transparent 60%);pointer-events:none}
+.pass .top{display:flex;justify-content:space-between;align-items:center}
+.pass h4{font:400 30px "Instrument Serif";margin:14px 0 2px}
+.stamps{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.st{aspect-ratio:1;border-radius:50%;border:1.5px dashed #E3B04B44;display:grid;place-items:center;font:11px "Geist Mono";color:#C9A25A;text-align:center;line-height:1.1}
+.st.on{border:2px solid var(--gold);color:var(--gold);background:#E3B04B14;animation:thump .7s var(--spring);rotate:var(--r,0deg)}
+@keyframes thump{0%{scale:2.4;opacity:0;rotate:-30deg}60%{scale:.9;opacity:1}100%{scale:1}}
+.bar{height:8px;border-radius:9px;background:#ffffff14;margin-top:14px;overflow:hidden}
+.bar b{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--gold),var(--gold2));border-radius:9px;transition:width 1s var(--out)}
+.lvl{display:flex;justify-content:space-between;font:11px "Geist Mono";color:var(--mute);margin-top:6px}
+.toast{position:fixed;bottom:24px;left:50%;translate:-50% 140%;padding:12px 18px;border-radius:16px;background:#111E42ee;backdrop-filter:blur(16px);border:1px solid var(--gold);transition:translate .6s var(--spring);z-index:60}
+.toast.show{translate:-50% 0}
+.conf{position:fixed;width:8px;height:8px;border-radius:2px;pointer-events:none;z-index:70}
+.br{display:grid;gap:14px}
+.br .card{display:grid;gap:10px}
+.br h3 small{font:12px "Geist Mono";color:var(--mute);margin-left:8px;letter-spacing:0}
+.tag{font:11px "Geist Mono";padding:3px 8px;border-radius:7px;background:#ffffff0d;color:var(--mute)}
+.tag.a{color:#0B1530;background:var(--gold)}.tag.b{color:#0B1530;background:var(--teal)}
+ul.t{padding-left:18px;color:var(--mute);font-size:14.5px}ul.t li{margin:3px 0}
+code{font:13px "Geist Mono";background:#ffffff0f;padding:2px 6px;border-radius:6px;color:var(--gold2)}
+pre{font:13px/1.6 "Geist Mono";background:#050a18;border:1px solid var(--line);border-radius:16px;padding:18px;overflow:auto;color:#cdd6f4}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.tl{position:relative;margin-top:30px;border:1px solid var(--line);border-radius:22px;padding:22px;background:#ffffff05}
+.lane{display:grid;grid-template-columns:70px 1fr;gap:12px;align-items:center;margin:10px 0}
+.lane>span{font:12px "Geist Mono";color:var(--mute)}
+.track{position:relative;height:34px;background:#ffffff08;border-radius:10px}
+.seg{position:absolute;top:3px;bottom:3px;border-radius:8px;font:11px/28px "Geist Mono";padding:0 8px;color:#0B1530;white-space:nowrap;overflow:hidden;width:0;transition:width 1.1s var(--out)}
+.tl.in .seg{width:var(--w)}
+.axis{display:grid;grid-template-columns:70px 1fr;gap:12px}
+.axis div{display:flex;justify-content:space-between;font:11px "Geist Mono";color:var(--mute)}
+footer{padding:80px 0 60px;color:var(--mute);text-align:center}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.rv{opacity:1;translate:0;filter:none}.seg{width:var(--w)}}
+</style>
+</head>
+<body>
+<nav><a href="#top">Top</a><a href="#design">Design</a><a href="#passport">Passport</a><a href="#arch">Contract</a><a href="#branches">Branches</a><a href="#time">Timeline</a><a href="#demo">Demo</a></nav>
+
+<header class="hero" id="top">
+  <div class="beam"></div>
+  <svg class="pat" viewBox="0 0 400 400" aria-hidden="true"><defs><g id="s"><rect x="-40" y="-40" width="80" height="80" fill="none" stroke="#E3B04B" stroke-width=".6"/><rect x="-40" y="-40" width="80" height="80" fill="none" stroke="#E3B04B" stroke-width=".6" transform="rotate(45)"/><circle r="28" fill="none" stroke="#E3B04B" stroke-width=".5"/></g></defs>
+    <g id="tiles"></g></svg>
+  <div class="wrap">
+    <h1 class="rv" style="transition-delay:.08s">Manara<br><em>Rihla</em> <span class="ar" style="font-size:.5em">رحلة</span></h1>
+    <p class="lead rv" style="margin-top:22px;transition-delay:.16s">One passport. One profile. One network across 65 campuses, with Islamic boundaries built in. Below: the design system, the work split, and the branch plan so two people can build in parallel and merge clean.</p>
+    <div class="row rv" style="margin-top:30px;transition-delay:.24s"><a class="btn gold" href="#branches">See branch split →</a><a class="btn glass" href="#design">Design system</a></div>
+    <div class="chips rv" style="transition-delay:.32s"><span class="chip">Vite + React + Tailwind</span><span class="chip">react-leaflet</span><span class="chip">Framer Motion</span><span class="chip">localStorage + storage event</span><span class="chip">No backend</span></div>
+  </div>
+</header>
+
+<section id="design"><div class="wrap">
+  <p class="mono rv">01 · Design system</p>
+  <h2 class="rv">Navy, gold, springs.</h2>
+  <p class="lead rv">Lighthouse at night. Gold is the only loud color. Apple-style physical motion: springs, not eases; transform and opacity only; every press scales; reduced-motion respected.</p>
+  <div class="sw rv">
+    <div><i style="background:#070D20"></i><span>ink #070D20</span></div>
+    <div><i style="background:#0B1530"></i><span>navy #0B1530</span></div>
+    <div><i style="background:#111E42"></i><span>navy2 #111E42</span></div>
+    <div><i style="background:#E3B04B"></i><span>gold #E3B04B</span></div>
+    <div><i style="background:#F6EFDD"></i><span>cream #F6EFDD</span></div>
+    <div><i style="background:#2DB5A6"></i><span>CC teal #2DB5A6</span></div>
+    <div><i style="background:#5B8CFF"></i><span>brothers #5B8CFF</span></div>
+    <div><i style="background:#B58CFF"></i><span>sisters #B58CFF</span></div>
+    <div><i style="background:#FF5C5C"></i><span>fading #FF5C5C</span></div>
+  </div>
+  <div class="grid g2" style="margin-top:28px">
+    <div class="card rv"><p class="mono">Type</p>
+      <h3 style="font-size:54px;margin:8px 0">Instrument Serif</h3>
+      <p style="color:var(--mute)">Display + numbers. Italic for emphasis.</p>
+      <p style="font:500 22px Geist;margin-top:14px;letter-spacing:-.01em">Geist — UI &amp; body</p>
+      <p style="font:14px 'Geist Mono';color:var(--gold);margin-top:6px">Geist Mono — codes, stamps, labels</p>
+      <p class="ar" style="font-size:34px;margin-top:6px">أميري — Arabic accents</p></div>
+    <div class="card rv"><p class="mono">Buttons</p>
+      <div class="row" style="margin-top:16px"><button class="btn gold">Check in</button><button class="btn glass">Connect</button><button class="btn ghost">Link MSAs</button></div>
+      <p style="margin-top:18px"><span class="pill pb">🟦 Brothers</span> <span class="pill ps">🟪 Sisters</span></p>
+      <ul class="t" style="margin-top:14px"><li>Hover: sheen sweep + lift</li><li>Press: scale .96, spring back</li><li>Cards: cursor spotlight</li></ul></div>
+  </div>
+  <div class="card rv" style="margin-top:16px"><p class="mono">Motion spec (Framer Motion)</p>
+<pre>spring.ui    = { type:"spring", stiffness:380, damping:32 }   // buttons, toggles
+spring.sheet = { type:"spring", stiffness:260, damping:30 }   // modals, level-up
+spring.pop   = { type:"spring", stiffness:500, damping:18 }   // stamps, badges
+page: fade + y:12 → 0 + blur 6px → 0 (AnimatePresence, mode="wait")
+lists: stagger 0.04s · numbers: count-up 800ms · map pulse: ring scale 1→3, opacity .6→0, 1.6s
+tab underline: layoutId shared element · reduced-motion: opacity only</pre></div>
+  <div class="card rv" style="margin-top:16px"><p class="mono">21st.dev components to pull (shadcn-style, copy in)</p>
+    <ul class="t" style="margin-top:8px"><li>Spotlight / glow card → dashboard cards</li><li>Animated beam → landing hero (lighthouse sweep)</li><li>Text scramble / decode → "Rihla" reveal, check-in code</li><li>Bento grid → landing features</li><li>Animated tabs (layoutId) → student dashboard tabs</li><li>Number ticker → admin stats</li><li>Marquee → campus names on landing</li></ul></div>
+</div></section>
+
+<section id="passport"><div class="wrap">
+  <p class="mono rv">02 · Mockup · the main feature</p>
+  <h2 class="rv">The Rihla Passport.</h2>
+  <p class="lead rv">Tilt it. Hit check-in. Stamps thump in, bar fills, level ups fire confetti. This is the feel to ship in React.</p>
+  <div class="demo">
+    <div class="pp rv"><div class="pass" id="pass">
+      <div class="top"><span class="mono">Rihla Passport</span><span class="pill pb">🟦 Brothers</span></div>
+      <h4>Omar K.</h4><p style="color:var(--mute);font-size:13px">San Diego Mesa → UCSD · CS · Transfer track</p>
+      <div class="stamps" id="stamps"></div>
+      <div class="bar"><b id="bar"></b></div>
+      <div class="lvl"><span id="lv">Explorer</span><span id="cnt">0 / 5 stamps</span></div>
+    </div></div>
+    <div class="rv"><div class="card"><p class="mono">Try it</p>
+      <p style="color:var(--mute);margin:8px 0 16px">Enter any code (try <code>MESA42</code>) and hit check in.</p>
+      <div class="row"><input id="code" value="MESA42" style="flex:1;min-width:140px;padding:13px 16px;border-radius:14px;border:1px solid var(--line);background:#ffffff0a;color:var(--cream);font:15px 'Geist Mono';letter-spacing:.15em"><button class="btn gold" id="ci">Check in</button></div>
+      <p style="margin-top:14px;font-size:13px;color:var(--mute)">Levels: Explorer 0–4 · Traveler 5–9 · Navigator 10–14 · Manara Fellow 15+</p></div></div>
+  </div>
+</div></section>
+
+<section id="arch"><div class="wrap">
+  <p class="mono rv">03 · Shared contract (merge first)</p>
+  <h2 class="rv">Freeze this before branching.</h2>
+  <p class="lead rv">Both people code against the same store API. Stub it on <code>main</code> first so branches never touch each other's files.</p>
+  <div class="card rv" style="margin-top:20px"><pre>src/store.js     getState() · subscribe(fn) · reset()           // persists + window 'storage' sync
+                 actions: signUp(user) login(id) logout()
+                          checkIn(userId, code)  → {ok, stamp, levelUp}
+                          connect(a,b)  sendMessage(from,to,text)
+                          createEvent(ev)  inviteCoHost(eventId, campusId)
+                          linkCampuses(a,b)  logActivity(type,campusId)
+                 selectors: visibleUsers(viewer)  ← ONLY place gender filter lives
+                            sameGender(a,b) · levelOf(stamps) · strength(campusId)
+src/data/seed.js 25 campuses · 6 linked pairs · 20 students · 4 leaders · 1 admin · 12 events
+src/theme.css    tokens above · src/lib/motion.js springs</pre></div>
+</div></section>
+
+<section id="branches"><div class="wrap">
+  <p class="mono rv">04 · Branch split</p>
+  <h2 class="rv">Five branches, two people.</h2>
+  <p class="lead rv">Each branch owns its own files. Shared files (<code>store.js</code>, <code>seed.js</code>, <code>App.jsx</code> routes, <code>theme.css</code>) are frozen after <code>feat/foundation</code>; need a change? tiny PR to <code>main</code>, both rebase.</p>
+  <div class="br" style="margin-top:28px">
+    <div class="card rv"><h3>0 · feat/foundation <small>~30 min · BLOCKS ALL</small></h3><div class="row"><span class="tag a">You</span><span class="tag">merge first</span></div>
+      <ul class="t"><li>Vite + React + Tailwind + Router + react-leaflet + framer-motion scaffold</li><li><code>store.js</code> with every action/selector above (stubs OK, gender helper real)</li><li><code>seed.js</code> full data</li><li>Route shells: <code>/ /signup /student /campus /admin</code>, Navbar, GenderPill, theme tokens, motion lib</li><li>Done when: <code>npm run dev</code> runs, demo-login switches users, shells render</li></ul></div>
+
+    <div class="card rv"><h3>1 · feat/landing-signup <small>~45 min</small></h3><div class="row"><span class="tag b">Partner</span><span class="tag">after 0</span></div>
+      <ul class="t"><li>Files: <code>pages/Landing.jsx</code> <code>pages/Signup.jsx</code> + <code>components/landing/*</code></li><li>Hero w/ lighthouse beam, problem, 3 feature cards, Demo-login dropdown</li><li>Front Door quiz 4 steps, progress bar, "Your Rihla Plan" summary, role redirect</li><li>Done when: sign up as each role lands on right dashboard</li></ul></div>
+
+    <div class="card rv"><h3>2 · feat/student-passport <small>~80 min · MAIN FEATURE</small></h3><div class="row"><span class="tag a">You</span><span class="tag">after 0</span></div>
+      <ul class="t"><li>Files: <code>pages/Student.jsx</code> <code>components/Passport.jsx</code> <code>ProfileCard.jsx</code> <code>EventsTab.jsx</code> <code>LevelUpModal.jsx</code></li><li>Tracks + 5 milestones, stamps, stars, badges, levels, journey timeline</li><li>Check-in input → confetti + badge popup + <code>logActivity</code></li><li>LinkedIn-style profile, Deen private, events filtered by audience</li><li>Done when: passport matches mockup feel; check-in updates level live</li></ul></div>
+
+    <div class="card rv"><h3>3 · feat/admin-map <small>~75 min</small></h3><div class="row"><span class="tag b">Partner</span><span class="tag">after 0</span></div>
+      <ul class="t"><li>Files: <code>pages/Admin.jsx</code> <code>components/NetworkMap.jsx</code> <code>StatsCards.jsx</code> <code>ActivityFeed.jsx</code></li><li>Leaflet: teal CC / gold 4-yr, link lines weighted by activity, pulse on activity, red ring ≥60d inactive</li><li>Link MSAs tool, strength score table, Fading list, Simulate toggle</li><li>Done when: check-in in tab A pulses map in tab B &lt; 1s</li></ul></div>
+
+    <div class="card rv"><h3>4 · feat/connect-chat <small>~60 min</small></h3><div class="row"><span class="tag a">You</span><span class="tag">after 2 merges</span></div>
+      <ul class="t"><li>Files: <code>components/ConnectList.jsx</code> <code>Chat.jsx</code> (mounted as Student tabs)</li><li>Search + suggestions (same gender only), Connect, 1:1 chat across tabs, report/block</li><li>Done when: brother account never sees a sister anywhere; test helper proves it</li></ul></div>
+
+    <div class="card rv"><h3>5 · feat/campus-events <small>~45 min</small></h3><div class="row"><span class="tag b">Partner</span><span class="tag">after 3 or 1</span></div>
+      <ul class="t"><li>Files: <code>pages/Campus.jsx</code> <code>components/EventForm.jsx</code> <code>CoHostInvite.jsx</code></li><li>Create event (audience, stamp, auto 6-char code), co-host dropdown, attendance counts, leader profile</li><li>Done when: co-hosted event shows on both campuses and feeds admin line weight</li></ul></div>
+
+    <div class="card rv"><h3>6 · polish/demo <small>last 30 min · both</small></h3>
+      <ul class="t"><li>Page transitions, count-ups, empty states, mobile pass, a11y focus rings</li><li>Rehearse 3-min demo two tabs side by side; Reset demo data button</li></ul></div>
+  </div>
+  <div class="card rv" style="margin-top:20px"><p class="mono">Git rules</p>
+<pre>git checkout main &amp;&amp; git pull
+git checkout -b feat/&lt;name&gt;        # one branch per row above
+# commit small, push often
+git fetch &amp;&amp; git rebase origin/main  # before every PR
+# PR → merge in this order: foundation → landing-signup + student-passport + admin-map → connect-chat → campus-events → polish
+# never edit another branch's files; shared files = PR to main first</pre></div>
+</div></section>
+
+<section id="time"><div class="wrap">
+  <p class="mono rv">05 · Timeline</p>
+  <h2 class="rv">3:15 build start → 7:15 freeze.</h2>
+  <p class="lead rv">Judge office hours 4:00–5:30 (talk to 2 judges, log feedback). Maghrib break 5:15. Cut order if behind: group chats → suggestions → co-host invite flow → certificates. Never cut passport, gender separation, live map.</p>
+  <div class="tl rv" id="tl">
+    <div class="axis"><span></span><div><span>3:15</span><span>4:15</span><span>5:15</span><span>6:15</span><span>7:15</span></div></div>
+    <div class="lane"><span>You</span><div class="track">
+      <div class="seg" style="left:0;--w:12%;background:var(--gold)">foundation</div>
+      <div class="seg" style="left:12%;--w:34%;background:var(--gold2);transition-delay:.15s">student-passport</div>
+      <div class="seg" style="left:48%;--w:26%;background:var(--gold);transition-delay:.3s">connect-chat</div>
+      <div class="seg" style="left:76%;--w:24%;background:var(--cream);transition-delay:.45s">polish</div></div></div>
+    <div class="lane"><span>Partner</span><div class="track">
+      <div class="seg" style="left:0;--w:12%;background:#1b4b45;color:#fff;transition-delay:.1s">setup</div>
+      <div class="seg" style="left:12%;--w:20%;background:var(--teal);transition-delay:.2s">landing-signup</div>
+      <div class="seg" style="left:33%;--w:30%;background:var(--teal);transition-delay:.35s">admin-map</div>
+      <div class="seg" style="left:64%;--w:20%;background:#7fded3;transition-delay:.5s">campus-events</div>
+      <div class="seg" style="left:86%;--w:14%;background:var(--cream);transition-delay:.6s">demo</div></div></div>
+  </div>
+  <p style="color:var(--mute);font-size:14px;margin-top:12px">Partner's first 20 min before foundation merges: read the contract, set up Leaflet tiles + mock marker data locally so admin-map starts fast.</p>
+</div></section>
+
+<section id="demo"><div class="wrap">
+  <p class="mono rv">06 · Demo (3 min)</p>
+  <h2 class="rv">The story.</h2>
+  <div class="grid g3" style="margin-top:20px">
+    <div class="card rv"><span class="mono">1</span><p>Brother at Mesa takes the quiz → Transfer-track passport.</p></div>
+    <div class="card rv"><span class="mono">2</span><p>Checks in at a UCSD×Mesa event → stamp, badge, level up.</p></div>
+    <div class="card rv"><span class="mono">3</span><p>Connects + chats with a Mesa→UCSD brother. Only brothers visible.</p></div>
+    <div class="card rv"><span class="mono">4</span><p>Admin tab: map pulses, Mesa–UCSD line thickens, link a fading MSA.</p></div>
+    <div class="card rv"><span class="mono">5</span><p>Judge feedback slide: "You told us no free mixing — separate spaces in every feature."</p></div>
+    <div class="card rv"><span class="mono">6</span><p>"Your Rihla Passport is your journey, your profile, and your network."</p></div>
+  </div>
+</div></section>
+<footer><p class="ar" style="font-size:28px">منارة</p><p>Manara Rihla · plan v1</p></footer>
+<div class="toast" id="toast"></div>
+
+<script>
+const t=document.getElementById('tiles');for(let y=0;y<5;y++)for(let x=0;x<5;x++)t.insertAdjacentHTML('beforeend',`<use href="#s" x="${x*80+40}" y="${y*80+40}"/>`);
+const io=new IntersectionObserver(es=>es.forEach(e=>{if(e.isIntersecting){e.target.classList.add('in');io.unobserve(e.target)}}),{threshold:.12});
+document.querySelectorAll('.rv').forEach(el=>io.observe(el));
+document.querySelectorAll('.card').forEach(c=>c.addEventListener('pointermove',e=>{const r=c.getBoundingClientRect();c.style.setProperty('--mx',e.clientX-r.left+'px');c.style.setProperty('--my',e.clientY-r.top+'px')}));
+const pass=document.getElementById('pass');
+pass.addEventListener('pointermove',e=>{const r=pass.getBoundingClientRect(),x=(e.clientX-r.left)/r.width-.5,y=(e.clientY-r.top)/r.height-.5;pass.style.transform=`rotateY(${x*14}deg) rotateX(${-y*14}deg)`;pass.style.setProperty('--gx',(x+.5)*100+'%');pass.style.setProperty('--gy',(y+.5)*100+'%')});
+pass.addEventListener('pointerleave',()=>pass.style.transform='');
+const camp=['MESA','UCSD','UCLA','SMC','UCI','UCR','SJSU','DVC','UCB'];let n=0;
+const S=document.getElementById('stamps');
+camp.forEach(c=>S.insertAdjacentHTML('beforeend',`<div class="st">${c}</div>`));
+const lv=['Explorer','Traveler','Navigator','Manara Fellow'];
+function toast(m){const e=document.getElementById('toast');e.textContent=m;e.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(()=>e.classList.remove('show'),2200)}
+function confetti(x,y){for(let i=0;i<26;i++){const d=document.createElement('i');d.className='conf';d.style.cssText=`left:${x}px;top:${y}px;background:${['#E3B04B','#F6D58A','#2DB5A6','#F6EFDD'][i%4]}`;document.body.appendChild(d);const a=Math.random()*Math.PI*2,v=80+Math.random()*160;d.animate([{transform:'translate(0,0) rotate(0)',opacity:1},{transform:`translate(${Math.cos(a)*v}px,${Math.sin(a)*v+120}px) rotate(${Math.random()*720}deg)`,opacity:0}],{duration:1100,easing:'cubic-bezier(.16,1,.3,1)'}).onfinish=()=>d.remove()}}
+function upd(){const L=n>=15?3:n>=10?2:n>=5?1:0;document.getElementById('lv').textContent=lv[L];const base=[0,5,10,15][L],next=[5,10,15,15][L];document.getElementById('cnt').textContent=n+' / '+(L==3?'15+':next)+' stamps';document.getElementById('bar').style.width=Math.min(100,(n-base)/(next-base||1)*100)+'%'}
+document.getElementById('ci').onclick=()=>{if(n>=9){n=0;[...S.children].forEach(s=>s.classList.remove('on'))}const s=S.children[n];s.style.setProperty('--r',(Math.random()*16-8)+'deg');s.classList.add('on');n++;const r=s.getBoundingClientRect();confetti(r.left+r.width/2,r.top+r.height/2);upd();toast(n==5?'Level up → Traveler ✦':'Stamp earned · '+camp[n-1])};
+upd();
+new IntersectionObserver((es)=>es.forEach(e=>{if(e.isIntersecting)e.target.classList.add('in')}),{threshold:.3}).observe(document.getElementById('tl'));
+</script>
+</body>
+</html>
