@@ -1,6 +1,7 @@
 // Landing. Three sections: the pitch, the one thing that makes us different,
 // the way in. Everything else lives inside the product.
-import { motion } from 'framer-motion'
+import { useRef } from 'react'
+import { motion, useScroll, useTransform, useSpring, useReducedMotion } from 'framer-motion'
 import { CAMPUSES } from '../data/seed.js'
 import NightSky from '../components/landing/NightSky.jsx'
 import TechText from '../components/landing/TechText.jsx'
@@ -8,6 +9,7 @@ import PassportCard from '../components/landing/PassportCard.jsx'
 import ProfileShowcase from '../components/landing/ProfileShowcase.jsx'
 import MagneticButton from '../components/landing/MagneticButton.jsx'
 import Reveal from '../components/landing/Reveal.jsx'
+import ScrollProgress from '../components/landing/ScrollProgress.jsx'
 
 const ease = [0.16, 1, 0.3, 1]
 const rise = (delay) => ({
@@ -17,13 +19,28 @@ const rise = (delay) => ({
 })
 
 export default function Landing() {
+  const reduced = useReducedMotion()
+  const heroRef = useRef(null)
+  // The hero drifts up and dims as it leaves, so the page feels layered
+  // rather than a stack of blocks that scroll past at one speed.
+  const { scrollYProgress } = useScroll({ target: heroRef, offset: ['start start', 'end start'] })
+  const soft = (mv) => useSpring(mv, { stiffness: 80, damping: 24, mass: 0.4 })
+  const copyY = soft(useTransform(scrollYProgress, [0, 1], [0, -70]))
+  const cardY = soft(useTransform(scrollYProgress, [0, 1], [0, -140]))
+  const skyY = soft(useTransform(scrollYProgress, [0, 1], [0, 90]))
+  const fade = useTransform(scrollYProgress, [0, 0.8], [1, 0])
+  const still = {}
+
   return (
     <div>
+      <ScrollProgress />
       {/* ------------------------------------------------------------ hero */}
-      <section className="relative left-1/2 -mt-24 w-screen -translate-x-1/2 overflow-hidden">
-        <NightSky />
+      <section ref={heroRef} className="relative left-1/2 -mt-24 w-screen -translate-x-1/2 overflow-hidden">
+        <motion.div style={reduced ? still : { y: skyY }} className="absolute inset-0">
+          <NightSky />
+        </motion.div>
         <div className="relative mx-auto grid max-w-6xl items-center gap-12 px-5 pt-36 pb-24 lg:grid-cols-[1.1fr_minmax(0,330px)]">
-          <div>
+          <motion.div style={reduced ? still : { y: copyY, opacity: fade }}>
             <motion.p {...rise(0)} className="font-mono text-[11px] tracking-[0.2em] text-sun uppercase">
               Manara West · 65 campuses
             </motion.p>
@@ -72,18 +89,19 @@ export default function Landing() {
                 Get your passport
               </MagneticButton>
             </motion.div>
-          </div>
+          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 34, rotate: -6 }}
-            animate={{ opacity: 1, y: 0, rotate: 0 }}
-            transition={{ duration: 1, delay: 0.2, ease }}
-            className="relative mx-auto w-full max-w-[330px]"
-          >
-            <PassportCard stamps={['mesa', 'ucsd', 'ucla', 'uci', '']} filled={4} campusId="mesa" />
-            <p className="mt-5 text-center font-mono text-[10px] tracking-[0.18em] text-mute/70 uppercase">
-              drag it
-            </p>
+          <motion.div style={reduced ? still : { y: cardY }} className="relative mx-auto w-full max-w-[330px]">
+            <motion.div
+              initial={{ opacity: 0, y: 34, rotate: -6 }}
+              animate={{ opacity: 1, y: 0, rotate: 0 }}
+              transition={{ duration: 1, delay: 0.2, ease }}
+            >
+              <PassportCard stamps={['mesa', 'ucsd', 'ucla', 'uci', '']} filled={4} campusId="mesa" />
+              <p className="mt-5 text-center font-mono text-[10px] tracking-[0.18em] text-mute/70 uppercase">
+                drag it
+              </p>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -92,6 +110,8 @@ export default function Landing() {
       <section className="pt-28">
         <Reveal>
           <h2 className="text-[clamp(30px,4.6vw,52px)] font-semibold">Two spaces. No overlap.</h2>
+        </Reveal>
+        <Reveal delay={0.1}>
           <p className="mt-3 max-w-[46ch] text-[16px] text-mute">
             Judges told us: no free mixing. So it is the architecture, not a setting.
           </p>
@@ -105,7 +125,11 @@ export default function Landing() {
       <section className="py-28 text-center">
         <Reveal>
           <p className="font-ar text-3xl text-sun">رحلة</p>
+        </Reveal>
+        <Reveal delay={0.08}>
           <h2 className="mt-4 text-[clamp(30px,5vw,56px)] font-semibold">Start your rihla.</h2>
+        </Reveal>
+        <Reveal delay={0.16}>
           <div className="mt-8 flex justify-center">
             <MagneticButton to="/signup" variant="sun">
               Get your passport
