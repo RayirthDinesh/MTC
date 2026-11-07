@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ink: #070d20;
+  --color-navy: #0b1530;
+  --color-navy2: #111e42;
+  --color-gold: #e3b04b;
+  --color-gold2: #f6d58a;
+  --color-cream: #f6efdd;
+  --color-mute: #93a0c2;
+  --color-cc: #2db5a6;
+  --color-bro: #5b8cff;
+  --color-sis: #b58cff;
+  --color-fading: #ff5c5c;
+  --font-display: "Instrument Serif", serif;
+  --font-sans: "Geist", system-ui, sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --font-ar: "Amiri", serif;
+}
+
+html { scroll-behavior: smooth; }
+body { background: var(--color-ink); color: var(--color-cream); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+h1, h2, h3 { font-family: var(--font-display); font-weight: 400; letter-spacing: -0.02em; line-height: 1.05; }
+
+.card { background: linear-gradient(180deg, #ffffff0d, #ffffff04); border: 1px solid #ffffff17; border-radius: 22px; padding: 24px; }
+.btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 20px; border-radius: 14px; font-weight: 500; cursor: pointer; transition: transform .35s cubic-bezier(.34,1.56,.64,1); }
+.btn:active { transform: scale(.96); }
+.btn-gold { background: linear-gradient(180deg, var(--color-gold2), var(--color-gold)); color: #2a1d00; box-shadow: 0 8px 20px #0007; }
+.btn-glass { background: #ffffff10; box-shadow: inset 0 0 0 1px #ffffff17; }
+.input { width: 100%; padding: 12px 14px; border-radius: 14px; background: #ffffff0a; border: 1px solid #ffffff17; color: inherit; }
+.input:focus-visible, .btn:focus-visible { outline: 2px solid var(--color-gold); outline-offset: 2px; }
+
+@media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
